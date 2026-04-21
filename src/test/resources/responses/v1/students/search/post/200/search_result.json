@@ -1,0 +1,29 @@
+{
+  "data": {
+    "total": 6,
+    "data": [
+      {
+        "id": "ST000001",
+        "name": "Name 1",
+        "age": 18,
+        "createdBy": "system",
+        "createdAt": "2025-01-01T09:00:00",
+        "updatedBy": "user",
+        "updatedAt": "2025-02-01T09:00:00"
+      },
+      {
+        "id": "ST000002",
+        "name": "Name 2",
+        "age": 19,
+        "createdBy": "user",
+        "createdAt": "2025-01-03T10:00:00",
+        "updatedBy": "system",
+        "updatedAt": "2025-02-03T10:00:00"
+      }
+    ]
+  },
+  "status": {
+    "code": "200",
+    "message": "ok"
+  }
+}

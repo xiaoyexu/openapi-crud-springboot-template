@@ -1,0 +1,15 @@
+{
+  "data": {
+    "id": "S111111",
+    "name": "Name S111111",
+    "age": 18,
+    "createdBy": "system",
+    "createdAt": "2026-01-13T16:35:09.448316",
+    "updatedBy": "system",
+    "updatedAt": "2026-01-13T16:35:09.448324"
+  },
+  "status": {
+    "code": "200",
+    "message": "ok"
+  }
+}

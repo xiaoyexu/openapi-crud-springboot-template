@@ -1,0 +1,34 @@
+.rspec-local
+.yardoc
+.buildpath
+*.iml
+admin_cache
+coverage
+config/licenses.yml
+config/auth.yml
+doc
+spec/reports
+version.txt
+*~
+staging_task.log
+.metadata
+target/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Netbeans
+nb-configuration.xml
+
+# OSX
+.DS_Store
+
+*.class
+*.log
+
+/.idea/
+/logs/
+.42c/
+.run/

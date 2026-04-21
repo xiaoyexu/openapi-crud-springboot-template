@@ -1,0 +1,21 @@
+#stubrunner:
+#  ids:
+#    - <stub groupId>:<stub artifactId>:1.0.0-SNAPSHOT
+#  repositoryRoot: https://<TBC>/repository/snapshots/
+#  stubsMode: LOCAL
+spring:
+  h2:
+    console:
+      enabled: false
+  datasource:
+    dynamic:
+      primary: master
+      strict: false
+      datasource:
+        master:
+          driver-class-name: org.h2.Driver
+          url: jdbc:h2:mem:test1;MODE=MYSQL;INIT=RUNSCRIPT FROM 'classpath:db/db.sql'
+          username: sa
+          password:
+  redis:
+    enable: false
