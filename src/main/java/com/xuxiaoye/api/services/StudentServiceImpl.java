@@ -7,17 +7,14 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dhatim.fastexcel.reader.*;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.xuxiaoye.api.adapter.api.server.dto.Student;
@@ -35,6 +32,7 @@ import com.xuxiaoye.api.services.interfaces.StudentService;
 import com.xuxiaoye.api.utils.ExcelHelper;
 import com.xuxiaoye.api.utils.ExcelReaderHelper;
 
+import static com.xuxiaoye.api.client.BaseDbClient.Operator.*;
 import static com.xuxiaoye.api.constant.CommonConstants.*;
 import static com.xuxiaoye.api.utils.DateTimeUtils.*;
 import static com.xuxiaoye.api.interceptors.TableAuditLogInterceptor.*;
@@ -56,80 +54,28 @@ public class StudentServiceImpl extends BaseDbClient implements StudentService {
         this.studentDBService = studentDBService;
     }
 
-    private <T> void addFilter(
-            LambdaQueryWrapper<com.xuxiaoye.api.services.db.dto.entity.Student> query,
-            String operator,
-            SFunction<com.xuxiaoye.api.services.db.dto.entity.Student, ?> column,
-            Collection<T> values
-    ) {
-        if (!CollectionUtils.isEmpty(values)) {
-            switch (operator) {
-                case "in" -> query.in(column, values);
-                case "cs" ->
-                        query.and(subCondition -> values.forEach(value -> subCondition.or(fieldCondition -> fieldCondition.like(column, value))));
-                case "bt" -> query.and(subCondition ->
-                        values.forEach(value -> subCondition.or(fieldCondition -> handleDateRange(column, (String) value, fieldCondition)))
-                );
-            }
-        }
-    }
-
-    private static void handleDateRange(
-            SFunction<com.xuxiaoye.api.services.db.dto.entity.Student, ?> column,
-            String value,
-            LambdaQueryWrapper<com.xuxiaoye.api.services.db.dto.entity.Student> fieldCondition
-    ) {
-        String[] segs = value.split(",");
-        if (segs.length == 2 && !StringUtils.isBlank(segs[0]) && !StringUtils.isBlank(segs[1])) {
-            fieldCondition.between(column, parseStringToDateTime(segs[0]), parseStringToDateTime(segs[1]));
-        }
-        if (segs.length > 0 && !StringUtils.isBlank(segs[0])) {
-            fieldCondition.ge(column, parseStringToDateTime(segs[0]));
-        }
-        if (segs.length > 1 && !StringUtils.isBlank(segs[1])) {
-            fieldCondition.le(column, parseStringToDateTime(segs[1]));
-        }
-    }
-
-    private void addSortField(LambdaQueryWrapper<com.xuxiaoye.api.services.db.dto.entity.Student> query, Pagination pagination) {
-        if (ArrayUtils.isEmpty(pagination.getSortFields())) {
-            query.orderByAsc(com.xuxiaoye.api.services.db.dto.entity.Student::getId);
-            return;
-        }
-
-        Arrays.stream(pagination.getSortFields()).forEach(sortField -> {
-            SFunction<com.xuxiaoye.api.services.db.dto.entity.Student, ?> column = switch (sortField.getFieldName()) {
-                // Todo - Add mapping here
-                // case "xxxx" -> com.xuxiaoye.api.services.db.dto.entity.Student::getXXXX;
-                // case "createdBy" -> com.xuxiaoye.api.services.db.dto.entity.Student::getCreatedBy;
-                // case "createdAt" -> com.xuxiaoye.api.services.db.dto.entity.Student::getCreatedAt;
-                // case "updatedBy" -> com.xuxiaoye.api.services.db.dto.entity.Student::getUpdatedBy;
-                // case "updatedAt" -> com.xuxiaoye.api.services.db.dto.entity.Student::getUpdatedAt;
-                default -> com.xuxiaoye.api.services.db.dto.entity.Student::getId;
-            };
-            if (sortField.isAscending()) {
-                query.orderByAsc(column);
-            } else {
-                query.orderByDesc(column);
-            }
-        });
-    }
-
     @Override
     public AppResponse<PagedStudents> searchStudent(SearchStudentRequest searchStudentRequest, Pagination pagination) {
         return handleDbCall(() -> {
             Page<com.xuxiaoye.api.services.db.dto.entity.Student> page = new Page<>(pagination.getOffset(), pagination.getLimit());
             LambdaQueryWrapper<com.xuxiaoye.api.services.db.dto.entity.Student> query = new LambdaQueryWrapper<>();
 
-            addSortField(query, pagination);
+            addSortField(
+                    query,
+                    pagination,
+                    sortField -> com.xuxiaoye.api.services.db.dto.entity.Student::getId
+            );
 
             // Todo - Add search fields here
-            addFilter(query, "in", com.xuxiaoye.api.services.db.dto.entity.Student::getId, searchStudentRequest.getIds());
-            addFilter(query, "cs", com.xuxiaoye.api.services.db.dto.entity.Student::getName, searchStudentRequest.getNames());
-            addFilter(query, "bt", com.xuxiaoye.api.services.db.dto.entity.Student::getCreatedAt, searchStudentRequest.getCreatedAts());
-            addFilter(query, "bt", com.xuxiaoye.api.services.db.dto.entity.Student::getUpdatedAt, searchStudentRequest.getUpdatedAts());
-            addFilter(query, "in", com.xuxiaoye.api.services.db.dto.entity.Student::getCreatedBy, searchStudentRequest.getCreatedBys());
-            addFilter(query, "in", com.xuxiaoye.api.services.db.dto.entity.Student::getUpdatedBy, searchStudentRequest.getUpdatedBys());
+            addFilter(query, IN, com.xuxiaoye.api.services.db.dto.entity.Student::getId, searchStudentRequest.getIds());
+            addFilter(query, I_LIKE, com.xuxiaoye.api.services.db.dto.entity.Student::getName, searchStudentRequest.getNames());
+            addFilter(query, INTEGER_RANGE, com.xuxiaoye.api.services.db.dto.entity.Student::getAge, searchStudentRequest.getAges());
+            addFilter(query, DECIMAL_RANGE, com.xuxiaoye.api.services.db.dto.entity.Student::getHeight, searchStudentRequest.getHeights());
+            addFilter(query, DATE_RANGE, com.xuxiaoye.api.services.db.dto.entity.Student::getBirthday, searchStudentRequest.getBirthdays());
+            addFilter(query, DATETIME_RANGE, com.xuxiaoye.api.services.db.dto.entity.Student::getCreatedAt, searchStudentRequest.getCreatedAts());
+            addFilter(query, DATETIME_RANGE, com.xuxiaoye.api.services.db.dto.entity.Student::getUpdatedAt, searchStudentRequest.getUpdatedAts());
+            addFilter(query, LIKE, com.xuxiaoye.api.services.db.dto.entity.Student::getCreatedBy, searchStudentRequest.getCreatedBys());
+            addFilter(query, IN, com.xuxiaoye.api.services.db.dto.entity.Student::getUpdatedBy, searchStudentRequest.getUpdatedBys());
 
             Page<com.xuxiaoye.api.services.db.dto.entity.Student> studentPage = this.studentDBService.page(page, query);
             PagedStudents pagedStudents = new PagedStudents(page.getTotal(), this.studentMapper.map(studentPage.getRecords()));

@@ -71,6 +71,77 @@ paths:
           description: OK
           schema:
             type: string
+  /user/login:
+    post:
+      tags:
+        - user
+      description: Login
+      operationId: login
+      parameters:
+        - $ref: '#/parameters/Access-Token'
+        - in: body
+          name: loginRequest
+          required: true
+          schema:
+            $ref: '#/definitions/LoginRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /user/refresh:
+    post:
+      tags:
+        - user
+      description: Refresh Token
+      operationId: refreshToken
+      parameters:
+        - $ref: '#/parameters/Access-Token'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/RefreshTokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
   /students:
     post:
       tags:
@@ -360,6 +431,33 @@ definitions:
     type: array
     items:
       type: string
+  LoginRequest:
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+  LoginResponse:
+    properties:
+      data:
+        $ref: '#/definitions/JWT'
+      status:
+        $ref: '#/definitions/ResponseStatus'
+  JWT:
+    properties:
+      accessToken:
+        type: string
+      refreshToken:
+        type: string
+      expiresIn:
+        type: string
+  RefreshTokenResponse:
+    type: object
+    properties:
+      data:
+        type: string
+      status:
+        $ref: '#/definitions/ResponseStatus'
   PagedStudents:
     properties:
       total:
@@ -379,6 +477,10 @@ definitions:
         type: string
       age:
         type: integer
+      height:
+        type: number
+      birthday:
+        type: string
       createdBy:
         type: string
       createdAt:
@@ -401,6 +503,12 @@ definitions:
       ids:
         $ref: '#/definitions/StringList'
       names:
+        $ref: '#/definitions/StringList'
+      ages:
+        $ref: '#/definitions/StringList'
+      heights:
+        $ref: '#/definitions/StringList'
+      birthdays:
         $ref: '#/definitions/StringList'
       createdAts:
         $ref: '#/definitions/StringList'

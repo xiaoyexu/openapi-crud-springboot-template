@@ -9,12 +9,13 @@
     </parent>
 
     <groupId>com.xuxiaoye.api</groupId>
-    <artifactId>template-api-db-service</artifactId>
+    <artifactId>openapi-crud-springboot-template</artifactId>
     <version>1.0.0</version>
-    <name>template-api-db-service</name>
+    <name>openapi-crud-springboot-template</name>
     <description>Template API DB Service</description>
     <properties>
         <java.version>17</java.version>
+        <jsonwebtoken.version>0.12.3</jsonwebtoken.version>
     </properties>
     <dependencies>
         <dependency>
@@ -25,6 +26,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
         <dependency>
@@ -117,11 +123,11 @@
             <version>2.2.220</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>com.microsoft.sqlserver</groupId>-->
-<!--            <artifactId>mssql-jdbc</artifactId>-->
-<!--            <version>12.3.0.jre17-preview</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.microsoft.sqlserver</groupId>-->
+        <!--            <artifactId>mssql-jdbc</artifactId>-->
+        <!--            <version>12.3.0.jre17-preview</version>-->
+        <!--        </dependency>-->
 
         <dependency>
             <groupId>org.jeasy</groupId>
@@ -148,6 +154,25 @@
             <artifactId>bean-matchers</artifactId>
             <version>0.14</version>
             <scope>test</scope>
+        </dependency>
+
+        <!-- jwt related -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jsonwebtoken.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jsonwebtoken.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${jsonwebtoken.version}</version>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- read xls file -->
@@ -183,6 +208,54 @@
     </dependencies>
     <build>
         <finalName>openapi-service</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>**/*.key</exclude>
+                    <exclude>**/*.der</exclude>
+                    <exclude>**/*.crt</exclude>
+                    <exclude>**/*.pem</exclude>
+                    <exclude>**/*.p12</exclude>
+                </excludes>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.key</include>
+                    <include>**/*.der</include>
+                    <include>**/*.crt</include>
+                    <include>**/*.pem</include>
+                    <include>**/*.p12</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+            <resource>
+                <directory>src/test/resources</directory>
+                <excludes>
+                    <exclude>**/*.key</exclude>
+                    <exclude>**/*.der</exclude>
+                    <exclude>**/*.crt</exclude>
+                    <exclude>**/*.pem</exclude>
+                    <exclude>**/*.p12</exclude>
+                    <exclude>**/*.xlsx</exclude>
+                </excludes>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>src/test/resources</directory>
+                <includes>
+                    <include>**/*.key</include>
+                    <include>**/*.der</include>
+                    <include>**/*.crt</include>
+                    <include>**/*.pem</include>
+                    <include>**/*.p12</include>
+                    <include>**/*.xlsx</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

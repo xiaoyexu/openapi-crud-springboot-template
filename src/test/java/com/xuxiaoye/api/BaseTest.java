@@ -104,6 +104,7 @@ public abstract class BaseTest {
         private String forwardedFor;
         private String acceptLanguage;
         private String deviceId;
+        private String userId;
 
         public HeaderBuilder traceId(String traceId) {
             this.traceId = traceId;
@@ -155,6 +156,11 @@ public abstract class BaseTest {
             return this;
         }
 
+        public HeaderBuilder userId(String userId) {
+            this.userId = userId;
+            return this;
+        }
+
         public static HeaderBuilder defaultHeader() {
             HeaderBuilder builder = new HeaderBuilder();
             builder.traceId = "kHsnH02437";
@@ -167,6 +173,7 @@ public abstract class BaseTest {
             builder.forwardedFor = "192.168.0.10";
             builder.acceptLanguage = "zh_HK";
             builder.deviceId = "12345678";
+            builder.userId = "US000002";
             return builder;
         }
 
@@ -211,6 +218,10 @@ public abstract class BaseTest {
 
             if (Objects.nonNull(this.deviceId)) {
                 lHeaders.add(new Header("x-device-id", this.deviceId));
+            }
+
+            if (Objects.nonNull(this.userId)) {
+                lHeaders.add(new Header("x-user-id", this.userId));
             }
 
             return new Headers(lHeaders);
