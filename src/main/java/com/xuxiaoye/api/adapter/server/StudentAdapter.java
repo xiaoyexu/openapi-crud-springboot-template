@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.xuxiaoye.api.adapter.api.server.StudentsApiDelegate;
 import com.xuxiaoye.api.adapter.api.server.dto.*;
 import com.xuxiaoye.api.adapter.server.mapper.CommonMapper;
+import com.xuxiaoye.api.annotations.ApiPreAuthorize;
 import com.xuxiaoye.api.bean.Pagination;
 import com.xuxiaoye.api.resp.AppResponse;
 import com.xuxiaoye.api.resp.AppStatus;
@@ -28,6 +29,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     }
 
     @Override
+    @ApiPreAuthorize.MemberLevel
     public ResponseEntity<CreateStudentResponse> createSingleStudent(
             Student createStudentRequest
     ) {
@@ -39,6 +41,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     }
 
     @Override
+    @ApiPreAuthorize.MemberLevel
     public ResponseEntity<DeleteStudentResponse> deleteSingleStudent(
             String studentId
     ) {
@@ -50,6 +53,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     }
 
     @Override
+    @ApiPreAuthorize.GuestLevel
     public ResponseEntity<GetStudentResponse> getSingleStudent(
             String studentId
     ) {
@@ -61,6 +65,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     }
 
     @Override
+    @ApiPreAuthorize.GuestLevel
     public ResponseEntity<SearchStudentResponse> searchStudents(
             SearchStudentRequest searchStudentRequest,
             Integer limit,
@@ -75,6 +80,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     }
 
     @Override
+    @ApiPreAuthorize.MemberLevel
     public ResponseEntity<UpdateStudentResponse> updateSingleStudent(
             String studentId,
             Student updateStudentRequest
@@ -87,6 +93,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     }
 
     @Override
+    @ApiPreAuthorize.AdminLevel
     public ResponseEntity<org.springframework.core.io.Resource> exportStudents(
             SearchStudentRequest searchStudentRequest,
             Integer limit,
@@ -101,6 +108,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     }
 
     @Override
+    @ApiPreAuthorize.AdminLevel
     public ResponseEntity<ImportStudentResponse> importStudents(MultipartFile file) {
         return this.studentService.importStudents(file)
                 .toResponseEntity(
