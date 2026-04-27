@@ -1,5 +1,5 @@
 server:
-  port: 6020
+  port: 6666
 spring:
   jackson:
     default-property-inclusion: NON_NULL
@@ -65,3 +65,11 @@ springdoc:
     enabled: true
     path: /swagger
     use-root-path: true
+bypassTokenCheck: ${BY_PASS_TOKEN_CHECK:false}
+admin:
+  accessToken:
+    expiration: ${ACCESS_EXPIRE_SECONDS:1800}
+  refreshToken:
+    expiration: ${REFRESH_EXPIRE_SECONDS:7200}
+servicePublicKeyPath: ${SERVICE_PUBLIC_KEY_PATH:}
+servicePrivateKeyPath: ${SERVICE_PRIVATE_KEY_PATH:}

@@ -63,6 +63,10 @@ class StudentAdapterTest extends BaseTest {
                     // filter
                     "search.json;search_result.json;2;0;",
                     "search_ids.json;search_ids_result.json;2;0;",
+                    "search_names.json;search_names_result.json;2;0;",
+                    "search_ages.json;search_ages_result.json;2;0;",
+                    "search_heights.json;search_heights_result.json;2;0;",
+                    "search_birthdays.json;search_birthdays_result.json;2;0;",
                     "search_createdAt_bt.json;search_createdAt_bt_result.json;2;0;",
                     "search_createdAt_ge.json;search_createdAt_ge_result.json;2;0;",
                     "search_createdAt_le.json;search_createdAt_le_result.json;2;0;",
@@ -73,7 +77,6 @@ class StudentAdapterTest extends BaseTest {
                     "search_createdBy_user.json;search_createdBy_user_result.json;2;0;",
                     "search_updatedBy_system.json;search_updatedBy_system_result.json;2;0;",
                     "search_updatedBy_user.json;search_updatedBy_user_result.json;2;0;",
-                    "search_names.json;search_names_result.json;2;0;",
                     // pagination
                     // "search.json;search_result_2_1.json;2,1;",
                     // "search.json;search_result_2_2.json;2,2;",

@@ -19,6 +19,10 @@ public class DateTimeUtils {
         return LocalDate.parse(dateStr, DateTimeFormatter.ofPattern(format));
     }
 
+    public static LocalDate parseStringToDate(String dateStr) {
+        return parseStringToDate(dateStr, DATE_FORMATTER);
+    }
+
     public static String parseDateToString(LocalDate localDate, String targetPattern) {
         return localDate.format(DateTimeFormatter.ofPattern(targetPattern));
     }
