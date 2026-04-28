@@ -4,24 +4,34 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import io.restassured.http.Header;
 import io.restassured.http.Headers;
+import org.jeasy.random.EasyRandom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
+import com.xuxiaoye.api.bean.TokenPair;
+import com.xuxiaoye.api.conf.ResourceConfig;
+import com.xuxiaoye.api.utils.JwtUtils;
+
 public abstract class BaseTest {
+    protected BaseTest.JsonFileReader reader = new BaseTest.JsonFileReader().withVersion("v1");
 
     @Autowired
     private ResourceLoader resourceLoader;
 
+    @Autowired
+    ResourceConfig resourceConfig;
+
     @Value("${spring.mvc.servlet.path}")
     protected String basePath;
+
+    protected EasyRandom easyRandom = new EasyRandom();
 
     public class JsonFileReader {
         private String base;
@@ -233,10 +243,24 @@ public abstract class BaseTest {
                 .getContentAsString(StandardCharsets.UTF_8);
     }
 
-    protected String regReplace(String target, String regex, String replaceTo) {
-        Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
-        Matcher m = p.matcher(target);
-        return m.replaceAll(replaceTo);
+    protected String buildToken(String userId, String roles, String authorities) {
+        if (userId == null) {
+            userId = easyRandom.nextObject(String.class);
+        }
+        TokenPair tokenPair = JwtUtils.generateJWTTokenPair(
+                resourceConfig.getPrivateKey(),
+                180,
+                180,
+                userId,
+                easyRandom.nextObject(String.class),
+                Map.of(
+                        "id", userId,
+                        "accountName", easyRandom.nextObject(String.class),
+                        "roles", roles == null ? "" : roles,
+                        "authorities", authorities == null ? "" : authorities
+                )
+        );
+        return tokenPair.accessToken();
     }
 }
 

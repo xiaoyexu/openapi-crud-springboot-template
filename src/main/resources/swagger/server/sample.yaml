@@ -78,7 +78,6 @@ paths:
       description: Login
       operationId: login
       parameters:
-        - $ref: '#/parameters/Access-Token'
         - in: body
           name: loginRequest
           required: true

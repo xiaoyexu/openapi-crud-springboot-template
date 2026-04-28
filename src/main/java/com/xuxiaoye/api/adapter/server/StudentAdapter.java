@@ -3,12 +3,12 @@ package com.xuxiaoye.api.adapter.server;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.xuxiaoye.api.adapter.api.server.StudentsApiDelegate;
 import com.xuxiaoye.api.adapter.api.server.dto.*;
+import com.xuxiaoye.api.adapter.api.server.StudentsApiDelegate;
 import com.xuxiaoye.api.adapter.server.mapper.CommonMapper;
-import com.xuxiaoye.api.annotations.ApiPreAuthorize;
 import com.xuxiaoye.api.bean.Pagination;
 import com.xuxiaoye.api.resp.AppResponse;
 import com.xuxiaoye.api.resp.AppStatus;
@@ -29,7 +29,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     }
 
     @Override
-    @ApiPreAuthorize.MemberLevel
+    @PreAuthorize("@P.hasPermission(authentication, 'student', 'create')")
     public ResponseEntity<CreateStudentResponse> createSingleStudent(
             Student createStudentRequest
     ) {
@@ -41,7 +41,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     }
 
     @Override
-    @ApiPreAuthorize.MemberLevel
+    @PreAuthorize("@P.hasPermission(authentication, #studentId, 'student', 'delete') or @P.hasPermission(authentication, #studentId, 'student', 'delete_own')")
     public ResponseEntity<DeleteStudentResponse> deleteSingleStudent(
             String studentId
     ) {
@@ -53,7 +53,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     }
 
     @Override
-    @ApiPreAuthorize.GuestLevel
+    @PreAuthorize("@P.hasPermission(authentication, #studentId, 'student', 'get') or @P.hasPermission(authentication, #studentId, 'student', 'get_own')")
     public ResponseEntity<GetStudentResponse> getSingleStudent(
             String studentId
     ) {
@@ -65,7 +65,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     }
 
     @Override
-    @ApiPreAuthorize.GuestLevel
+    @PreAuthorize("hasRole('ADMIN') or  @P.hasPermission(authentication, 'student', 'search')")
     public ResponseEntity<SearchStudentResponse> searchStudents(
             SearchStudentRequest searchStudentRequest,
             Integer limit,
@@ -80,7 +80,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     }
 
     @Override
-    @ApiPreAuthorize.MemberLevel
+    @PreAuthorize("@P.hasPermission(authentication, #studentId, 'student', 'update') or @P.hasPermission(authentication, #studentId, 'student', 'update_own')")
     public ResponseEntity<UpdateStudentResponse> updateSingleStudent(
             String studentId,
             Student updateStudentRequest
@@ -93,7 +93,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     }
 
     @Override
-    @ApiPreAuthorize.AdminLevel
+    @PreAuthorize("@P.hasPermission(authentication, 'student', 'export')")
     public ResponseEntity<org.springframework.core.io.Resource> exportStudents(
             SearchStudentRequest searchStudentRequest,
             Integer limit,
@@ -108,7 +108,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     }
 
     @Override
-    @ApiPreAuthorize.AdminLevel
+    @PreAuthorize("@P.hasPermission(authentication, 'student', 'import')")
     public ResponseEntity<ImportStudentResponse> importStudents(MultipartFile file) {
         return this.studentService.importStudents(file)
                 .toResponseEntity(

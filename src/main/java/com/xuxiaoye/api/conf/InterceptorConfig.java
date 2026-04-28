@@ -3,13 +3,14 @@ package com.xuxiaoye.api.conf;
 import java.util.Arrays;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.xuxiaoye.api.bean.RequestContext;
-import com.xuxiaoye.api.interceptors.JWTInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import com.xuxiaoye.api.bean.RequestContext;
+import com.xuxiaoye.api.interceptors.JWTInterceptor;
 
 public class InterceptorConfig implements WebMvcConfigurer {
     @Value("${bypassTokenCheck}")

@@ -1,0 +1,6 @@
+logging:
+  level:
+    root: ${ROOT_LOG_LEVEL:debug}
+    com:
+      xuxiaoye: ${LOG_LEVEL:debug}
+bypassTokenCheck: false
