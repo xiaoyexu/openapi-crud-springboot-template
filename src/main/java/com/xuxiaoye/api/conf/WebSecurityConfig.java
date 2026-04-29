@@ -14,13 +14,19 @@ public class WebSecurityConfig {
     public static final String[] AUTH_WHITELIST = {
             // Allow Swagger UI
             "/ping",
+            "/user/login"
     };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+
+                .authorizeHttpRequests(auth -> auth
+//                                .requestMatchers(AUTH_WHITELIST).permitAll()
+//                                .anyRequest().authenticated()
+                                .anyRequest().permitAll()
+                )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
     }

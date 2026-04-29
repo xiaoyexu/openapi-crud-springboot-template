@@ -40,8 +40,6 @@ class StudentAdapterTest extends BaseTest {
         log.info("Starting test case {}", info.getDisplayName());
     }
 
-    JsonFileReader reader = new JsonFileReader().withVersion("v1");
-
     @Nested
     @Order(1)
     class SearchStudentTest {

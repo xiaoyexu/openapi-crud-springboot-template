@@ -25,7 +25,6 @@ public class UserAdapter implements UserApiDelegate {
 
     @Override
     public ResponseEntity<LoginResponse> login(
-            String authorization,
             LoginRequest loginRequest
     ) {
         return this.userService.login(loginRequest).toResponseEntity(

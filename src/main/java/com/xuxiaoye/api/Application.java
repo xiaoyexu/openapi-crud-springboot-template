@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -32,7 +33,7 @@ import com.xuxiaoye.api.interceptors.TableAuditLogInterceptor;
         InterceptorConfig.class
 })
 @Log4j2
-@EnableMethodSecurity(securedEnabled = true)
+@EnableMethodSecurity
 public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);

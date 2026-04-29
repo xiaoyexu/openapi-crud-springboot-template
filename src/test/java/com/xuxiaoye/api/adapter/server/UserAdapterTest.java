@@ -15,11 +15,11 @@ import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRun
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 import com.xuxiaoye.api.adapter.api.server.dto.LoginResponse;
 import com.xuxiaoye.api.Application;
 import com.xuxiaoye.api.BaseTest;
-import org.springframework.test.context.TestPropertySource;
 
 import static io.restassured.RestAssured.given;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -41,8 +41,6 @@ class UserAdapterTest extends BaseTest {
         RestAssured.baseURI = "http://localhost:" + port;
         log.info("Starting test case {}", info.getDisplayName());
     }
-
-    BaseTest.JsonFileReader reader = new BaseTest.JsonFileReader().withVersion("v1");
 
     @Autowired
     ObjectMapper objectMapper;

@@ -98,6 +98,8 @@ public class UserServiceImpl implements UserService {
                 "id", dbUser.getId(),
                 "accountName", dbUser.getAccountName(),
                 "roles", Objects.requireNonNullElse(dbUser.getRole(), "")
+//                "authorities",Objects.requireNonNullElse(dbUser.getRole(), ""),
+//                "permission",Objects.requireNonNullElse(dbUser.getRole(), "")
         );
     }
 }

@@ -1,5 +1,6 @@
 package com.xuxiaoye.api.interceptors;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -70,14 +71,33 @@ public class JWTInterceptor implements HandlerInterceptor {
             throw new JWTExpiredException("JWT Token Expired");
         }
         String userId = (String) claims.get("id");
-        String accountName = (String) claims.get("accountName");
+//        String accountName = (String) claims.get("accountName");
         String roles = (String) claims.get("roles");
+        String authorities = (String) claims.get("authorities");
+
+        List<SimpleGrantedAuthority> grantedAuthorities = new ArrayList<>();
 
         // Roles
-        List<SimpleGrantedAuthority> authRoles = new java.util.ArrayList<>(Arrays.stream(roles.split(",")).map((role) -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase())).toList());
+        if (!StringUtils.isBlank(roles)) {
+            grantedAuthorities = new java.util.ArrayList<>(Arrays.stream(roles.split(","))
+                    .filter(StringUtils::isNotBlank)
+                    .map((role) -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
+                    .toList()
+            );
+        }
 
-        UserDetails userDetails = new User(accountName, "", authRoles);
-        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, "", authRoles);
+        // Authorities
+        if (!StringUtils.isBlank(authorities)) {
+            List<SimpleGrantedAuthority> userAuthorities = new java.util.ArrayList<>(Arrays.stream(authorities.split(","))
+                    .filter(StringUtils::isNotBlank)
+                    .map((role) -> new SimpleGrantedAuthority(authorities.toUpperCase()))
+                    .toList()
+            );
+            grantedAuthorities.addAll(userAuthorities);
+        }
+
+        UserDetails userDetails = new User(userId, "", grantedAuthorities);
+        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, "", grantedAuthorities);
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         this.requestContext.setXUserId(userId);
