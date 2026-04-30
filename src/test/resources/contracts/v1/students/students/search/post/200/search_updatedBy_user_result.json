@@ -1,0 +1,33 @@
+{
+  "data": {
+    "total": 3,
+    "data": [
+      {
+        "id": "ST000001",
+        "name": "Name 1",
+        "age": 18,
+        "height": 168.50,
+        "birthday": "2002-02-03",
+        "createdBy": "system",
+        "createdAt": "2025-01-01T09:00:00",
+        "updatedBy": "user",
+        "updatedAt": "2025-02-01T09:00:00"
+      },
+      {
+        "id": "ST000003",
+        "name": "Name 3",
+        "age": 20,
+        "height": 174.80,
+        "birthday": "2002-06-09",
+        "createdBy": "system",
+        "createdAt": "2025-02-02T11:00:00",
+        "updatedBy": "user",
+        "updatedAt": "2025-03-02T11:00:00"
+      }
+    ]
+  },
+  "status": {
+    "code": "200",
+    "message": "ok"
+  }
+}

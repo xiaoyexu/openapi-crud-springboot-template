@@ -1,0 +1,15 @@
+{
+  "data": {
+    "id": "ST000001",
+    "name": "Name 1 updated",
+    "age": 18,
+    "createdBy": "system",
+    "createdAt": "2025-01-01T11:22:33",
+    "updatedBy": "system",
+    "updatedAt": "2026-04-05T23:26:16.65987"
+  },
+  "status": {
+    "code": "200",
+    "message": "ok"
+  }
+}

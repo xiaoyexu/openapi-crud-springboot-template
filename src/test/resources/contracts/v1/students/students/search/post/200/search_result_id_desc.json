@@ -1,0 +1,33 @@
+{
+  "data": {
+    "total": 7,
+    "data": [
+      {
+        "id": "ST000007",
+        "name": "Name 7",
+        "age": 25,
+        "height": 177.00,
+        "birthday": "2002-09-13",
+        "createdBy": "US000002",
+        "createdAt": "2025-02-01T14:00:00",
+        "updatedBy": "US000002",
+        "updatedAt": "2025-03-01T14:00:00"
+      },
+      {
+        "id": "ST000006",
+        "name": "Name 6",
+        "age": 23,
+        "height": 178.30,
+        "birthday": "2002-09-13",
+        "createdBy": "system",
+        "createdAt": "2025-02-01T14:00:00",
+        "updatedBy": "user",
+        "updatedAt": "2025-03-01T14:00:00"
+      }
+    ]
+  },
+  "status": {
+    "code": "200",
+    "message": "ok"
+  }
+}
