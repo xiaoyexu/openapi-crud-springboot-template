@@ -1,5 +1,6 @@
 package com.xuxiaoye.api.adapter.server;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import com.xuxiaoye.api.resp.AppStatus;
 import com.xuxiaoye.api.resp.FileResponse;
 import com.xuxiaoye.api.services.interfaces.StudentService;
 
+@Log4j2
 public class StudentAdapter implements StudentsApiDelegate {
 
     private final CommonMapper commonMapper;
@@ -65,7 +67,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN') or  @P.hasPermission(authentication, 'student', 'search')")
+    @PreAuthorize("@P.hasPermission(authentication, 'student', 'search')")
     public ResponseEntity<SearchStudentResponse> searchStudents(
             SearchStudentRequest searchStudentRequest,
             Integer limit,
