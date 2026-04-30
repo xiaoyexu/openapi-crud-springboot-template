@@ -1,0 +1,17 @@
+{
+  "data": {
+    "id": "ST000001",
+    "name": "Name 1",
+    "age": 18,
+    "height": 168.50,
+    "birthday": "2002-02-03",
+    "createdBy": "system",
+    "createdAt": "2025-01-01T09:00:00",
+    "updatedBy": "user",
+    "updatedAt": "2025-02-01T09:00:00"
+  },
+  "status": {
+    "code": "200",
+    "message": "ok"
+  }
+}

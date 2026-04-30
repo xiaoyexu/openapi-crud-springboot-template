@@ -6,8 +6,8 @@ import com.xuxiaoye.api.services.db.dto.entity.Student;
 import com.xuxiaoye.api.services.db.mapper.StudentDBMapper;
 
 public class StudentDBService extends ServiceImpl<StudentDBMapper, Student> {
-    public boolean isOwner(String id, String username) {
+    public boolean isOwner(String id, String createdBy) {
         Student student = this.getById(id);
-        return student != null && student.getCreatedBy().equals(username);
+        return student != null && student.getCreatedBy().equals(createdBy);
     }
 }

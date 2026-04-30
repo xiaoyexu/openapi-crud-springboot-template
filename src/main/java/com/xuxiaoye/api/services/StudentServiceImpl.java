@@ -30,7 +30,6 @@ import com.xuxiaoye.api.resp.FileResponse;
 import com.xuxiaoye.api.services.db.StudentDBService;
 import com.xuxiaoye.api.services.interfaces.StudentService;
 import com.xuxiaoye.api.utils.ExcelHelper;
-import com.xuxiaoye.api.utils.ExcelReaderHelper;
 
 import static com.xuxiaoye.api.client.BaseDbClient.Operator.*;
 import static com.xuxiaoye.api.constant.CommonConstants.*;
@@ -175,7 +174,7 @@ public class StudentServiceImpl extends BaseDbClient implements StudentService {
             return AppResponse.failWithStatus(pagedStudentsAppResponse.getStatus());
         }
 
-        ExcelHelper excelHelper = new ExcelHelper();
+        ExcelHelper.ExcelWriter excelHelper = ExcelHelper.getWriter();
         excelHelper
                 .newWorkbook("Student", "1.0")
                 .newWorkSheet("Student");
@@ -231,7 +230,7 @@ public class StudentServiceImpl extends BaseDbClient implements StudentService {
             return AppResponse.failWithStatus(AppStatus.internalError(e.getLocalizedMessage()));
         }
 
-        return handleDbCall(() -> new ExcelReaderHelper(readableWorkbook).process(this::handleRow));
+        return handleDbCall(() -> ExcelHelper.getReader(readableWorkbook).process(this::handleRow));
     }
 
     protected void handleRow(Row row) {

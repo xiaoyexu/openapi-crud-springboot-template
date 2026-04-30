@@ -95,7 +95,8 @@ public abstract class BaseTest {
         }
 
         public String getPath() {
-            return String.format("/%s/%s/%s/%s/%s/%s", base, version, endPoint, method, httpStatus, fileName);
+//            return String.format("/%s/%s/%s/%s/%s/%s", base, version, endPoint, method, httpStatus, fileName);
+            return String.format("/apis/%s/%s/%s/%s/%s/%s", version, endPoint, method, httpStatus, base, fileName);
         }
 
         public Resource getResource() {
