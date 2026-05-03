@@ -128,16 +128,20 @@ public class StudentServiceImpl extends BaseDbClient implements StudentService {
                 return validateResult;
             }
 
-            if (this.studentDBService.getById(id) == null) {
+            com.xuxiaoye.api.services.db.dto.entity.Student dbStudent = this.studentDBService.getById(id);
+            if (dbStudent == null) {
                 return AppResponse.failWithStatus(AppStatus.notFound());
             }
 
             student.setId(id);
-            com.xuxiaoye.api.services.db.dto.entity.Student dbStudent = this.studentMapper.map(student);
-            dbStudent.setUpdatedBy(SYSTEM);
-            dbStudent.setUpdatedAt(LocalDateTime.now());
-            if (this.studentDBService.updateById(dbStudent)) {
-                return AppResponse.okWithData(this.studentMapper.map(dbStudent));
+            com.xuxiaoye.api.services.db.dto.entity.Student updatedDbStudent = this.studentMapper.map(student);
+            updatedDbStudent.setUpdatedBy(SYSTEM);
+            updatedDbStudent.setUpdatedAt(LocalDateTime.now());
+            updatedDbStudent.setCreatedBy(dbStudent.getCreatedBy());
+            updatedDbStudent.setCreatedAt(dbStudent.getCreatedAt());
+
+            if (this.studentDBService.updateById(updatedDbStudent)) {
+                return AppResponse.okWithData(this.studentMapper.map(updatedDbStudent));
             } else {
                 return AppResponse.failWithStatus(AppStatus.internalError());
             }
