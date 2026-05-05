@@ -1,0 +1,37 @@
+{
+  "data": {
+    "total": 4,
+    "data": [
+      {
+        "auditId": 3,
+        "id": "ST000003",
+        "action": "A",
+        "name": "Name 3",
+        "age": 20,
+        "height": 174.80,
+        "birthday": "2002-06-09",
+        "createdBy": "system",
+        "createdAt": "2025-02-02T11:00:00",
+        "updatedBy": "user",
+        "updatedAt": "2025-03-02T11:00:00"
+      },
+      {
+        "auditId": 5,
+        "id": "ST000005",
+        "action": "A",
+        "name": "Name 5",
+        "age": 22,
+        "height": 169.70,
+        "birthday": "2002-01-28",
+        "createdBy": "user",
+        "createdAt": "2025-02-03T13:00:00",
+        "updatedBy": "system",
+        "updatedAt": "2025-03-03T13:00:00"
+      }
+    ]
+  },
+  "status": {
+    "code": "200",
+    "message": "ok"
+  }
+}

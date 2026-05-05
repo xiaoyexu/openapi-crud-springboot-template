@@ -1,0 +1,24 @@
+{
+  "data": {
+    "total": 1,
+    "data": [
+      {
+        "auditId": 2,
+        "id": "ST000002",
+        "action": "A",
+        "name": "Name 2",
+        "age": 19,
+        "height": 171.50,
+        "birthday": "2002-03-15",
+        "createdBy": "user",
+        "createdAt": "2025-01-03T10:00:00",
+        "updatedBy": "system",
+        "updatedAt": "2025-02-03T10:00:00"
+      }
+    ]
+  },
+  "status": {
+    "code": "200",
+    "message": "ok"
+  }
+}

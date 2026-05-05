@@ -28,6 +28,7 @@ import static io.restassured.RestAssured.given;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestClassOrder(ClassOrderer.OrderAnnotation.class)
 @TestPropertySource(properties = "bypassTokenCheck=false")
+@Order(3)
 public class StudentAdapterAuthTest extends BaseTest {
     @LocalServerPort
     private int port;

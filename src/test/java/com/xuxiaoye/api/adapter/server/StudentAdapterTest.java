@@ -29,6 +29,7 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 @Log4j2
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestClassOrder(ClassOrderer.OrderAnnotation.class)
+@Order(2)
 class StudentAdapterTest extends BaseTest {
 
     @LocalServerPort
@@ -42,6 +43,206 @@ class StudentAdapterTest extends BaseTest {
 
     @Nested
     @Order(1)
+    class SearchStudentAuditTest {
+        @BeforeEach
+        void before() {
+            reader = reader.withEndPoint("student-audits/search").withMethod("post");
+        }
+
+        @Nested
+        class Code200 {
+
+            @BeforeEach
+            void before() {
+                reader = reader.withHttpStatus("200");
+            }
+
+            @ParameterizedTest
+            @CsvSource(value = {
+                    // filter
+                    "search.json;search_result.json;2;0;",
+                    "search_ids.json;search_ids_result.json;2;0;",
+                    "search_createdAt_bt.json;search_createdAt_bt_result.json;2;0;",
+                    "search_createdAt_ge.json;search_createdAt_ge_result.json;2;0;",
+                    "search_createdAt_le.json;search_createdAt_le_result.json;2;0;",
+                    "search_updatedAt_bt.json;search_updatedAt_bt_result.json;2;0;",
+                    "search_updatedAt_ge.json;search_updatedAt_ge_result.json;2;0;",
+                    "search_updatedAt_le.json;search_updatedAt_le_result.json;2;0;",
+                    "search_createdBy_system.json;search_createdBy_system_result.json;2;0;",
+                    "search_createdBy_user.json;search_createdBy_user_result.json;2;0;",
+                    "search_updatedBy_system.json;search_updatedBy_system_result.json;2;0;",
+                    "search_updatedBy_user.json;search_updatedBy_user_result.json;2;0;",
+                    // pagination
+                    // "search.json;search_result_2_1.json;2,1;",
+                    // "search.json;search_result_2_2.json;2,2;",
+                    // "search.json;search_result_2_3.json;2,3;",
+                    // "search_multiple.json;search_multiple_result.json;2;0;",
+                    // sort
+                    "search.json;search_result_id_asc.json;2;0;id;",
+                    "search.json;search_result_id_desc.json;2;0;-id;",
+                    // use ';' as ',' will be used for multiple column sorting
+                    // "search.json;search_result_c1_c2_c3_asc.json;2;0;column1,column2,column3;",
+            }, delimiter = ';')
+            void searchStudentAudit(String requestJson, String responseJson, Integer limit, Integer offset, String sortBy) throws IOException {
+                String request = reader.withBase("requests").withFileName(requestJson).getContent();
+
+                String jsonResponse = given().log()
+                        .all(true)
+                        .headers(HeaderBuilder.defaultHeader().build())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .queryParams(
+                                "limit", limit,
+                                "offset", offset,
+                                "sortBy", sortBy
+                        )
+                        .basePath(basePath)
+                        .body(request)
+                        .when()
+                        .post("/student-audits/search")
+                        .then()
+                        .log()
+                        .all(true)
+                        .assertThat()
+                        .statusCode(HttpStatus.OK.value())
+                        .extract()
+                        .asString();
+
+                String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
+                assertThatJson(jsonResponse).isEqualTo(mockRes);
+            }
+        }
+    }
+
+    @Nested
+    @Order(2)
+    class GetSingleStudentAuditTest {
+        @BeforeEach
+        void before() {
+            reader = reader.withEndPoint("student-audits").withMethod("get");
+        }
+
+        @Nested
+        class Code200 {
+
+            @BeforeEach
+            void before() {
+                reader = reader.withHttpStatus("200");
+            }
+
+            @ParameterizedTest
+            @CsvSource({
+                    "1,get_result.json",
+            })
+            void getSingleStudentAudit(String id, String responseJson) throws IOException {
+
+                String jsonResponse = given().log()
+                        .all(true)
+                        .headers(HeaderBuilder.defaultHeader().build())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .basePath(basePath)
+                        .when()
+                        .get("/student-audits/" + id)
+                        .then()
+                        .log()
+                        .all(true)
+                        .assertThat()
+                        .statusCode(HttpStatus.OK.value())
+                        .extract()
+                        .asString();
+
+                String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
+                assertThatJson(jsonResponse).isEqualTo(mockRes);
+            }
+        }
+
+        @Nested
+        class Code404 {
+
+            @BeforeEach
+            void before() {
+                reader = reader.withHttpStatus("404");
+            }
+
+            @ParameterizedTest
+            @CsvSource({
+                    "100000,get_result.json",
+            })
+            void getSingleStudentAudit(String id, String responseJson) throws IOException {
+
+                String jsonResponse = given().log()
+                        .all(true)
+                        .headers(HeaderBuilder.defaultHeader().build())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .basePath(basePath)
+                        .when()
+                        .get("/student-audits/" + id)
+                        .then()
+                        .log()
+                        .all(true)
+                        .assertThat()
+                        .statusCode(HttpStatus.NOT_FOUND.value())
+                        .extract()
+                        .asString();
+
+                String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
+                assertThatJson(jsonResponse).isEqualTo(mockRes);
+            }
+        }
+    }
+
+    @Nested
+    @Order(3)
+    class ExportStudentAuditsTest {
+        @BeforeEach
+        void before() {
+            reader = reader.withEndPoint("student-audits/search").withMethod("post");
+        }
+
+        @Nested
+        class Code200 {
+
+            @BeforeEach
+            void before() {
+                reader = reader.withHttpStatus("200");
+            }
+
+            @ParameterizedTest
+            @CsvSource(value = {
+                    // filter
+                    "search.json;2;0;",
+            }, delimiter = ';')
+            void exportStudentAudit(String requestJson, Integer limit, Integer offset, String sortBy) throws IOException {
+                String request = reader.withBase("requests").withFileName(requestJson).getContent();
+
+                given().log()
+                        .all(true)
+                        .headers(HeaderBuilder.defaultHeader().build())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .queryParams(
+                                "limit", limit,
+                                "offset", offset,
+                                "sortBy", sortBy
+                        )
+                        .basePath(basePath)
+                        .body(request)
+                        .when()
+                        .post("/student-audits/export")
+                        .then()
+                        .log()
+                        .all(true)
+                        .assertThat()
+                        .statusCode(HttpStatus.OK.value())
+                        .extract()
+                        .asString();
+            }
+        }
+    }
+
+    @Nested
+    @Order(10)
     class SearchStudentTest {
         @BeforeEach
         void before() {
@@ -117,7 +318,7 @@ class StudentAdapterTest extends BaseTest {
     }
 
     @Nested
-    @Order(2)
+    @Order(20)
     class GetSingleStudentTest {
         @BeforeEach
         void before() {
@@ -159,10 +360,46 @@ class StudentAdapterTest extends BaseTest {
             }
 
         }
+
+        @Nested
+        class Code404 {
+
+            @BeforeEach
+            void before() {
+                reader = reader.withHttpStatus("404");
+            }
+
+            @ParameterizedTest
+            @CsvSource({
+                    "no_such_id,get_result.json",
+            })
+            void getSingleStudent(String id, String responseJson) throws IOException {
+
+                String jsonResponse = given().log()
+                        .all(true)
+                        .headers(HeaderBuilder.defaultHeader().build())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .basePath(basePath)
+                        .when()
+                        .get("/students/" + id)
+                        .then()
+                        .log()
+                        .all(true)
+                        .assertThat()
+                        .statusCode(HttpStatus.NOT_FOUND.value())
+                        .extract()
+                        .asString();
+
+                String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
+                assertThatJson(jsonResponse).isEqualTo(mockRes);
+            }
+
+        }
     }
 
     @Nested
-    @Order(3)
+    @Order(30)
     class UpdateStudentTest {
         @BeforeEach
         void before() {
@@ -248,7 +485,7 @@ class StudentAdapterTest extends BaseTest {
     }
 
     @Nested
-    @Order(4)
+    @Order(40)
     class DeleteStudentTest {
         @BeforeEach
         void before() {
@@ -344,7 +581,7 @@ class StudentAdapterTest extends BaseTest {
     }
 
     @Nested
-    @Order(5)
+    @Order(50)
     class CreateStudentTest {
         @BeforeEach
         void before() {
@@ -432,7 +669,7 @@ class StudentAdapterTest extends BaseTest {
     }
 
     @Nested
-    @Order(6)
+    @Order(60)
     class ExportStudentsTest {
         @BeforeEach
         void before() {
@@ -480,7 +717,7 @@ class StudentAdapterTest extends BaseTest {
     }
 
     @Nested
-    @Order(7)
+    @Order(70)
     class ImportStudentsTest {
         @BeforeEach
         void before() {

@@ -7,11 +7,11 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 @Data
-public abstract class BaseEntity {
+public class BaseEntity extends DBEntity<String> {
     @TableId(type = IdType.INPUT)
-    private String id;
-    private String createdBy;
-    private LocalDateTime createdAt;
-    private String updatedBy;
-    private LocalDateTime updatedAt;
+    String id;
+    String createdBy;
+    LocalDateTime createdAt;
+    String updatedBy;
+    LocalDateTime updatedAt;
 }
