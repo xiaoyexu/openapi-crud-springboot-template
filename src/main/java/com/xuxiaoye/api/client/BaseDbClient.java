@@ -19,7 +19,7 @@ import org.springframework.util.CollectionUtils;
 import com.xuxiaoye.api.bean.Pagination;
 import com.xuxiaoye.api.resp.AppResponse;
 import com.xuxiaoye.api.resp.AppStatus;
-import com.xuxiaoye.api.services.db.dto.entity.BaseEntity;
+import com.xuxiaoye.api.services.db.dto.entity.DBEntity;
 import com.xuxiaoye.api.utils.DateTimeUtils;
 
 @Log4j2
@@ -84,7 +84,7 @@ public class BaseDbClient {
         }
     }
 
-    protected <E extends BaseEntity> void addSortField(
+    protected <E extends DBEntity> void addSortField(
             LambdaQueryWrapper<E> query,
             Pagination pagination,
             Function<String, SFunction<E, ?>> columnMapper

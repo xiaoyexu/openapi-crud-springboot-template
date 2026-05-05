@@ -4,14 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.access.PermissionEvaluator;
 
+import com.xuxiaoye.api.adapter.server.mapper.StudentAuditMapper;
 import com.xuxiaoye.api.adapter.server.mapper.StudentMapper;
 import com.xuxiaoye.api.bean.RequestContext;
 import com.xuxiaoye.api.services.db.StudentAuditDBService;
 import com.xuxiaoye.api.services.db.StudentDBService;
 import com.xuxiaoye.api.services.db.UserDBService;
+import com.xuxiaoye.api.services.interfaces.StudentAuditService;
 import com.xuxiaoye.api.services.interfaces.StudentService;
 import com.xuxiaoye.api.services.interfaces.UserService;
 import com.xuxiaoye.api.services.PermissionServiceImpl;
+import com.xuxiaoye.api.services.StudentAuditServiceImpl;
 import com.xuxiaoye.api.services.StudentServiceImpl;
 import com.xuxiaoye.api.services.UserServiceImpl;
 
@@ -50,6 +53,14 @@ public class ServiceConfig {
             @Autowired StudentDBService studentDBService
     ) {
         return new StudentServiceImpl(requestContext, studentMapper, studentDBService);
+    }
+
+    @Bean
+    StudentAuditService studentAuditService(
+            @Autowired StudentAuditMapper studentAuditMapper,
+            @Autowired StudentAuditDBService studentAuditDBService
+    ) {
+        return new StudentAuditServiceImpl(studentAuditMapper, studentAuditDBService);
     }
 
     @Bean
