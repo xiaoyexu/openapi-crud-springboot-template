@@ -1,5 +1,6 @@
 package com.xuxiaoye.api.client;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Function;
@@ -7,10 +8,12 @@ import java.util.function.Supplier;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.LambdaUtils;
+import com.baomidou.mybatisplus.core.toolkit.support.LambdaMeta;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
-import io.micrometer.common.util.StringUtils;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.reflection.property.PropertyNamer;
 import org.mybatis.spring.MyBatisSystemException;
 import org.springframework.transaction.NoTransactionException;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -35,13 +38,16 @@ public class BaseDbClient {
         DECIMAL_RANGE
     }
 
+    record FieldMeta(String fieldName, Class<?> fieldType) {
+    }
+
     protected <T, E> void addFilter(
             LambdaQueryWrapper<E> query,
             Operator operator,
             SFunction<E, ?> column,
             Collection<T> values
     ) {
-        String columnName = LambdaUtils.extract(column).getImplMethodName().substring(3);
+        String columnName = getFieldMeta(column).fieldName;
         if (!CollectionUtils.isEmpty(values)) {
             switch (operator) {
                 case IN -> query.in(column, values);
@@ -82,6 +88,41 @@ public class BaseDbClient {
                 );
             }
         }
+    }
+
+    static <E> FieldMeta getFieldMeta(SFunction<E, ?> column) {
+        LambdaMeta fieldMeta = LambdaUtils.extract(column);
+        String columnName = PropertyNamer.methodToProperty(fieldMeta.getImplMethodName());
+        Class<?> instantiatedClass = fieldMeta.getInstantiatedClass();
+        try {
+            // Handle camel case to snake case conversion
+            Field field = instantiatedClass.getDeclaredField(columnName);
+            return new FieldMeta(columnName, field.getType());
+        } catch (NoSuchFieldException e) {
+            log.error("Error resolving column name for class {} and field {}: {}", instantiatedClass.getName(), columnName, e.getLocalizedMessage());
+            return new FieldMeta(columnName, null);
+        }
+    }
+
+    @SafeVarargs
+    protected final <E> void applyMultiColumnKeyWordFilter(
+            LambdaQueryWrapper<E> query,
+            String keyword,
+            SFunction<E, ?>... columns) {
+
+        if (StringUtils.isBlank(keyword) || ArrayUtils.isEmpty(columns)) {
+            return;
+        }
+
+        String lowerCaseKeyword = keyword.toLowerCase();
+        query.and((subCondition) -> Arrays.stream(columns).toList().forEach(column -> {
+            FieldMeta fieldMeta = getFieldMeta(column);
+            if (String.class == fieldMeta.fieldType) {
+                subCondition.or(fieldCondition -> fieldCondition.apply("LOWER(" + fieldMeta.fieldName + ") LIKE CONCAT('%', {0}, '%')", lowerCaseKeyword));
+            } else {
+                subCondition.or(fieldCondition -> fieldCondition.apply("LOWER(CONCAT(" + fieldMeta.fieldName + ",'')) LIKE CONCAT('%', {0}, '%')", lowerCaseKeyword));
+            }
+        }));
     }
 
     protected <E extends DBEntity> void addSortField(
