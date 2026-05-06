@@ -15,6 +15,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.xuxiaoye.api.adapter.api.server.dto.Student;
@@ -76,6 +77,17 @@ public class StudentServiceImpl extends BaseDbClient implements StudentService {
             addFilter(query, LIKE, com.xuxiaoye.api.services.db.dto.entity.Student::getCreatedBy, searchStudentRequest.getCreatedBys());
             addFilter(query, IN, com.xuxiaoye.api.services.db.dto.entity.Student::getUpdatedBy, searchStudentRequest.getUpdatedBys());
 
+            // Keyword search
+            if (StringUtils.isNotBlank(searchStudentRequest.getKeyword())) {
+                String keyword = searchStudentRequest.getKeyword();
+                query.and(subCondition -> subCondition
+                        .or(fieldCondition -> fieldCondition.apply("LOWER(name) LIKE CONCAT('%', {0}, '%')", keyword.toLowerCase()))
+                        .or(fieldCondition -> fieldCondition.apply("LOWER(age) LIKE CONCAT('%', {0}, '%')", keyword.toLowerCase()))
+                        .or(fieldCondition -> fieldCondition.apply("LOWER(CONCAT(height,'')) LIKE CONCAT('%', {0}, '%')", keyword.toLowerCase()))
+                        .or(fieldCondition -> fieldCondition.apply("LOWER(CONCAT(birthday,'')) LIKE CONCAT('%', {0}, '%')", keyword.toLowerCase()))
+                );
+            }
+
             Page<com.xuxiaoye.api.services.db.dto.entity.Student> studentPage = this.studentDBService.page(page, query);
             PagedStudents pagedStudents = new PagedStudents(page.getTotal(), this.studentMapper.map(studentPage.getRecords()));
             return AppResponse.okWithData(pagedStudents);
@@ -107,9 +119,9 @@ public class StudentServiceImpl extends BaseDbClient implements StudentService {
 
         return handleDbCall(() -> {
             com.xuxiaoye.api.services.db.dto.entity.Student dbStudent = this.studentMapper.map(student);
-            dbStudent.setCreatedBy(SYSTEM);
+            dbStudent.setCreatedBy(requestContext.getXUserId());
             dbStudent.setCreatedAt(LocalDateTime.now());
-            dbStudent.setUpdatedBy(SYSTEM);
+            dbStudent.setUpdatedBy(requestContext.getXUserId());
             dbStudent.setUpdatedAt(LocalDateTime.now());
             if (this.studentDBService.save(dbStudent)) {
                 return AppResponse.okWithData(this.studentMapper.map(dbStudent));
@@ -135,7 +147,7 @@ public class StudentServiceImpl extends BaseDbClient implements StudentService {
 
             student.setId(id);
             com.xuxiaoye.api.services.db.dto.entity.Student updatedDbStudent = this.studentMapper.map(student);
-            updatedDbStudent.setUpdatedBy(SYSTEM);
+            updatedDbStudent.setUpdatedBy(requestContext.getXUserId());
             updatedDbStudent.setUpdatedAt(LocalDateTime.now());
             updatedDbStudent.setCreatedBy(dbStudent.getCreatedBy());
             updatedDbStudent.setCreatedAt(dbStudent.getCreatedAt());

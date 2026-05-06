@@ -660,6 +660,8 @@ definitions:
   SearchStudentRequest:
     type: object
     properties:
+      keyword:
+        type: string
       ids:
         $ref: '#/definitions/StringList'
       names:
