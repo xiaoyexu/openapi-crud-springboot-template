@@ -261,6 +261,7 @@ class StudentAdapterTest extends BaseTest {
             @CsvSource(value = {
                     // filter
                     "search.json;search_result.json;2;0;",
+                    "search_keyword1.json;search_keyword1_result.json;2;0;",
                     "search_ids.json;search_ids_result.json;2;0;",
                     "search_names.json;search_names_result.json;2;0;",
                     "search_ages.json;search_ages_result.json;2;0;",
@@ -444,6 +445,43 @@ class StudentAdapterTest extends BaseTest {
                         .isEqualTo(mockRes);
             }
 
+        }
+
+        @Nested
+        class Code400 {
+
+            @BeforeEach
+            void before() {
+                reader = reader.withHttpStatus("400");
+            }
+
+            @ParameterizedTest
+            @CsvSource({
+                    "update.json,id,update_result.json",
+            })
+            void updateStudent(String requestJson, String id, String responseJson) throws IOException {
+                String request = reader.withBase("requests").withFileName(requestJson).getContent();
+
+                String jsonResponse = given().log()
+                        .all(true)
+                        .headers(HeaderBuilder.defaultHeader().build())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .basePath(basePath)
+                        .body(request)
+                        .when()
+                        .put("/students/" + id)
+                        .then()
+                        .log()
+                        .all(true)
+                        .assertThat()
+                        .statusCode(HttpStatus.BAD_REQUEST.value())
+                        .extract()
+                        .asString();
+
+                String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
+                assertThatJson(jsonResponse).isEqualTo(mockRes);
+            }
         }
 
         @Nested

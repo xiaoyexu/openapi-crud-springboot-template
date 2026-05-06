@@ -1,1 +1,8 @@
-{}
+{
+  "id": "ST000001",
+  "name": "Name 1 updated",
+  "createdBy": "system",
+  "createdAt": "2025-01-01T11:22:33",
+  "updatedBy": "system",
+  "updatedAt": "2025-01-02T11:22:33"
+}
