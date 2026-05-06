@@ -15,7 +15,6 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.xuxiaoye.api.adapter.api.server.dto.Student;
@@ -79,12 +78,11 @@ public class StudentServiceImpl extends BaseDbClient implements StudentService {
 
             // Keyword search
             if (StringUtils.isNotBlank(searchStudentRequest.getKeyword())) {
-                String keyword = searchStudentRequest.getKeyword();
-                query.and(subCondition -> subCondition
-                        .or(fieldCondition -> fieldCondition.apply("LOWER(name) LIKE CONCAT('%', {0}, '%')", keyword.toLowerCase()))
-                        .or(fieldCondition -> fieldCondition.apply("LOWER(age) LIKE CONCAT('%', {0}, '%')", keyword.toLowerCase()))
-                        .or(fieldCondition -> fieldCondition.apply("LOWER(CONCAT(height,'')) LIKE CONCAT('%', {0}, '%')", keyword.toLowerCase()))
-                        .or(fieldCondition -> fieldCondition.apply("LOWER(CONCAT(birthday,'')) LIKE CONCAT('%', {0}, '%')", keyword.toLowerCase()))
+                applyMultiColumnKeyWordFilter(query, searchStudentRequest.getKeyword(),
+                        com.xuxiaoye.api.services.db.dto.entity.Student::getName,
+                        com.xuxiaoye.api.services.db.dto.entity.Student::getAge,
+                        com.xuxiaoye.api.services.db.dto.entity.Student::getHeight,
+                        com.xuxiaoye.api.services.db.dto.entity.Student::getBirthday
                 );
             }
 
