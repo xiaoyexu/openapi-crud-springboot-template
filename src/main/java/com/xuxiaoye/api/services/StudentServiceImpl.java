@@ -54,6 +54,11 @@ public class StudentServiceImpl extends BaseDbClient implements StudentService {
     }
 
     @Override
+    public AppResponse<PagedStudents> listStudent(Pagination pagination) {
+        return this.searchStudent(new SearchStudentRequest(), pagination);
+    }
+
+    @Override
     public AppResponse<PagedStudents> searchStudent(SearchStudentRequest searchStudentRequest, Pagination pagination) {
         return handleDbCall(() -> {
             Page<com.xuxiaoye.api.services.db.dto.entity.Student> page = new Page<>(pagination.getOffset(), pagination.getLimit());

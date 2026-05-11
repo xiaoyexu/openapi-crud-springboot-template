@@ -242,6 +242,64 @@ class StudentAdapterTest extends BaseTest {
     }
 
     @Nested
+    @Order(5)
+    class ListStudentTest {
+        @BeforeEach
+        void before() {
+            reader = reader.withEndPoint("students").withMethod("get");
+        }
+
+        @Nested
+        class Code200 {
+
+            @BeforeEach
+            void before() {
+                reader = reader.withHttpStatus("200");
+            }
+
+            @ParameterizedTest
+            @CsvSource(value = {
+                    // filter
+                    "list_result.json;2;0;",
+                    // pagination
+                    // "search.json;search_result_2_1.json;2,1;",
+                    // "search.json;search_result_2_2.json;2,2;",
+                    // "search.json;search_result_2_3.json;2,3;",
+                    // "search_multiple.json;search_multiple_result.json;2;0;",
+                    // sort
+                    "list_result_id_asc.json;2;0;id;",
+                    "list_result_id_desc.json;2;0;-id;",
+            }, delimiter = ';')
+            void listStudent(String responseJson, Integer limit, Integer offset, String sortBy) throws IOException {
+
+                String jsonResponse = given().log()
+                        .all(true)
+                        .headers(HeaderBuilder.defaultHeader().build())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .queryParams(
+                                "limit", limit,
+                                "offset", offset,
+                                "sortBy", sortBy
+                        )
+                        .basePath(basePath)
+                        .when()
+                        .get("/students")
+                        .then()
+                        .log()
+                        .all(true)
+                        .assertThat()
+                        .statusCode(HttpStatus.OK.value())
+                        .extract()
+                        .asString();
+
+                String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
+                assertThatJson(jsonResponse).isEqualTo(mockRes);
+            }
+        }
+    }
+
+    @Nested
     @Order(10)
     class SearchStudentTest {
         @BeforeEach

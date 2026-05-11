@@ -148,6 +148,41 @@ paths:
             $ref: '#/definitions/ErrorResponse'
   # student
   /students:
+    get:
+      tags:
+        - students
+      description: List Students
+      operationId: listStudents
+      parameters:
+        - $ref: '#/parameters/Access-Token'
+        - $ref: '#/parameters/Limit'
+        - $ref: '#/parameters/Offset'
+        - $ref: '#/parameters/SortBy'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/SearchStudentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
     post:
       tags:
         - students

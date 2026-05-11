@@ -67,6 +67,21 @@ public class StudentAdapter implements StudentsApiDelegate {
     }
 
     @Override
+    @PreAuthorize("@P.hasPermission(authentication, 'student', 'list')")
+    public ResponseEntity<SearchStudentResponse> listStudents(
+            String authorization,
+            Integer limit,
+            Integer offset,
+            String sortBy
+    ) {
+        return this.studentService.listStudent(Pagination.of(offset, limit, sortBy))
+                .toResponseEntity(
+                        data -> SearchStudentResponse.builder().data(data).status(this.commonMapper.map(AppStatus.ok())).build(),
+                        status -> SearchStudentResponse.builder().status(this.commonMapper.map(status)).build()
+                );
+    }
+
+    @Override
     @PreAuthorize("@P.hasPermission(authentication, 'student', 'search')")
     public ResponseEntity<SearchStudentResponse> searchStudents(
             SearchStudentRequest searchStudentRequest,

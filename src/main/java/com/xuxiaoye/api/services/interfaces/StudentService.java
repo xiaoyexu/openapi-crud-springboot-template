@@ -9,6 +9,8 @@ import com.xuxiaoye.api.resp.FileResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface StudentService {
+    AppResponse<PagedStudents> listStudent(Pagination pagination);
+
     AppResponse<PagedStudents> searchStudent(SearchStudentRequest searchStudentRequest, Pagination pagination);
 
     AppResponse<Student> getStudent(String id);
