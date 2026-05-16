@@ -1,5 +1,9 @@
 package com.xuxiaoye.api.conf;
 
+import java.util.concurrent.TimeUnit;
+
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.access.PermissionEvaluator;
@@ -19,6 +23,14 @@ import com.xuxiaoye.api.services.StudentServiceImpl;
 import com.xuxiaoye.api.services.UserServiceImpl;
 
 public class ServiceConfig {
+
+    @Bean
+    public Cache<String, Boolean> nonceCache() {
+        return Caffeine.newBuilder()
+                .expireAfterWrite(5, TimeUnit.MINUTES)
+                .maximumSize(500_000)
+                .build();
+    }
 
     @Bean("P")
     PermissionEvaluator permissionEvaluator(

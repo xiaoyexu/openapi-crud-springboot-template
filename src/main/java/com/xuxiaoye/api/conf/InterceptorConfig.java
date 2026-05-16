@@ -3,6 +3,7 @@ package com.xuxiaoye.api.conf;
 import java.util.Arrays;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.benmanes.caffeine.cache.Cache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -25,9 +26,12 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Autowired
     ResourceConfig resourceConfig;
 
+    @Autowired
+    Cache<String, Boolean> cache;
+
     @Bean
     public JWTInterceptor jwtInterceptor() {
-        return new JWTInterceptor(requestContext, resourceConfig, bypassTokenCheck);
+        return new JWTInterceptor(requestContext, resourceConfig, cache, bypassTokenCheck);
     }
 
     @Override

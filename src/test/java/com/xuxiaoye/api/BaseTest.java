@@ -2,10 +2,7 @@ package com.xuxiaoye.api;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import io.restassured.http.Header;
 import io.restassured.http.Headers;
@@ -174,8 +171,8 @@ public abstract class BaseTest {
 
         public static HeaderBuilder defaultHeader() {
             HeaderBuilder builder = new HeaderBuilder();
-            builder.traceId = "kHsnH02437";
-            builder.contextId = "CB3gT";
+            builder.traceId = UUID.randomUUID().toString();
+            builder.contextId = UUID.randomUUID().toString();
             builder.env = "env";
             builder.lbu = "application";
             builder.authorizationUser = "12345";

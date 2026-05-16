@@ -2,6 +2,7 @@ package com.xuxiaoye.api.interceptors;
 
 import java.util.Date;
 
+import com.github.benmanes.caffeine.cache.Cache;
 import com.xuxiaoye.api.bean.RequestContext;
 import com.xuxiaoye.api.common.exceptions.JWTExpiredException;
 import com.xuxiaoye.api.conf.ResourceConfig;
@@ -32,6 +33,9 @@ class JWTInterceptorTest {
     private ResourceConfig resourceConfig;
 
     @Mock
+    private Cache<String, Boolean> cache;
+
+    @Mock
     private HttpServletRequest request;
 
     @Mock
@@ -55,18 +59,23 @@ class JWTInterceptorTest {
     void setup() {
         requestContext = mock(RequestContext.class);
         resourceConfig = mock(ResourceConfig.class);
+        cache = mock(Cache.class);
         request = mock(HttpServletRequest.class);
         response = mock(HttpServletResponse.class);
         claims = mock(Claims.class);
         clientHttpRequestExecution = mock(ClientHttpRequestExecution.class);
         httpRequest = mock(ClientHttpRequest.class);
+
+        when(cache.getIfPresent(anyString())).thenReturn(false);
     }
 
     @Nested
     class NoAuthCheckRequired {
         @Test
         public void testPreHandleByPass() throws Exception {
-            JWTInterceptor jwtInterceptor = spy(new JWTInterceptor(requestContext, resourceConfig, true));
+            JWTInterceptor jwtInterceptor = spy(
+                    new JWTInterceptor(requestContext, resourceConfig, cache, false)
+            );
             assertTrue(jwtInterceptor.preHandle(request, response, object));
         }
     }
@@ -75,7 +84,9 @@ class JWTInterceptorTest {
     class RequireAuthCheck {
         @Test
         public void testAllowGetMethodAnyways() throws Exception {
-            JWTInterceptor jwtInterceptor = spy(new JWTInterceptor(requestContext, resourceConfig, false));
+            JWTInterceptor jwtInterceptor = spy(
+                    new JWTInterceptor(requestContext, resourceConfig, cache, false)
+            );
             doReturn("").when(request).getHeader(AUTHORIZATION);
             doReturn("GET").when(request).getMethod();
             assertDoesNotThrow(() -> jwtInterceptor.preHandle(request, response, object));
@@ -84,7 +95,9 @@ class JWTInterceptorTest {
         @Test
         public void testValidToken() throws Exception {
             String token = easyRandom.nextObject(String.class);
-            JWTInterceptor jwtInterceptor = spy(new JWTInterceptor(requestContext, resourceConfig, false));
+            JWTInterceptor jwtInterceptor = spy(
+                    new JWTInterceptor(requestContext, resourceConfig, cache, false)
+            );
             doReturn(token).when(request).getHeader(AUTHORIZATION);
 
             Claims claims = mock(Claims.class);
@@ -102,7 +115,9 @@ class JWTInterceptorTest {
         @Test
         public void testExpiredToken() {
             String token = easyRandom.nextObject(String.class);
-            JWTInterceptor jwtInterceptor = spy(new JWTInterceptor(requestContext, resourceConfig, false));
+            JWTInterceptor jwtInterceptor = spy(
+                    new JWTInterceptor(requestContext, resourceConfig, cache, false)
+            );
             doReturn(token).when(request).getHeader(AUTHORIZATION);
 
             Claims claims = mock(Claims.class);

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import com.github.benmanes.caffeine.cache.Cache;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,8 +19,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.xuxiaoye.api.bean.RequestContext;
-import com.xuxiaoye.api.conf.ResourceConfig;
+import com.xuxiaoye.api.common.exceptions.ForbiddenException;
 import com.xuxiaoye.api.common.exceptions.JWTExpiredException;
+import com.xuxiaoye.api.conf.ResourceConfig;
 import com.xuxiaoye.api.constant.HeaderConstant;
 import com.xuxiaoye.api.utils.JwtUtils;
 
@@ -29,15 +31,18 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 public class JWTInterceptor implements HandlerInterceptor {
     private final RequestContext requestContext;
     private final ResourceConfig resourceConfig;
+    private final Cache<String, Boolean> cache;
     private final boolean bypassTokenCheck;
 
     public JWTInterceptor(
             RequestContext requestContext,
             ResourceConfig resourceConfig,
+            Cache<String, Boolean> cache,
             boolean bypassTokenCheck
     ) {
         this.requestContext = requestContext;
         this.resourceConfig = resourceConfig;
+        this.cache = cache;
         this.bypassTokenCheck = bypassTokenCheck;
     }
 
@@ -52,6 +57,12 @@ public class JWTInterceptor implements HandlerInterceptor {
             SecurityContextHolder.getContext().setAuthentication(auth);
             return true;
         }
+
+        String traceId = request.getHeader(HeaderConstant.X_TRACE_ID);
+        if (cache.getIfPresent(traceId) != null) {
+            throw new ForbiddenException("Duplicated Request");
+        }
+        cache.put(traceId, true);
 
         String authorization = request.getHeader(AUTHORIZATION);
         if (StringUtils.isBlank(authorization)) {
