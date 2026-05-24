@@ -26,7 +26,6 @@ import static io.restassured.RestAssured.given;
 @ActiveProfiles("test")
 @Log4j2
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@TestClassOrder(ClassOrderer.OrderAnnotation.class)
 @TestPropertySource(properties = "bypassTokenCheck=false")
 @Order(3)
 public class StudentAdapterAuthTest extends BaseTest {

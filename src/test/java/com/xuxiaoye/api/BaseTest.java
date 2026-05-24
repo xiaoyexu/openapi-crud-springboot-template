@@ -7,6 +7,8 @@ import java.util.*;
 import io.restassured.http.Header;
 import io.restassured.http.Headers;
 import org.jeasy.random.EasyRandom;
+import org.junit.jupiter.api.ClassOrderer;
+import org.junit.jupiter.api.TestClassOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -16,6 +18,7 @@ import com.xuxiaoye.api.bean.TokenPair;
 import com.xuxiaoye.api.conf.ResourceConfig;
 import com.xuxiaoye.api.utils.JwtUtils;
 
+@TestClassOrder(ClassOrderer.OrderAnnotation.class)
 public abstract class BaseTest {
     protected BaseTest.JsonFileReader reader = new BaseTest.JsonFileReader().withVersion("v1");
 
