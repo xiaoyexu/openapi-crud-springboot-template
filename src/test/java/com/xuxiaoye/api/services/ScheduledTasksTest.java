@@ -46,7 +46,7 @@ class ScheduledTasksTest {
 
     @Test
     public void autoCancelOvertimeOUnpaidRegistrations() {
-        when(studentService.searchStudent(any(SearchStudentRequest.class), any(Pagination.class))).thenReturn(AppResponse.ok());
+        when(studentService.search(any(SearchStudentRequest.class), any(Pagination.class))).thenReturn(AppResponse.ok());
         assertDoesNotThrow(() -> scheduledTasks.autoCancelOvertimeOUnpaidRegistrations());
     }
 }

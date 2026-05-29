@@ -2,8 +2,10 @@ package com.xuxiaoye.api.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import lombok.Getter;
@@ -29,14 +31,20 @@ public class ExcelHelper {
             this.readableWorkbook = readableWorkbook;
         }
 
-        public AppResponse<String> process(Consumer<Row> rowHandler) {
+        public AppResponse<String> process(Function<Row, AppResponse<String>> rowHandler) {
             Optional<Sheet> optionalSheet = this.readableWorkbook.getSheet(0);
             if (optionalSheet.isPresent()) {
                 Sheet sheet = optionalSheet.get();
                 try (Stream<Row> rows = sheet.openStream()) {
-                    rows
+                    List<AppResponse<String>> result = rows
                             .filter(row -> row.getRowNum() != 1) // Remove first header line
-                            .forEach(rowHandler);
+                            .map(rowHandler).toList();
+
+                    Optional<AppResponse<String>> error = result.stream().filter(stringAppResponse -> !stringAppResponse.isOk()).findFirst();
+                    return error.<AppResponse<String>>map(
+                                    stringAppResponse -> AppResponse.failWithStatus(AppStatus.badRequest(stringAppResponse.getStatus().getMessage()))
+                            )
+                            .orElseGet(AppResponse::ok);
                 } catch (IOException e) {
                     log.error("Failed to open xlsx file data, error: {}", e.getLocalizedMessage());
                     return AppResponse.failWithStatus(AppStatus.badRequest(e.getLocalizedMessage()));

@@ -41,8 +41,7 @@ class ExcelHelperTest {
             when(readableWorkbook.getSheet(eq(0))).thenReturn(Optional.of(sheet));
             when(sheet.openStream()).thenThrow(new IOException("test error"));
 
-            AppResponse<String> response = ExcelHelper.getReader(readableWorkbook).process(row -> {
-            });
+            AppResponse<String> response = ExcelHelper.getReader(readableWorkbook).process(row -> AppResponse.ok());
             assertThat(response.isOk()).isFalse();
         }
 
@@ -51,8 +50,7 @@ class ExcelHelperTest {
             ReadableWorkbook readableWorkbook = mock(ReadableWorkbook.class);
             when(readableWorkbook.getSheet(eq(0))).thenReturn(Optional.empty());
 
-            AppResponse<String> response = ExcelHelper.getReader(readableWorkbook).process(row -> {
-            });
+            AppResponse<String> response = ExcelHelper.getReader(readableWorkbook).process(row -> AppResponse.ok());
             assertThat(response.isOk()).isTrue();
         }
     }

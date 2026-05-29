@@ -40,9 +40,9 @@ class StudentServiceTest {
     void createStudentError() {
         com.xuxiaoye.api.adapter.api.server.dto.Student student = new com.xuxiaoye.api.adapter.api.server.dto.Student();
         student.setAge(new EasyRandom().nextObject(Integer.class));
-        when(studentMapper.map(student)).thenReturn(new Student());
+        when(studentMapper.mapToDB(student)).thenReturn(new Student());
         when(studentDBService.save(any(Student.class))).thenReturn(false);
-        AppResponse<com.xuxiaoye.api.adapter.api.server.dto.Student> response = studentService.createStudent(student);
+        AppResponse<com.xuxiaoye.api.adapter.api.server.dto.Student> response = studentService.create(student);
         assertThat(response.isInternalError()).isTrue();
     }
 
@@ -51,7 +51,7 @@ class StudentServiceTest {
         Student student = new Student();
         when(studentDBService.getById(any(String.class))).thenReturn(student);
         when(studentDBService.removeById(any(String.class))).thenReturn(false);
-        AppResponse<String> response = studentService.deleteStudentById(new EasyRandom().nextObject(String.class));
+        AppResponse<String> response = studentService.deleteById(new EasyRandom().nextObject(String.class));
         assertThat(response.isInternalError()).isTrue();
     }
 
@@ -59,10 +59,10 @@ class StudentServiceTest {
     void updateStudentError() {
         com.xuxiaoye.api.adapter.api.server.dto.Student student = new com.xuxiaoye.api.adapter.api.server.dto.Student();
         student.setAge(new EasyRandom().nextObject(Integer.class));
-        when(studentMapper.map(student)).thenReturn(new Student());
+        when(studentMapper.mapToDB(student)).thenReturn(new Student());
         when(studentDBService.getById(any(String.class))).thenReturn(new Student());
         when(studentDBService.updateById(any(Student.class))).thenReturn(false);
-        AppResponse<com.xuxiaoye.api.adapter.api.server.dto.Student> response = studentService.updateStudentById(new EasyRandom().nextObject(String.class), student);
+        AppResponse<com.xuxiaoye.api.adapter.api.server.dto.Student> response = studentService.updateById(new EasyRandom().nextObject(String.class), student);
         assertThat(response.isInternalError()).isTrue();
     }
 }

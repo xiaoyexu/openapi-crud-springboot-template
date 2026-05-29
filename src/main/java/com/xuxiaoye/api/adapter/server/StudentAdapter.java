@@ -35,7 +35,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     public ResponseEntity<CreateStudentResponse> createSingleStudent(
             Student createStudentRequest
     ) {
-        return this.studentService.createStudent(createStudentRequest)
+        return this.studentService.create(createStudentRequest)
                 .toResponseEntity(
                         data -> CreateStudentResponse.builder().data(data).status(this.commonMapper.map(AppStatus.ok())).build(),
                         status -> CreateStudentResponse.builder().status(this.commonMapper.map(status)).build()
@@ -47,7 +47,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     public ResponseEntity<DeleteStudentResponse> deleteSingleStudent(
             String studentId
     ) {
-        return this.studentService.deleteStudentById(studentId)
+        return this.studentService.deleteById(studentId)
                 .toResponseEntity(
                         data -> DeleteStudentResponse.builder().data(data).status(this.commonMapper.map(AppStatus.ok())).build(),
                         status -> DeleteStudentResponse.builder().status(this.commonMapper.map(status)).build()
@@ -59,7 +59,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     public ResponseEntity<GetStudentResponse> getSingleStudent(
             String studentId
     ) {
-        return this.studentService.getStudent(studentId)
+        return this.studentService.get(studentId)
                 .toResponseEntity(
                         data -> GetStudentResponse.builder().data(data).status(this.commonMapper.map(AppStatus.ok())).build(),
                         status -> GetStudentResponse.builder().status(this.commonMapper.map(status)).build()
@@ -89,7 +89,7 @@ public class StudentAdapter implements StudentsApiDelegate {
             Integer offset,
             String sortBy
     ) {
-        return this.studentService.searchStudent(searchStudentRequest, Pagination.of(offset, limit, sortBy))
+        return this.studentService.search(searchStudentRequest, Pagination.of(offset, limit, sortBy))
                 .toResponseEntity(
                         data -> SearchStudentResponse.builder().data(data).status(this.commonMapper.map(AppStatus.ok())).build(),
                         status -> SearchStudentResponse.builder().status(this.commonMapper.map(status)).build()
@@ -102,7 +102,7 @@ public class StudentAdapter implements StudentsApiDelegate {
             String studentId,
             Student updateStudentRequest
     ) {
-        return this.studentService.updateStudentById(studentId, updateStudentRequest)
+        return this.studentService.updateById(studentId, updateStudentRequest)
                 .toResponseEntity(
                         data -> UpdateStudentResponse.builder().data(data).status(this.commonMapper.map(AppStatus.ok())).build(),
                         status -> UpdateStudentResponse.builder().status(this.commonMapper.map(status)).build()
@@ -127,7 +127,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     @Override
     @PreAuthorize("@P.hasPermission(authentication, 'student', 'import')")
     public ResponseEntity<ImportStudentResponse> importStudents(MultipartFile file) {
-        return this.studentService.importStudents(file)
+        return this.studentService.importData(file)
                 .toResponseEntity(
                         data -> ImportStudentResponse.builder().data(data).status(this.commonMapper.map(AppStatus.ok())).build(),
                         status -> ImportStudentResponse.builder().status(this.commonMapper.map(status)).build()

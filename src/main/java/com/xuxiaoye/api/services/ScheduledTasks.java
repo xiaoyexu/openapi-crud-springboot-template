@@ -1,17 +1,18 @@
 package com.xuxiaoye.api.services;
 
+import java.util.Map;
+
+import jakarta.annotation.PostConstruct;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
+
 import com.xuxiaoye.api.adapter.api.server.dto.SearchStudentRequest;
 import com.xuxiaoye.api.bean.Pagination;
 import com.xuxiaoye.api.conf.ResourceConfig;
 import com.xuxiaoye.api.services.interfaces.StudentService;
 import com.xuxiaoye.api.utils.ContextUtils;
 import com.xuxiaoye.api.utils.JwtUtils;
-import jakarta.annotation.PostConstruct;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
-
-import java.util.Map;
 
 @Log4j2
 public class ScheduledTasks {
@@ -45,7 +46,7 @@ public class ScheduledTasks {
         );
 
         ContextUtils.prepareRequestContext(appEnv, scheduler, newToken);
-        this.studentService.searchStudent(new SearchStudentRequest(), Pagination.of(0, 10));
+        this.studentService.search(new SearchStudentRequest(), Pagination.of(0, 10));
         log.info("Check Payment Status Finished");
     }
 
