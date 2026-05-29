@@ -8,6 +8,8 @@ import org.mybatis.spring.MyBatisSystemException;
 import com.xuxiaoye.api.resp.AppResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -55,5 +57,22 @@ class BaseDbClientTest {
         assertThat(appResponse).isNotNull();
         assertThat(appResponse.getStatus().getCode()).isEqualTo("500");
         assertThat(appResponse.getStatus().getMessage()).isEqualTo(errorMsg);
+    }
+
+    class TestClass {
+        private String name;
+    }
+
+    @Test
+    void testGetField() {
+
+        assertDoesNotThrow(() -> {
+            assertThat(BaseDbClient.getField(TestClass.class, "name")).isNotNull();
+        });
+
+        assertThrows(NoSuchFieldException.class, () -> {
+            BaseDbClient.getField(TestClass.class, "age");
+        });
+
     }
 }

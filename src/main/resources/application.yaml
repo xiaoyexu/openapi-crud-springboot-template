@@ -9,11 +9,11 @@ spring:
       strict: false
       datasource:
         master:
-#          driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+          #          driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
           driverClassName: com.mysql.cj.jdbc.Driver
-#          url: ${DB_URL:jdbc:postgresql://172.17.0.1:5432/postgres}
+          #          url: ${DB_URL:jdbc:postgresql://172.17.0.1:5432/postgres}
           url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_SCHEMA:dev}
-#          url: ${DB_HOST:jdbc:sqlserver://localhost:1433;database=master;trustServerCertificate=true;}
+          #          url: ${DB_HOST:jdbc:sqlserver://localhost:1433;database=master;trustServerCertificate=true;}
           username: ${DB_USERNAME:root}
           password: ${DB_PASSWORD:root}
   servlet:
@@ -73,3 +73,7 @@ admin:
     expiration: ${REFRESH_EXPIRE_SECONDS:7200}
 servicePublicKeyPath: ${SERVICE_PUBLIC_KEY_PATH:}
 servicePrivateKeyPath: ${SERVICE_PRIVATE_KEY_PATH:}
+configs:
+  scheduler:
+    enabled: true
+    check: ${CHECK:0 */1 * * * *}

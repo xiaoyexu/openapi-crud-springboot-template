@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.LambdaUtils;
 import com.baomidou.mybatisplus.core.toolkit.support.LambdaMeta;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import com.google.common.base.CaseFormat;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -90,13 +91,26 @@ public class BaseDbClient {
         }
     }
 
+    public static Field getField(Class<?> clazz, String fieldName) throws NoSuchFieldException {
+        Class<?> currentClass = clazz;
+        while (currentClass != null && currentClass != Object.class) {
+            try {
+                return currentClass.getDeclaredField(fieldName);
+            } catch (NoSuchFieldException e) {
+                currentClass = currentClass.getSuperclass();
+            }
+        }
+        throw new NoSuchFieldException("Field '" + fieldName + "' not found in class " + clazz.getName());
+    }
+
     static <E> FieldMeta getFieldMeta(SFunction<E, ?> column) {
         LambdaMeta fieldMeta = LambdaUtils.extract(column);
-        String columnName = PropertyNamer.methodToProperty(fieldMeta.getImplMethodName());
+        String propertyName = PropertyNamer.methodToProperty(fieldMeta.getImplMethodName());
+        String columnName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, propertyName);
         Class<?> instantiatedClass = fieldMeta.getInstantiatedClass();
         try {
             // Handle camel case to snake case conversion
-            Field field = instantiatedClass.getDeclaredField(columnName);
+            Field field = getField(instantiatedClass, propertyName);
             return new FieldMeta(columnName, field.getType());
         } catch (NoSuchFieldException e) {
             log.error("Error resolving column name for class {} and field {}: {}", instantiatedClass.getName(), columnName, e.getLocalizedMessage());
@@ -168,15 +182,16 @@ public class BaseDbClient {
         try {
             return logic.get();
         } catch (MyBatisSystemException ex) {
+            log.error("db call error: {}", ex.getLocalizedMessage());
             // Rollback
             rollback();
-            log.error("db call error: {}", ex.getLocalizedMessage());
             AppStatus appStatus = AppStatus.builder().code("500").message(ex.getLocalizedMessage()).build();
             return AppResponse.failWithStatus(appStatus);
-        } catch (RuntimeException e) {
+        } catch (RuntimeException ex) {
+            log.error("db call runtime error: {}", ex.getLocalizedMessage());
             // Rollback
             rollback();
-            AppStatus appStatus = AppStatus.builder().code("500").message(e.getLocalizedMessage()).build();
+            AppStatus appStatus = AppStatus.builder().code("500").message(ex.getLocalizedMessage()).build();
             return AppResponse.failWithStatus(appStatus);
         }
     }
