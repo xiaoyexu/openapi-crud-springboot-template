@@ -11,14 +11,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
 import com.xuxiaoye.api.Application;
 import com.xuxiaoye.api.BaseTest;
-
-import static io.restassured.RestAssured.given;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = Application.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -53,15 +50,11 @@ public class StudentAdapterAuthTest extends BaseTest {
                 "id_not_exist;US000001;;student:get_own;401"
         }, delimiter = ';')
         public void testGetSingleStudentWithValidToken(String id, String userId, String roles, String authorities, int expectHttpStatus) {
-            given()
-                    .headers(HeaderBuilder.defaultHeader()
-                            .authorizationToken(buildToken(userId, roles, authorities))
-                            .build())
-                    .basePath(basePath)
-                    .when()
-                    .get("/students/" + id)
-                    .then()
-                    .statusCode(HttpStatus.valueOf(expectHttpStatus).value());
+            get(
+                    "/students/" + id,
+                    HeaderBuilder.defaultHeader().authorizationToken(buildToken(userId, roles, authorities)).build(),
+                    HttpStatus.valueOf(expectHttpStatus).value()
+            );
         }
     }
 
@@ -86,22 +79,12 @@ public class StudentAdapterAuthTest extends BaseTest {
         public void testGetSingleStudentWithValidToken(String userId, String roles, String authorities, int expectHttpStatus) throws IOException {
             String request = reader.withBase("requests").withFileName("create.json").getContent();
 
-            given().log()
-                    .all(true)
-                    .headers(HeaderBuilder.defaultHeader()
-                            .authorizationToken(buildToken(userId, roles, authorities))
-                            .build())
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .accept(MediaType.APPLICATION_JSON_VALUE)
-                    .basePath(basePath)
-                    .body(request)
-                    .when()
-                    .post("/students")
-                    .then()
-                    .log()
-                    .all(true)
-                    .assertThat()
-                    .statusCode(HttpStatus.valueOf(expectHttpStatus).value());
+            post(
+                    "/students",
+                    HeaderBuilder.defaultHeader().authorizationToken(buildToken(userId, roles, authorities)).build(),
+                    request,
+                    HttpStatus.valueOf(expectHttpStatus).value()
+            );
         }
     }
 
@@ -125,22 +108,12 @@ public class StudentAdapterAuthTest extends BaseTest {
         public void testGetSingleStudentWithValidToken(String id, String userId, String roles, String authorities, int expectHttpStatus) throws IOException {
             String request = reader.withBase("requests").withFileName("update.json").getContent();
 
-            given().log()
-                    .all(true)
-                    .headers(HeaderBuilder.defaultHeader()
-                            .authorizationToken(buildToken(userId, roles, authorities))
-                            .build())
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .accept(MediaType.APPLICATION_JSON_VALUE)
-                    .basePath(basePath)
-                    .body(request)
-                    .when()
-                    .put("/students/" + id)
-                    .then()
-                    .log()
-                    .all(true)
-                    .assertThat()
-                    .statusCode(HttpStatus.valueOf(expectHttpStatus).value());
+            put(
+                    "/students/" + id,
+                    HeaderBuilder.defaultHeader().authorizationToken(buildToken(userId, roles, authorities)).build(),
+                    request,
+                    HttpStatus.valueOf(expectHttpStatus).value()
+            );
         }
     }
 }

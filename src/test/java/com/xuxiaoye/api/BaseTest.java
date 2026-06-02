@@ -1,11 +1,14 @@
 package com.xuxiaoye.api;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.IntStream;
 
 import io.restassured.http.Header;
 import io.restassured.http.Headers;
+import io.restassured.specification.RequestSpecification;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.ClassOrderer;
 import org.junit.jupiter.api.TestClassOrder;
@@ -17,6 +20,9 @@ import org.springframework.core.io.ResourceLoader;
 import com.xuxiaoye.api.bean.TokenPair;
 import com.xuxiaoye.api.conf.ResourceConfig;
 import com.xuxiaoye.api.utils.JwtUtils;
+import org.springframework.http.MediaType;
+
+import static io.restassured.RestAssured.given;
 
 @TestClassOrder(ClassOrderer.OrderAnnotation.class)
 public abstract class BaseTest {
@@ -262,6 +268,230 @@ public abstract class BaseTest {
                 )
         );
         return tokenPair.accessToken();
+    }
+
+    protected String post(String urlPath, String requestBody, int httpStatus, Object... queryParams) {
+        return post(urlPath, HeaderBuilder.defaultHeader().build(), requestBody, httpStatus, queryParams);
+    }
+
+    protected String post(String urlPath, Headers headers, String requestBody, int httpStatus, Object... queryParams) {
+        RequestSpecification spec = given().log()
+                .all(true)
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .basePath(this.basePath)
+                .body(requestBody);
+
+        IntStream.range(0, queryParams.length / 2)
+                .map(i -> i * 2)
+                .filter(i -> queryParams[i + 1] != null)
+                .forEach(i -> spec.queryParams(queryParams[i].toString(), queryParams[i + 1]));
+
+        return spec
+                .when()
+                .post(urlPath)
+                .then()
+                .log()
+                .all(true)
+                .assertThat()
+                .statusCode(httpStatus)
+                .extract()
+                .asString();
+    }
+
+    protected String postAcceptAny(String urlPath, String requestBody, int httpStatus, Object... queryParams) {
+        return postAcceptAny(urlPath, HeaderBuilder.defaultHeader().build(), requestBody, httpStatus, queryParams);
+    }
+
+    protected String postAcceptAny(String urlPath, Headers headers, String requestBody, int httpStatus, Object... queryParams) {
+        RequestSpecification spec = given().log()
+                .all(true)
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .basePath(this.basePath)
+                .body(requestBody);
+
+        IntStream.range(0, queryParams.length / 2)
+                .map(i -> i * 2)
+                .filter(i -> queryParams[i + 1] != null)
+                .forEach(i -> spec.queryParams(queryParams[i].toString(), queryParams[i + 1]));
+
+        return spec
+                .when()
+                .post(urlPath)
+                .then()
+                .log()
+                .all(true)
+                .assertThat()
+                .statusCode(httpStatus)
+                .extract()
+                .asString();
+    }
+
+    protected String postFile(String urlPath, String name, File file, int httpStatus) {
+        return postFile(urlPath, HeaderBuilder.defaultHeader().build(), name, file, httpStatus);
+    }
+
+    protected String postFile(String urlPath, String name, File file, int httpStatus, Object... formParams) {
+        return postFile(urlPath, HeaderBuilder.defaultHeader().build(), name, file, httpStatus, formParams);
+    }
+
+    protected String postFile(String urlPath, Headers headers, String name, File file, int httpStatus) {
+        return given().log()
+                .all(true)
+                .headers(headers)
+                .basePath(basePath)
+                .multiPart(name, file)
+                .when()
+                .post(urlPath)
+                .then()
+                .log()
+                .all(true)
+                .assertThat()
+                .statusCode(httpStatus)
+                .extract()
+                .asString();
+    }
+
+    protected String postFile(String urlPath, Headers headers, String name, File file, int httpStatus, Object... formParams) {
+        RequestSpecification spec = given().log()
+                .all(true)
+                .headers(headers)
+                .basePath(this.basePath)
+                .multiPart(name, file);
+
+        IntStream.range(0, formParams.length / 2)
+                .map(i -> i * 2)
+                .filter(i -> formParams[i + 1] != null)
+                .forEach(i -> spec.formParams(formParams[i].toString(), formParams[i + 1]));
+
+        return spec
+                .when()
+                .post(urlPath)
+                .then()
+                .log()
+                .all(true)
+                .assertThat()
+                .statusCode(httpStatus)
+                .extract()
+                .asString();
+    }
+
+    protected String put(String urlPath, String requestBody, int httpStatus, Object... queryParams) {
+        return put(urlPath, HeaderBuilder.defaultHeader().build(), requestBody, httpStatus, queryParams);
+    }
+
+    protected String put(String urlPath, Headers headers, String requestBody, int httpStatus, Object... queryParams) {
+        RequestSpecification spec = given().log()
+                .all(true)
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .basePath(this.basePath)
+                .body(requestBody);
+
+        IntStream.range(0, queryParams.length / 2)
+                .map(i -> i * 2)
+                .filter(i -> queryParams[i + 1] != null)
+                .forEach(i -> spec.queryParams(queryParams[i].toString(), queryParams[i + 1]));
+
+        return spec
+                .when()
+                .put(urlPath)
+                .then()
+                .log()
+                .all(true)
+                .assertThat()
+                .statusCode(httpStatus)
+                .extract()
+                .asString();
+    }
+
+    protected String get(String urlPath, int httpStatus, Object... queryParams) {
+        return get(urlPath, HeaderBuilder.defaultHeader().build(), httpStatus, queryParams);
+    }
+
+    protected String get(String urlPath, Headers headers, int httpStatus, Object... queryParams) {
+        RequestSpecification spec = given().log()
+                .all(true)
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .basePath(this.basePath);
+
+        IntStream.range(0, queryParams.length / 2)
+                .map(i -> i * 2)
+                .filter(i -> queryParams[i + 1] != null)
+                .forEach(i -> spec.queryParams(queryParams[i].toString(), queryParams[i + 1]));
+
+        return spec
+                .when()
+                .get(urlPath)
+                .then()
+                .log()
+                .all(true)
+                .assertThat()
+                .statusCode(httpStatus)
+                .extract()
+                .asString();
+    }
+
+    protected String getAcceptAny(String urlPath, int httpStatus, Object... queryParams) {
+        return getAcceptAny(urlPath, HeaderBuilder.defaultHeader().build(), httpStatus, queryParams);
+    }
+
+    protected String getAcceptAny(String urlPath, Headers headers, int httpStatus, Object... queryParams) {
+        RequestSpecification spec = given().log()
+                .all(true)
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .basePath(this.basePath);
+
+        IntStream.range(0, queryParams.length / 2)
+                .map(i -> i * 2)
+                .filter(i -> queryParams[i + 1] != null)
+                .forEach(i -> spec.queryParams(queryParams[i].toString(), queryParams[i + 1]));
+
+        return spec
+                .when()
+                .get(urlPath)
+                .then()
+                .log()
+                .all(true)
+                .assertThat()
+                .statusCode(httpStatus)
+                .extract()
+                .asString();
+    }
+
+    protected String delete(String urlPath, int httpStatus, Object... queryParams) {
+        return delete(urlPath, HeaderBuilder.defaultHeader().build(), httpStatus, queryParams);
+    }
+
+    protected String delete(String urlPath, Headers headers, int httpStatus, Object... queryParams) {
+        RequestSpecification spec = given().log()
+                .all(true)
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .basePath(this.basePath);
+
+        IntStream.range(0, queryParams.length / 2)
+                .map(i -> i * 2)
+                .filter(i -> queryParams[i + 1] != null)
+                .forEach(i -> spec.queryParams(queryParams[i].toString(), queryParams[i + 1]));
+
+        return spec
+                .when()
+                .delete(urlPath)
+                .then()
+                .log()
+                .all(true)
+                .assertThat()
+                .statusCode(httpStatus)
+                .extract()
+                .asString();
     }
 }
 

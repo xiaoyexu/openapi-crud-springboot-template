@@ -13,13 +13,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.xuxiaoye.api.Application;
 import com.xuxiaoye.api.BaseTest;
 
-import static io.restassured.RestAssured.given;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = Application.class)
@@ -85,27 +83,14 @@ class StudentAdapterTest extends BaseTest {
             void searchStudentAudit(String requestJson, String responseJson, Integer limit, Integer offset, String sortBy) throws IOException {
                 String request = reader.withBase("requests").withFileName(requestJson).getContent();
 
-                String jsonResponse = given().log()
-                        .all(true)
-                        .headers(HeaderBuilder.defaultHeader().build())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .queryParams(
-                                "limit", limit,
-                                "offset", offset,
-                                "sortBy", sortBy
-                        )
-                        .basePath(basePath)
-                        .body(request)
-                        .when()
-                        .post("/student-audits/search")
-                        .then()
-                        .log()
-                        .all(true)
-                        .assertThat()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract()
-                        .asString();
+                String jsonResponse = post(
+                        "/student-audits/search",
+                        request,
+                        HttpStatus.OK.value(),
+                        "limit", limit,
+                        "offset", offset,
+                        "sortBy", sortBy
+                );
 
                 String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
                 assertThatJson(jsonResponse).isEqualTo(mockRes);
@@ -135,21 +120,7 @@ class StudentAdapterTest extends BaseTest {
             })
             void getSingleStudentAudit(String id, String responseJson) throws IOException {
 
-                String jsonResponse = given().log()
-                        .all(true)
-                        .headers(HeaderBuilder.defaultHeader().build())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .basePath(basePath)
-                        .when()
-                        .get("/student-audits/" + id)
-                        .then()
-                        .log()
-                        .all(true)
-                        .assertThat()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract()
-                        .asString();
+                String jsonResponse = get("/student-audits/" + id, HttpStatus.OK.value());
 
                 String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
                 assertThatJson(jsonResponse).isEqualTo(mockRes);
@@ -170,21 +141,7 @@ class StudentAdapterTest extends BaseTest {
             })
             void getSingleStudentAudit(String id, String responseJson) throws IOException {
 
-                String jsonResponse = given().log()
-                        .all(true)
-                        .headers(HeaderBuilder.defaultHeader().build())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .basePath(basePath)
-                        .when()
-                        .get("/student-audits/" + id)
-                        .then()
-                        .log()
-                        .all(true)
-                        .assertThat()
-                        .statusCode(HttpStatus.NOT_FOUND.value())
-                        .extract()
-                        .asString();
+                String jsonResponse = get("/student-audits/" + id, HttpStatus.NOT_FOUND.value());
 
                 String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
                 assertThatJson(jsonResponse).isEqualTo(mockRes);
@@ -216,26 +173,14 @@ class StudentAdapterTest extends BaseTest {
             void exportStudentAudit(String requestJson, Integer limit, Integer offset, String sortBy) throws IOException {
                 String request = reader.withBase("requests").withFileName(requestJson).getContent();
 
-                given().log()
-                        .all(true)
-                        .headers(HeaderBuilder.defaultHeader().build())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .queryParams(
-                                "limit", limit,
-                                "offset", offset,
-                                "sortBy", sortBy
-                        )
-                        .basePath(basePath)
-                        .body(request)
-                        .when()
-                        .post("/student-audits/export")
-                        .then()
-                        .log()
-                        .all(true)
-                        .assertThat()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract()
-                        .asString();
+                postAcceptAny(
+                        "/student-audits/export",
+                        request,
+                        HttpStatus.OK.value(),
+                        "limit", limit,
+                        "offset", offset,
+                        "sortBy", sortBy
+                );
             }
         }
     }
@@ -271,26 +216,13 @@ class StudentAdapterTest extends BaseTest {
             }, delimiter = ';')
             void listStudent(String responseJson, Integer limit, Integer offset, String sortBy) throws IOException {
 
-                String jsonResponse = given().log()
-                        .all(true)
-                        .headers(HeaderBuilder.defaultHeader().build())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .queryParams(
-                                "limit", limit,
-                                "offset", offset,
-                                "sortBy", sortBy
-                        )
-                        .basePath(basePath)
-                        .when()
-                        .get("/students")
-                        .then()
-                        .log()
-                        .all(true)
-                        .assertThat()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract()
-                        .asString();
+                String jsonResponse = get(
+                        "/students",
+                        HttpStatus.OK.value(),
+                        "limit", limit,
+                        "offset", offset,
+                        "sortBy", sortBy
+                );
 
                 String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
                 assertThatJson(jsonResponse).isEqualTo(mockRes);
@@ -346,32 +278,18 @@ class StudentAdapterTest extends BaseTest {
             void searchStudent(String requestJson, String responseJson, Integer limit, Integer offset, String sortBy) throws IOException {
                 String request = reader.withBase("requests").withFileName(requestJson).getContent();
 
-                String jsonResponse = given().log()
-                        .all(true)
-                        .headers(HeaderBuilder.defaultHeader().build())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .queryParams(
-                                "limit", limit,
-                                "offset", offset,
-                                "sortBy", sortBy
-                        )
-                        .basePath(basePath)
-                        .body(request)
-                        .when()
-                        .post("/students/search")
-                        .then()
-                        .log()
-                        .all(true)
-                        .assertThat()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract()
-                        .asString();
+                String jsonResponse = post(
+                        "/students/search",
+                        request,
+                        HttpStatus.OK.value(),
+                        "limit", limit,
+                        "offset", offset,
+                        "sortBy", sortBy
+                );
 
                 String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
                 assertThatJson(jsonResponse).isEqualTo(mockRes);
             }
-
         }
     }
 
@@ -397,26 +315,11 @@ class StudentAdapterTest extends BaseTest {
             })
             void getSingleStudent(String id, String responseJson) throws IOException {
 
-                String jsonResponse = given().log()
-                        .all(true)
-                        .headers(HeaderBuilder.defaultHeader().build())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .basePath(basePath)
-                        .when()
-                        .get("/students/" + id)
-                        .then()
-                        .log()
-                        .all(true)
-                        .assertThat()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract()
-                        .asString();
+                String jsonResponse = get("/students/" + id, HttpStatus.OK.value());
 
                 String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
                 assertThatJson(jsonResponse).isEqualTo(mockRes);
             }
-
         }
 
         @Nested
@@ -433,26 +336,11 @@ class StudentAdapterTest extends BaseTest {
             })
             void getSingleStudent(String id, String responseJson) throws IOException {
 
-                String jsonResponse = given().log()
-                        .all(true)
-                        .headers(HeaderBuilder.defaultHeader().build())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .basePath(basePath)
-                        .when()
-                        .get("/students/" + id)
-                        .then()
-                        .log()
-                        .all(true)
-                        .assertThat()
-                        .statusCode(HttpStatus.NOT_FOUND.value())
-                        .extract()
-                        .asString();
+                String jsonResponse = get("/students/" + id, HttpStatus.NOT_FOUND.value());
 
                 String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
                 assertThatJson(jsonResponse).isEqualTo(mockRes);
             }
-
         }
     }
 
@@ -479,29 +367,17 @@ class StudentAdapterTest extends BaseTest {
             void updateStudent(String requestJson, String id, String responseJson) throws IOException {
                 String request = reader.withBase("requests").withFileName(requestJson).getContent();
 
-                String jsonResponse = given().log()
-                        .all(true)
-                        .headers(HeaderBuilder.defaultHeader().build())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .basePath(basePath)
-                        .body(request)
-                        .when()
-                        .put("/students/" + id)
-                        .then()
-                        .log()
-                        .all(true)
-                        .assertThat()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract()
-                        .asString();
+                String jsonResponse = put(
+                        "/students/" + id,
+                        request,
+                        HttpStatus.OK.value()
+                );
 
                 String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
                 assertThatJson(jsonResponse)
                         .whenIgnoringPaths("data.updatedAt")
                         .isEqualTo(mockRes);
             }
-
         }
 
         @Nested
@@ -519,22 +395,11 @@ class StudentAdapterTest extends BaseTest {
             void updateStudent(String requestJson, String id, String responseJson) throws IOException {
                 String request = reader.withBase("requests").withFileName(requestJson).getContent();
 
-                String jsonResponse = given().log()
-                        .all(true)
-                        .headers(HeaderBuilder.defaultHeader().build())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .basePath(basePath)
-                        .body(request)
-                        .when()
-                        .put("/students/" + id)
-                        .then()
-                        .log()
-                        .all(true)
-                        .assertThat()
-                        .statusCode(HttpStatus.BAD_REQUEST.value())
-                        .extract()
-                        .asString();
+                String jsonResponse = put(
+                        "/students/" + id,
+                        request,
+                        HttpStatus.BAD_REQUEST.value()
+                );
 
                 String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
                 assertThatJson(jsonResponse).isEqualTo(mockRes);
@@ -556,22 +421,11 @@ class StudentAdapterTest extends BaseTest {
             void updateStudent(String requestJson, String id, String responseJson) throws IOException {
                 String request = reader.withBase("requests").withFileName(requestJson).getContent();
 
-                String jsonResponse = given().log()
-                        .all(true)
-                        .headers(HeaderBuilder.defaultHeader().build())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .basePath(basePath)
-                        .body(request)
-                        .when()
-                        .put("/students/" + id)
-                        .then()
-                        .log()
-                        .all(true)
-                        .assertThat()
-                        .statusCode(HttpStatus.NOT_FOUND.value())
-                        .extract()
-                        .asString();
+                String jsonResponse = put(
+                        "/students/" + id,
+                        request,
+                        HttpStatus.NOT_FOUND.value()
+                );
 
                 String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
                 assertThatJson(jsonResponse).isEqualTo(mockRes);
@@ -601,43 +455,14 @@ class StudentAdapterTest extends BaseTest {
             })
             void deleteStudent(String id, String responseJson) throws IOException {
 
-                String jsonResponse = given().log()
-                        .all(true)
-                        .headers(HeaderBuilder.defaultHeader().build())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .basePath(basePath)
-                        .when()
-                        .delete("/students/" + id)
-                        .then()
-                        .log()
-                        .all(true)
-                        .assertThat()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract()
-                        .asString();
+                String jsonResponse = delete("/students/" + id, HttpStatus.OK.value());
 
                 String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
                 assertThatJson(jsonResponse).isEqualTo(mockRes);
 
                 // Expect Not Found
-                given().log()
-                        .all(true)
-                        .headers(HeaderBuilder.defaultHeader().build())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .basePath(basePath)
-                        .when()
-                        .get("/students/" + id)
-                        .then()
-                        .log()
-                        .all(true)
-                        .assertThat()
-                        .statusCode(HttpStatus.NOT_FOUND.value())
-                        .extract()
-                        .asString();
+                delete("/students/" + id, HttpStatus.NOT_FOUND.value());
             }
-
         }
 
         @Nested
@@ -653,21 +478,7 @@ class StudentAdapterTest extends BaseTest {
                     "id,delete_result.json",
             })
             void deleteStudent(String id, String responseJson) throws IOException {
-                String jsonResponse = given().log()
-                        .all(true)
-                        .headers(HeaderBuilder.defaultHeader().build())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .basePath(basePath)
-                        .when()
-                        .delete("/students/" + id)
-                        .then()
-                        .log()
-                        .all(true)
-                        .assertThat()
-                        .statusCode(HttpStatus.NOT_FOUND.value())
-                        .extract()
-                        .asString();
+                String jsonResponse = delete("/students/" + id, HttpStatus.NOT_FOUND.value());
 
                 String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
                 assertThatJson(jsonResponse).isEqualTo(mockRes);
@@ -698,30 +509,17 @@ class StudentAdapterTest extends BaseTest {
             void createStudent(String requestJson, String responseJson) throws IOException {
                 String request = reader.withBase("requests").withFileName(requestJson).getContent();
 
-                String jsonResponse = given().log()
-                        .all(true)
-                        .headers(HeaderBuilder.defaultHeader()
-                                .build())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .basePath(basePath)
-                        .body(request)
-                        .when()
-                        .post("/students")
-                        .then()
-                        .log()
-                        .all(true)
-                        .assertThat()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract()
-                        .asString();
+                String jsonResponse = post(
+                        "/students",
+                        request,
+                        HttpStatus.OK.value()
+                );
 
                 String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
                 assertThatJson(jsonResponse)
                         .whenIgnoringPaths("data.id", "data.createdAt", "data.updatedAt")
                         .isEqualTo(mockRes);
             }
-
         }
 
         @Nested
@@ -739,23 +537,11 @@ class StudentAdapterTest extends BaseTest {
             void createStudent(String requestJson, String responseJson) throws IOException {
                 String request = reader.withBase("requests").withFileName(requestJson).getContent();
 
-                String jsonResponse = given().log()
-                        .all(true)
-                        .headers(HeaderBuilder.defaultHeader()
-                                .build())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .basePath(basePath)
-                        .body(request)
-                        .when()
-                        .post("/students")
-                        .then()
-                        .log()
-                        .all(true)
-                        .assertThat()
-                        .statusCode(HttpStatus.BAD_REQUEST.value())
-                        .extract()
-                        .asString();
+                String jsonResponse = post(
+                        "/students",
+                        request,
+                        HttpStatus.BAD_REQUEST.value()
+                );
 
                 String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
                 assertThatJson(jsonResponse).isEqualTo(mockRes);
@@ -787,26 +573,14 @@ class StudentAdapterTest extends BaseTest {
             void exportStudent(String requestJson, Integer limit, Integer offset, String sortBy) throws IOException {
                 String request = reader.withBase("requests").withFileName(requestJson).getContent();
 
-                given().log()
-                        .all(true)
-                        .headers(HeaderBuilder.defaultHeader().build())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .queryParams(
-                                "limit", limit,
-                                "offset", offset,
-                                "sortBy", sortBy
-                        )
-                        .basePath(basePath)
-                        .body(request)
-                        .when()
-                        .post("/students/export")
-                        .then()
-                        .log()
-                        .all(true)
-                        .assertThat()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract()
-                        .asString();
+                postAcceptAny(
+                        "/students/export",
+                        request,
+                        HttpStatus.OK.value(),
+                        "limit", limit,
+                        "offset", offset,
+                        "sortBy", sortBy
+                );
             }
         }
     }
@@ -834,20 +608,12 @@ class StudentAdapterTest extends BaseTest {
             void importStudent(String requestFile, String responseJson) throws IOException {
                 File file = reader.withBase("requests").withFileName(requestFile).getResource().getFile();
 
-                String jsonResponse = given().log()
-                        .all(true)
-                        .headers(HeaderBuilder.defaultHeader().build())
-                        .basePath(basePath)
-                        .multiPart("file", file)
-                        .when()
-                        .post("/students/import")
-                        .then()
-                        .log()
-                        .all(true)
-                        .assertThat()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract()
-                        .asString();
+                String jsonResponse = postFile(
+                        "/students/import",
+                        "file",
+                        file,
+                        HttpStatus.OK.value()
+                );
 
                 String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
                 assertThatJson(jsonResponse).isEqualTo(mockRes);

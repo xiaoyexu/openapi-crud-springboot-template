@@ -13,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
@@ -21,7 +20,6 @@ import com.xuxiaoye.api.adapter.api.server.dto.LoginResponse;
 import com.xuxiaoye.api.Application;
 import com.xuxiaoye.api.BaseTest;
 
-import static io.restassured.RestAssured.given;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = Application.class)
@@ -67,22 +65,11 @@ class UserAdapterTest extends BaseTest {
             void login(String requestJson, String responseJson) throws IOException {
                 String request = reader.withBase("requests").withFileName(requestJson).getContent();
 
-                String jsonResponse = given().log()
-                        .all(true)
-                        .headers(BaseTest.HeaderBuilder.defaultHeader().build())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .basePath(basePath)
-                        .body(request)
-                        .when()
-                        .post("/user/login")
-                        .then()
-                        .log()
-                        .all(true)
-                        .assertThat()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract()
-                        .asString();
+                String jsonResponse = post(
+                        "/user/login",
+                        request,
+                        HttpStatus.OK.value()
+                );
 
                 String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
                 assertThatJson(jsonResponse)
@@ -106,29 +93,17 @@ class UserAdapterTest extends BaseTest {
             void login(String requestJson, String responseJson) throws IOException {
                 String request = reader.withBase("requests").withFileName(requestJson).getContent();
 
-                String jsonResponse = given().log()
-                        .all(true)
-                        .headers(BaseTest.HeaderBuilder.defaultHeader().build())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .basePath(basePath)
-                        .body(request)
-                        .when()
-                        .post("/user/login")
-                        .then()
-                        .log()
-                        .all(true)
-                        .assertThat()
-                        .statusCode(HttpStatus.BAD_REQUEST.value())
-                        .extract()
-                        .asString();
+                String jsonResponse = post(
+                        "/user/login",
+                        request,
+                        HttpStatus.BAD_REQUEST.value()
+                );
 
                 String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
                 assertThatJson(jsonResponse)
                         .whenIgnoringPaths("data.accessToken", "data.refreshToken")
                         .isEqualTo(mockRes);
             }
-
         }
     }
 
@@ -155,22 +130,11 @@ class UserAdapterTest extends BaseTest {
             void refresh(String userId, String responseJson) throws IOException {
                 String request = reader.withBase("requests").withEndPoint("user/login").withFileName("request.json").getContent();
 
-                String jsonResponse = given().log()
-                        .all(true)
-                        .headers(BaseTest.HeaderBuilder.defaultHeader().build())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .basePath(basePath)
-                        .body(request)
-                        .when()
-                        .post("/user/login")
-                        .then()
-                        .log()
-                        .all(true)
-                        .assertThat()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract()
-                        .asString();
+                String jsonResponse = post(
+                        "/user/login",
+                        request,
+                        HttpStatus.OK.value()
+                );
 
                 String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
                 assertThatJson(jsonResponse)
@@ -179,24 +143,15 @@ class UserAdapterTest extends BaseTest {
 
                 LoginResponse loginResponse = objectMapper.readValue(jsonResponse, LoginResponse.class);
 
-                jsonResponse = given().log()
-                        .all(true)
-                        .headers(BaseTest.HeaderBuilder.defaultHeader()
+                jsonResponse = post(
+                        "/user/refresh",
+                        HeaderBuilder.defaultHeader()
                                 .userId(userId)
                                 .authorizationToken(loginResponse.getData().getRefreshToken())
-                                .build())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .basePath(basePath)
-                        .when()
-                        .post("/user/refresh")
-                        .then()
-                        .log()
-                        .all(true)
-                        .assertThat()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract()
-                        .asString();
+                                .build(),
+                        request,
+                        HttpStatus.OK.value()
+                );
 
                 mockRes = reader.withBase("responses").withEndPoint("user/refresh").withFileName(responseJson).getContent();
                 assertThatJson(jsonResponse)
@@ -218,28 +173,17 @@ class UserAdapterTest extends BaseTest {
                     "unauthorized.json",
             })
             void refresh(String responseJson) throws IOException {
-                String jsonResponse = given().log()
-                        .all(true)
-                        .headers(BaseTest.HeaderBuilder.defaultHeader()
-                                .authorizationToken("a.b.c")
-                                .build())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .basePath(basePath)
-                        .when()
-                        .post("/user/refresh")
-                        .then()
-                        .log()
-                        .all(true)
-                        .assertThat()
-                        .statusCode(HttpStatus.UNAUTHORIZED.value())
-                        .extract()
-                        .asString();
+
+                String jsonResponse = post(
+                        "/user/refresh",
+                        HeaderBuilder.defaultHeader().authorizationToken("a.b.c").build(),
+                        "{}",
+                        HttpStatus.UNAUTHORIZED.value()
+                );
 
                 String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
                 assertThatJson(jsonResponse).isEqualTo(mockRes);
             }
-
         }
     }
 }
