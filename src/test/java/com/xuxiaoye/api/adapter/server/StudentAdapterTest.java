@@ -1,4 +1,3 @@
-
 package com.xuxiaoye.api.adapter.server;
 
 import java.io.File;
@@ -26,7 +25,6 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 @ActiveProfiles("test")
 @Log4j2
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Order(2)
 class StudentAdapterTest extends BaseTest {
 
     @LocalServerPort
@@ -605,7 +603,7 @@ class StudentAdapterTest extends BaseTest {
             @CsvSource({
                     "Students_for_import.xlsx,ok.json",
             })
-            void importStudent(String requestFile, String responseJson) throws IOException {
+            void importStudents(String requestFile, String responseJson) throws IOException {
                 File file = reader.withBase("requests").withFileName(requestFile).getResource().getFile();
 
                 String jsonResponse = postFile(
