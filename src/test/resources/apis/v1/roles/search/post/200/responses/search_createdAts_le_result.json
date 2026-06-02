@@ -1,0 +1,27 @@
+{
+  "data": {
+    "total": 3,
+    "data": [
+      {
+        "id": "RO000001",
+        "authority": "target:get,target2:update",
+        "createdBy": "system",
+        "createdAt": "2025-01-01T09:00:00",
+        "updatedBy": "user",
+        "updatedAt": "2025-02-01T09:00:00"
+      },
+      {
+        "id": "RO000002",
+        "authority": "target:get,target2:update",
+        "createdBy": "user",
+        "createdAt": "2025-01-03T10:00:00",
+        "updatedBy": "system",
+        "updatedAt": "2025-02-03T10:00:00"
+      }
+    ]
+  },
+  "status": {
+    "code": "200",
+    "message": "ok"
+  }
+}

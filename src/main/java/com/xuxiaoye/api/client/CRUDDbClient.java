@@ -3,7 +3,9 @@ package com.xuxiaoye.api.client;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -13,6 +15,9 @@ import io.micrometer.common.util.StringUtils;
 import lombok.extern.log4j.Log4j2;
 import org.dhatim.fastexcel.reader.ReadableWorkbook;
 import org.dhatim.fastexcel.reader.Row;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,24 +25,26 @@ import com.xuxiaoye.api.bean.PagedEntity;
 import com.xuxiaoye.api.bean.Pagination;
 import com.xuxiaoye.api.resp.AppResponse;
 import com.xuxiaoye.api.resp.AppStatus;
-import com.xuxiaoye.api.services.db.dto.entity.BaseEntity;
+import com.xuxiaoye.api.resp.FileResponse;
+import com.xuxiaoye.api.services.db.dto.entity.DBEntity;
 import com.xuxiaoye.api.services.interfaces.Service;
 import com.xuxiaoye.api.utils.ExcelHelper;
 import com.xuxiaoye.api.bean.RequestContext;
 
 import static com.xuxiaoye.api.constant.CommonConstants.OK;
 import static com.xuxiaoye.api.interceptors.TableAuditLogInterceptor.*;
+import static com.xuxiaoye.api.utils.DateTimeUtils.parseDateTimeToString;
 
 @Log4j2
 public abstract class CRUDDbClient<
         PresentDto,
+        SearchRequest,
         PresentPagedEntities,
-        Entity extends BaseEntity,
         PresentMapper extends com.xuxiaoye.api.adapter.server.mapper.BaseMapper<PresentDto, PresentPagedEntities, Entity>,
+        Entity extends DBEntity<String>,
         DBMapper extends BaseMapper<Entity>,
-        DBService extends ServiceImpl<DBMapper, Entity>,
-        SearchRequest
-        > extends BaseDbClient implements Service<PresentDto, PresentMapper, DBService, SearchRequest, PresentPagedEntities> {
+        DBService extends ServiceImpl<DBMapper, Entity>
+        > extends BaseDbClient implements Service<PresentDto, SearchRequest, PresentPagedEntities, PresentMapper, DBService> {
 
     protected RequestContext requestContext;
 
@@ -136,6 +143,20 @@ public abstract class CRUDDbClient<
         return query;
     }
 
+    public AppResponse<PagedEntity<PresentDto>> searchInternal(SearchRequest searchRequest, Pagination pagination) {
+        return handleDbCall(() -> {
+            Page<Entity> page = new Page<>(pagination.getOffset(), pagination.getLimit());
+            LambdaQueryWrapper<Entity> query = new LambdaQueryWrapper<>();
+
+            query = buildQuery(query, searchRequest, pagination);
+
+            Page<Entity> entityPageResult = this.getDBService().page(page, query);
+            PagedEntity<PresentDto> pagedEntities = new PagedEntity<>(page.getTotal(),
+                    this.getMapper().mapListToPresent(entityPageResult.getRecords()));
+            return AppResponse.okWithData(pagedEntities);
+        });
+    }
+
     @Override
     public AppResponse<PresentPagedEntities> search(SearchRequest searchRequest, Pagination pagination) {
         return handleDbCall(() -> {
@@ -188,5 +209,46 @@ public abstract class CRUDDbClient<
             return AppResponse.failWithStatus(AppStatus.badRequest("Failed to import id " + id + " error:" + appResponse.getStatus().getMessage()));
         }
         return AppResponse.ok();
+    }
+
+    protected String[] getHeaders() {
+        return new String[]{};
+    }
+
+    protected void writeRow(ExcelHelper.ExcelWriter excelWriter, int rowIdx, int colIdx, PresentDto presentDto) {
+
+    }
+
+    public AppResponse<FileResponse> exportData(SearchRequest searchRequest, Pagination pagination, String sheetName) {
+        AppResponse<PagedEntity<PresentDto>> pagedFilesAppResponse = this.searchInternal(searchRequest, pagination);
+        if (!pagedFilesAppResponse.isOk()) {
+            return AppResponse.failWithStatus(pagedFilesAppResponse.getStatus());
+        }
+
+        ExcelHelper.ExcelWriter excelWriter = ExcelHelper.getWriter();
+        excelWriter
+                .newWorkbook(sheetName, "1.0")
+                .newWorkSheet(sheetName);
+
+        String[] headers = getHeaders();
+        IntStream.range(0, headers.length).forEach(idx -> {
+            excelWriter.value(0, idx, headers[idx]);
+        });
+
+        List<PresentDto> pagedEntities = pagedFilesAppResponse.getData().getData();
+        IntStream.range(0, pagedEntities.size()).forEach(idx -> {
+            PresentDto presentDto = pagedEntities.get(idx);
+            writeRow(excelWriter, idx + 1, 0, presentDto);
+        });
+
+        excelWriter.finish();
+
+        FileResponse fileResponse = new FileResponse();
+        fileResponse.setFilename(String.format("%s_%s.xlsx", sheetName, parseDateTimeToString(LocalDateTime.now(), "yyyyMMdd(HH:mm:ss)")));
+        fileResponse.setContentType(MediaType.valueOf("application/vnd.ms-excel"));
+        fileResponse.setContentDisposition(ContentDisposition.parse(String.format("attachment; filename=%s", fileResponse.getFilename())));
+
+        fileResponse.setResource(new ByteArrayResource(excelWriter.getBytes()));
+        return AppResponse.okWithData(fileResponse);
     }
 }

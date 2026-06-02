@@ -1,0 +1,14 @@
+{
+  "data": {
+    "id": "VIP",
+    "authority": "new:get,new:update",
+    "createdBy": "US000001",
+    "createdAt": "2026-05-26T23:35:07.020574",
+    "updatedBy": "US000001",
+    "updatedAt": "2026-05-26T23:35:07.020582"
+  },
+  "status": {
+    "code": "200",
+    "message": "ok"
+  }
+}

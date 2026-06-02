@@ -1,0 +1,21 @@
+{
+  "data": {
+    "total": 1,
+    "data": [
+      {
+        "auditId": 2,
+        "id": "RO000002",
+        "action": "A",
+        "authority": "target:get,target2:update",
+        "createdBy": "user",
+        "createdAt": "2025-01-03T10:00:00",
+        "updatedBy": "system",
+        "updatedAt": "2025-02-03T10:00:00"
+      }
+    ]
+  },
+  "status": {
+    "code": "200",
+    "message": "ok"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "data": {
+    "id": "RO000001",
+    "authority": "new:get,new:update",
+    "createdBy": "system",
+    "createdAt": "2025-01-01T09:00:00",
+    "updatedBy": "US000001",
+    "updatedAt": "2026-05-26T23:31:50.043172"
+  },
+  "status": {
+    "code": "200",
+    "message": "ok"
+  }
+}

@@ -65,6 +65,16 @@ parameters:
     required: true
     in: path
     type: string
+  Role-Id:
+    name: role-id
+    required: true
+    in: path
+    type: string
+  Role-Audit-Id:
+    name: role-audit-id
+    required: true
+    in: path
+    type: string
 paths:
   /ping:
     get:
@@ -595,6 +605,390 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/ErrorResponse'
+  # role
+  /roles:
+    post:
+      tags:
+        - roles
+      description: Create Single Role
+      operationId: createSingleRole
+      parameters:
+        - $ref: '#/parameters/Access-Token'
+        - in: body
+          name: createRoleRequest
+          required: true
+          schema:
+            $ref: '#/definitions/CreateRoleRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/CreateRoleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /roles/search:
+    post:
+      tags:
+        - roles
+      description: Search Roles
+      operationId: searchRoles
+      parameters:
+        - $ref: '#/parameters/Access-Token'
+        - $ref: '#/parameters/Limit'
+        - $ref: '#/parameters/Offset'
+        - $ref: '#/parameters/SortBy'
+        - in: body
+          name: searchRoleRequest
+          required: true
+          schema:
+            $ref: '#/definitions/SearchRoleRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/SearchRoleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /roles/{role-id}:
+    get:
+      tags:
+        - roles
+      description: Get Single Role
+      operationId: getSingleRole
+      parameters:
+        - $ref: '#/parameters/Access-Token'
+        - $ref: '#/parameters/Role-Id'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/GetRoleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+    put:
+      tags:
+        - roles
+      description: Update Single Role
+      operationId: updateSingleRole
+      parameters:
+        - $ref: '#/parameters/Access-Token'
+        - $ref: '#/parameters/Role-Id'
+        - in: body
+          name: updateRoleRequest
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateRoleRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UpdateRoleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+    delete:
+      tags:
+        - roles
+      description: Delete Single Role
+      operationId: deleteSingleRole
+      parameters:
+        - $ref: '#/parameters/Access-Token'
+        - $ref: '#/parameters/Role-Id'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/DeleteRoleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /roles/export:
+    post:
+      tags:
+        - roles
+      description: Export Roles
+      operationId: exportRoles
+      parameters:
+        - $ref: '#/parameters/Access-Token'
+        - $ref: '#/parameters/Limit'
+        - $ref: '#/parameters/Offset'
+        - $ref: '#/parameters/SortBy'
+        - in: body
+          name: searchRoleRequest
+          required: true
+          schema:
+            $ref: '#/definitions/SearchRoleRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+            format: binary
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /roles/import:
+    post:
+      tags:
+        - roles
+      description: Import Roles
+      operationId: importRoles
+      consumes:
+        - multipart/form-data
+      parameters:
+        - $ref: '#/parameters/Access-Token'
+        - in: formData
+          name: file
+          type: file
+          required: true
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ImportRoleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  # roleAudit
+  /role-audits/search:
+    post:
+      tags:
+        - role-audits
+      description: Search RoleAudits
+      operationId: searchRoleAudits
+      parameters:
+        - $ref: '#/parameters/Access-Token'
+        - $ref: '#/parameters/Limit'
+        - $ref: '#/parameters/Offset'
+        - $ref: '#/parameters/SortBy'
+        - in: body
+          name: searchRoleAuditRequest
+          required: true
+          schema:
+            $ref: '#/definitions/SearchRoleAuditRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/SearchRoleAuditResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /role-audits/{role-audit-id}:
+    get:
+      tags:
+        - role-audits
+      description: Get Single RoleAudit
+      operationId: getSingleRoleAudit
+      parameters:
+        - $ref: '#/parameters/Access-Token'
+        - $ref: '#/parameters/Role-Audit-Id'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/GetRoleAuditResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /role-audits/export:
+    post:
+      tags:
+        - role-audits
+      description: Export RoleAudits
+      operationId: exportRoleAudits
+      parameters:
+        - $ref: '#/parameters/Access-Token'
+        - $ref: '#/parameters/Limit'
+        - $ref: '#/parameters/Offset'
+        - $ref: '#/parameters/SortBy'
+        - in: body
+          name: searchRoleAuditRequest
+          required: true
+          schema:
+            $ref: '#/definitions/SearchRoleAuditRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+            format: binary
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
 definitions:
   Exception:
     type: object
@@ -807,5 +1201,141 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/StudentAudit'
+      status:
+        $ref: '#/definitions/ResponseStatus'
+  # role
+  PagedRoles:
+    properties:
+      total:
+        type: integer
+        format: int64
+      data:
+        $ref: '#/definitions/Roles'
+  Roles:
+    type: array
+    items:
+      $ref: '#/definitions/Role'
+  Role:
+    properties:
+      id:
+        type: string
+      authority:
+        type: string
+      createdBy:
+        type: string
+      createdAt:
+        type: string
+      updatedBy:
+        type: string
+      updatedAt:
+        type: string
+  CreateRoleRequest:
+    $ref: '#/definitions/Role'
+  CreateRoleResponse:
+    properties:
+      data:
+        $ref: '#/definitions/Role'
+      status:
+        $ref: '#/definitions/ResponseStatus'
+  SearchRoleRequest:
+    type: object
+    properties:
+      keyword:
+        type: string
+      ids:
+        $ref: '#/definitions/StringList'
+      createdAts:
+        $ref: '#/definitions/StringList'
+      updatedAts:
+        $ref: '#/definitions/StringList'
+      createdBys:
+        $ref: '#/definitions/StringList'
+      updatedBys:
+        $ref: '#/definitions/StringList'
+  SearchRoleResponse:
+    properties:
+      data:
+        $ref: '#/definitions/PagedRoles'
+      status:
+        $ref: '#/definitions/ResponseStatus'
+  GetRoleResponse:
+    properties:
+      data:
+        $ref: '#/definitions/Role'
+      status:
+        $ref: '#/definitions/ResponseStatus'
+  UpdateRoleRequest:
+    $ref: '#/definitions/Role'
+  UpdateRoleResponse:
+    properties:
+      data:
+        $ref: '#/definitions/Role'
+      status:
+        $ref: '#/definitions/ResponseStatus'
+  DeleteRoleResponse:
+    properties:
+      data:
+        type: string
+      status:
+        $ref: '#/definitions/ResponseStatus'
+  ImportRoleResponse:
+    properties:
+      data:
+        type: string
+      status:
+        $ref: '#/definitions/ResponseStatus'
+  # role audit
+  PagedRoleAudits:
+    properties:
+      total:
+        type: integer
+        format: int64
+      data:
+        $ref: '#/definitions/RoleAudits'
+  RoleAudits:
+    type: array
+    items:
+      $ref: '#/definitions/RoleAudit'
+  RoleAudit:
+    properties:
+      auditId:
+        type: number
+      id:
+        type: string
+      action:
+        type: string
+      authority:
+        type: string
+      createdBy:
+        type: string
+      createdAt:
+        type: string
+      updatedBy:
+        type: string
+      updatedAt:
+        type: string
+  SearchRoleAuditRequest:
+    type: object
+    properties:
+      ids:
+        $ref: '#/definitions/StringList'
+      createdAts:
+        $ref: '#/definitions/StringList'
+      updatedAts:
+        $ref: '#/definitions/StringList'
+      createdBys:
+        $ref: '#/definitions/StringList'
+      updatedBys:
+        $ref: '#/definitions/StringList'
+  SearchRoleAuditResponse:
+    properties:
+      data:
+        $ref: '#/definitions/PagedRoleAudits'
+      status:
+        $ref: '#/definitions/ResponseStatus'
+  GetRoleAuditResponse:
+    properties:
+      data:
+        $ref: '#/definitions/RoleAudit'
       status:
         $ref: '#/definitions/ResponseStatus'

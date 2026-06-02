@@ -5,8 +5,6 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.xuxiaoye.api.client.CRUDDbClient;
-import com.xuxiaoye.api.services.db.mapper.StudentDBMapper;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.dhatim.fastexcel.reader.*;
@@ -20,9 +18,11 @@ import com.xuxiaoye.api.adapter.api.server.dto.SearchStudentRequest;
 import com.xuxiaoye.api.adapter.server.mapper.StudentMapper;
 import com.xuxiaoye.api.bean.Pagination;
 import com.xuxiaoye.api.bean.RequestContext;
+import com.xuxiaoye.api.client.CRUDDbClient;
 import com.xuxiaoye.api.resp.AppResponse;
 import com.xuxiaoye.api.resp.AppStatus;
 import com.xuxiaoye.api.resp.FileResponse;
+import com.xuxiaoye.api.services.db.mapper.StudentDBMapper;
 import com.xuxiaoye.api.services.db.StudentDBService;
 import com.xuxiaoye.api.services.interfaces.StudentService;
 import com.xuxiaoye.api.utils.ExcelHelper;
@@ -33,12 +33,12 @@ import static com.xuxiaoye.api.utils.DateTimeUtils.*;
 @Log4j2
 public class StudentServiceImpl extends CRUDDbClient<
         Student,
+        SearchStudentRequest,
         PagedStudents,
-        com.xuxiaoye.api.services.db.dto.entity.Student,
         StudentMapper,
+        com.xuxiaoye.api.services.db.dto.entity.Student,
         StudentDBMapper,
-        StudentDBService,
-        SearchStudentRequest
+        StudentDBService
         > implements StudentService {
 
     private final StudentMapper studentMapper;

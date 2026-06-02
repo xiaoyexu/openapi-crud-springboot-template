@@ -8,19 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.access.PermissionEvaluator;
 
+import com.xuxiaoye.api.adapter.server.mapper.RoleAuditMapper;
+import com.xuxiaoye.api.adapter.server.mapper.RoleMapper;
 import com.xuxiaoye.api.adapter.server.mapper.StudentAuditMapper;
 import com.xuxiaoye.api.adapter.server.mapper.StudentMapper;
 import com.xuxiaoye.api.bean.RequestContext;
-import com.xuxiaoye.api.services.db.StudentAuditDBService;
-import com.xuxiaoye.api.services.db.StudentDBService;
-import com.xuxiaoye.api.services.db.UserDBService;
-import com.xuxiaoye.api.services.interfaces.StudentAuditService;
-import com.xuxiaoye.api.services.interfaces.StudentService;
-import com.xuxiaoye.api.services.interfaces.UserService;
-import com.xuxiaoye.api.services.PermissionServiceImpl;
-import com.xuxiaoye.api.services.StudentAuditServiceImpl;
-import com.xuxiaoye.api.services.StudentServiceImpl;
-import com.xuxiaoye.api.services.UserServiceImpl;
+import com.xuxiaoye.api.services.*;
+import com.xuxiaoye.api.services.db.*;
+import com.xuxiaoye.api.services.interfaces.*;
 
 public class ServiceConfig {
 
@@ -34,9 +29,13 @@ public class ServiceConfig {
 
     @Bean("P")
     PermissionEvaluator permissionEvaluator(
-            @Autowired StudentDBService studentDBService
+            @Autowired StudentDBService studentDBService,
+            @Autowired RoleDBService roleDBService
     ) {
-        return new PermissionServiceImpl(studentDBService);
+        return new PermissionServiceImpl(
+                studentDBService,
+                roleDBService
+        );
     }
 
     @Bean
@@ -79,4 +78,37 @@ public class ServiceConfig {
     StudentAuditDBService studentAuditDBService() {
         return new StudentAuditDBService();
     }
+
+    @Bean
+    RoleDBService roleDBService() {
+        return new RoleDBService();
+    }
+
+    @Bean
+    RoleService roleService(
+            @Autowired RequestContext requestContext,
+            @Autowired RoleMapper roleMapper,
+            @Autowired RoleDBService roleDBService
+    ) {
+        return new RoleServiceImpl(requestContext, roleMapper, roleDBService);
+    }
+
+    @Bean
+    RoleAuditDBService roleAuditDBService() {
+        return new RoleAuditDBService();
+    }
+
+    @Bean
+    RoleAuditService roleAuditService(
+            @Autowired RequestContext requestContext,
+            @Autowired RoleAuditMapper roleAuditMapper,
+            @Autowired RoleAuditDBService roleAuditDBService
+    ) {
+        return new RoleAuditServiceImpl(
+                requestContext,
+                roleAuditMapper,
+                roleAuditDBService
+        );
+    }
+
 }

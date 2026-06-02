@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
-import com.xuxiaoye.api.services.db.dto.entity.StudentAudit;
+import com.xuxiaoye.api.services.db.dto.entity.*;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface EntityMapper {
@@ -16,4 +16,6 @@ public interface EntityMapper {
     @Mapping(target = "updatedBy", source = "updatedBy")
     @Mapping(target = "updatedAt", source = "updatedAt")
     StudentAudit map(com.xuxiaoye.api.services.db.dto.entity.Student student);
+
+    RoleAudit map(Role role);
 }

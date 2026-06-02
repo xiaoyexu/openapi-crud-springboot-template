@@ -1,6 +1,5 @@
---CREATE SCHEMA IF NOT EXISTS DEV;
---SET SCHEMA DEV;
-
+-- CREATE SCHEMA IF NOT EXISTS DEV;
+-- SET SCHEMA DEV;
 
 DROP TABLE IF EXISTS USERS;
 CREATE TABLE USERS(
@@ -76,3 +75,54 @@ INSERT INTO STUDENTS_AUDIT(ACTION,ID,NAME,AGE,BIRTHDAY,HEIGHT,CREATED_BY,CREATED
 ('A', 'ST000006','Name 6', 23, '2002-09-13', 178.3,  'system', '2025-02-01 14:00:00',       'user','2025-03-01 14:00:00'),
 -- for biz logic test
 ('A', 'ST000007','Name 7', 25, '2002-09-13', 177,    'US000002', '2025-02-01 14:00:00',  'US000002','2025-03-01 14:00:00');
+
+--
+DROP TABLE IF EXISTS ROLES;
+CREATE TABLE ROLES(
+  ID                      VARCHAR(50) NOT NULL,
+  CONSTRAINT PK_ROLES PRIMARY KEY (ID),
+  AUTHORITY               TEXT DEFAULT NULL,
+  CREATED_BY              VARCHAR(200) NOT NULL,
+  CREATED_AT              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UPDATED_BY              VARCHAR(200) NOT NULL,
+  UPDATED_AT              TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Make sure to create unique value for each column for filter testing
+INSERT INTO ROLES(ID,AUTHORITY,CREATED_BY,CREATED_AT,UPDATED_BY,UPDATED_AT) VALUES
+('RO000001', 'target:get,target2:update', 'system', '2025-01-01 09:00:00',  'user','2025-02-01 09:00:00'),
+('RO000002', 'target:get,target2:update',   'user', '2025-01-03 10:00:00','system','2025-02-03 10:00:00'),
+('RO000003', 'target:get,target2:update', 'system', '2025-02-02 11:00:00',  'user','2025-03-02 11:00:00'),
+('RO000004', 'target:get,target2:update',   'user', '2025-01-02 12:00:00','system','2025-02-02 12:00:00'),
+('RO000005', 'target:get,target2:update',   'user', '2025-02-03 13:00:00','system','2025-03-03 13:00:00'),
+('RO000006', 'target:get,target2:update', 'system', '2025-02-01 14:00:00',  'user','2025-03-01 14:00:00'),
+--
+('ADMIN', '*:*',                                                                                  'system', '2025-02-01 14:00:00',  'user','2025-03-01 14:00:00'),
+('MEMBER','user:refreshToken,student:search,student:get,studentAudit:search,studentAudit:get',    'system', '2025-02-01 14:00:00',  'user','2025-03-01 14:00:00'),
+('GUEST', 'student:search,student:get,user:login',                                                      'system', '2025-02-01 14:00:00',  'user','2025-03-01 14:00:00');
+
+DROP TABLE IF EXISTS ROLES_AUDIT;
+CREATE TABLE ROLES_AUDIT(
+  AUDIT_ID                BIGINT AUTO_INCREMENT,
+  CONSTRAINT PK_ROLES_AUDIT PRIMARY KEY (AUDIT_ID),
+  ACTION                  VARCHAR(1) NOT NULL,
+  ID                      VARCHAR(50) NOT NULL,
+  AUTHORITY               TEXT DEFAULT NULL,
+  CREATED_BY              VARCHAR(200) NOT NULL,
+  CREATED_AT              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UPDATED_BY              VARCHAR(200) NOT NULL,
+  UPDATED_AT              TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Make sure to create unique value for each column for filter testing
+INSERT INTO ROLES_AUDIT(ACTION,ID,AUTHORITY,CREATED_BY,CREATED_AT,UPDATED_BY,UPDATED_AT) VALUES
+  ('A','RO000001', 'target:get,target2:update', 'system', '2025-01-01 09:00:00',  'user','2025-02-01 09:00:00'),
+  ('A','RO000002', 'target:get,target2:update',   'user', '2025-01-03 10:00:00','system','2025-02-03 10:00:00'),
+  ('A','RO000003', 'target:get,target2:update', 'system', '2025-02-02 11:00:00',  'user','2025-03-02 11:00:00'),
+  ('A','RO000004', 'target:get,target2:update',   'user', '2025-01-02 12:00:00','system','2025-02-02 12:00:00'),
+  ('A','RO000005', 'target:get,target2:update',   'user', '2025-02-03 13:00:00','system','2025-03-03 13:00:00'),
+  ('A','RO000006', 'target:get,target2:update', 'system', '2025-02-01 14:00:00',  'user','2025-03-01 14:00:00'),
+  --
+  ('A','ADMIN', '*:*',                                                                        'system', '2025-02-01 14:00:00',  'user','2025-03-01 14:00:00'),
+  ('A','MEMBER', 'user:refreshToken,student:search,student:get,studentAudit:search,studentAudit:get', 'system', '2025-02-01 14:00:00',  'user','2025-03-01 14:00:00'),
+  ('A','GUEST', 'student:search,student:get,user:login',                                                       'system', '2025-02-01 14:00:00',  'user','2025-03-01 14:00:00');

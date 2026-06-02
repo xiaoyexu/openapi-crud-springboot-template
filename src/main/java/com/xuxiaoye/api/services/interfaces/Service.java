@@ -4,8 +4,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.xuxiaoye.api.bean.Pagination;
 import com.xuxiaoye.api.resp.AppResponse;
+import com.xuxiaoye.api.resp.FileResponse;
 
-public interface Service<PresentDto, PresentMapper, DBService, SearchRequest, PresentPagedEntities> {
+public interface Service<PresentDto, SearchRequest, PresentPagedEntities, PresentMapper, DBService> {
     PresentMapper getMapper();
 
     DBService getDBService();
@@ -21,4 +22,6 @@ public interface Service<PresentDto, PresentMapper, DBService, SearchRequest, Pr
     AppResponse<PresentPagedEntities> search(SearchRequest searchRequest, Pagination pagination);
 
     AppResponse<String> importData(MultipartFile file);
+
+    AppResponse<FileResponse> exportData(SearchRequest searchRequest, Pagination pagination, String sheetName);
 }

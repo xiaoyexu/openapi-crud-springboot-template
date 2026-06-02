@@ -1,0 +1,27 @@
+{
+  "data": {
+    "total": 8,
+    "data": [
+      {
+        "id": "GUEST",
+        "authority": "student:search,student:get,user:login",
+        "createdBy": "system",
+        "createdAt": "2025-02-01T14:00:00",
+        "updatedBy": "user",
+        "updatedAt": "2025-03-01T14:00:00"
+      },
+      {
+        "id": "MEMBER",
+        "authority": "user:refreshToken,student:search,student:get,studentAudit:search,studentAudit:get",
+        "createdBy": "system",
+        "createdAt": "2025-02-01T14:00:00",
+        "updatedBy": "user",
+        "updatedAt": "2025-03-01T14:00:00"
+      }
+    ]
+  },
+  "status": {
+    "code": "200",
+    "message": "ok"
+  }
+}

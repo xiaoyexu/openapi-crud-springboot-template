@@ -1,7 +1,5 @@
 package com.xuxiaoye.api.services.db.dto.mapper;
 
-import com.xuxiaoye.api.Application;
-import com.xuxiaoye.api.services.db.dto.entity.Student;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -9,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner;
 import org.springframework.test.context.ActiveProfiles;
+
+import com.xuxiaoye.api.Application;
+import com.xuxiaoye.api.services.db.dto.entity.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,5 +25,7 @@ class EntityMapperTest {
     @Test
     void testMapperWithNullValue() {
         assertThat(entityMapper.map((Student) null)).isNull();
+
+        assertThat(entityMapper.map((Role) null)).isNull();
     }
 }

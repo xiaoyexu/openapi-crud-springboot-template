@@ -190,7 +190,7 @@ public abstract class BaseTest {
             builder.forwardedFor = "192.168.0.10";
             builder.acceptLanguage = "zh_HK";
             builder.deviceId = "12345678";
-            builder.userId = "US000002";
+            builder.userId = "US000001";
             return builder;
         }
 

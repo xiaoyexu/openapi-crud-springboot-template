@@ -3,13 +3,9 @@ package com.xuxiaoye.api.conf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 
-import com.xuxiaoye.api.adapter.server.UserAdapter;
-import com.xuxiaoye.api.services.interfaces.StudentAuditService;
-import com.xuxiaoye.api.services.interfaces.StudentService;
-import com.xuxiaoye.api.services.interfaces.UserService;
-import com.xuxiaoye.api.adapter.server.StudentAdapter;
+import com.xuxiaoye.api.adapter.server.*;
 import com.xuxiaoye.api.adapter.server.mapper.CommonMapper;
-import com.xuxiaoye.api.adapter.server.StudentAuditAdapter;
+import com.xuxiaoye.api.services.interfaces.*;
 
 public class AdapterConfig {
     @Bean
@@ -34,5 +30,21 @@ public class AdapterConfig {
             @Autowired StudentAuditService studentAuditService
     ) {
         return new StudentAuditAdapter(commonMapper, studentAuditService);
+    }
+
+    @Bean
+    RoleAdapter roleAdapter(
+            @Autowired CommonMapper commonMapper,
+            @Autowired RoleService roleService
+    ) {
+        return new RoleAdapter(commonMapper, roleService);
+    }
+
+    @Bean
+    RoleAuditAdapter roleAuditAdapter(
+            @Autowired CommonMapper commonMapper,
+            @Autowired RoleAuditService roleAuditService
+    ) {
+        return new RoleAuditAdapter(commonMapper, roleAuditService);
     }
 }
