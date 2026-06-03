@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SavedRequest.Cache">
+    <option name="cache">
+      <map>
+        <entry key="Requests" value="[{&quot;id&quot;:&quot;17804654330282l72&quot;, &quot;parentId&quot;:&quot;0&quot;, &quot;name&quot;:&quot;@/user/refresh&quot;, &quot;desc&quot;:&quot;&quot;, &quot;sort&quot;:&quot;0&quot;, &quot;child&quot;:[], &quot;icon&quot;:&quot;/icons/tool/request.svg&quot;, &quot;type&quot;:&quot;REQUEST&quot;, &quot;method&quot;:&quot;POST&quot;, &quot;url&quot;:&quot;@/user/refresh&quot;, &quot;savedRequestEnvInfo&quot;:{&quot;env&quot;:&quot;local&quot;, &quot;module&quot;:&quot;openapi-crud-springboot-template&quot;, &quot;host&quot;:&quot;http://localhost&quot;, &quot;port&quot;:&quot;6666&quot;, &quot;contextPath&quot;:&quot;/api/v1&quot;}, &quot;savedRequestParamInfo&quot;:{&quot;params&quot;:&quot;[{\&quot;datum1\&quot;:\&quot;openapi.ArchitectureDojo.base-path\&quot;,\&quot;datum2\&quot;:\&quot;/springboot-dev/hello-service/v1\&quot;,\&quot;datum0\&quot;:true,\&quot;datum3\&quot;:\&quot;\&quot;}]&quot;, &quot;authorization&quot;:&quot;{\&quot;token\&quot;:\&quot;\&quot;,\&quot;password\&quot;:\&quot;\&quot;,\&quot;selectType\&quot;:\&quot;No Auth\&quot;,\&quot;username\&quot;:\&quot;\&quot;}&quot;, &quot;headers&quot;:&quot;[{\&quot;datum1\&quot;:\&quot;Authorization\&quot;,\&quot;datum2\&quot;:\&quot;String\&quot;,\&quot;datum0\&quot;:true,\&quot;datum3\&quot;:\&quot;\&quot;},{\&quot;datum1\&quot;:\&quot;x-trace-id\&quot;,\&quot;datum2\&quot;:\&quot;{{$randomInt}}\&quot;,\&quot;datum0\&quot;:true,\&quot;datum3\&quot;:\&quot;\&quot;}]&quot;, &quot;body&quot;:[{&quot;index&quot;:&quot;0&quot;, &quot;select&quot;:&quot;true&quot;, &quot;params&quot;:&quot;&quot;}, {&quot;index&quot;:&quot;1&quot;, &quot;select&quot;:&quot;false&quot;, &quot;params&quot;:&quot;[]&quot;}, {&quot;index&quot;:&quot;2&quot;, &quot;select&quot;:&quot;false&quot;, &quot;params&quot;:&quot;[]&quot;}, {&quot;index&quot;:&quot;3&quot;, &quot;select&quot;:&quot;false&quot;, &quot;params&quot;:&quot;&quot;}]}}]" />
+      </map>
+    </option>
+  </component>
+</project>

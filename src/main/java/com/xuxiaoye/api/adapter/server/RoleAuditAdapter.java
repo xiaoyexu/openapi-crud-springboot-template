@@ -67,10 +67,7 @@ public class RoleAuditAdapter implements RoleAuditsApiDelegate {
             Integer offset,
             String sortBy
     ) {
-        AppResponse<FileResponse> resourceAppResponse = this.roleAuditService.exportData(searchRoleAuditRequest, Pagination.of(offset, limit, sortBy), "RoleAudits");
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(resourceAppResponse.getData().getContentType());
-        headers.setContentDisposition(resourceAppResponse.getData().getContentDisposition());
-        return new ResponseEntity<>(resourceAppResponse.getData().getResource(), headers, HttpStatus.OK);
+        return this.roleAuditService.exportData(searchRoleAuditRequest, Pagination.of(offset, limit, sortBy), "RoleAudits")
+                .toFileResponseEntity();
     }
 }

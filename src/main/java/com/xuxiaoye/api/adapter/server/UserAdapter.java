@@ -1,5 +1,8 @@
 package com.xuxiaoye.api.adapter.server;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 
 import com.xuxiaoye.api.adapter.api.server.UserApiDelegate;
@@ -9,6 +12,10 @@ import com.xuxiaoye.api.adapter.api.server.dto.RefreshTokenResponse;
 import com.xuxiaoye.api.adapter.server.mapper.CommonMapper;
 import com.xuxiaoye.api.resp.AppStatus;
 import com.xuxiaoye.api.services.interfaces.UserService;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.util.Arrays;
 
 public class UserAdapter implements UserApiDelegate {
 
@@ -29,7 +36,16 @@ public class UserAdapter implements UserApiDelegate {
     ) {
         return this.userService.login(loginRequest).toResponseEntity(
                 data -> LoginResponse.builder().data(data).status(this.commonMapper.map(AppStatus.ok())).build(),
-                status -> LoginResponse.builder().status(this.commonMapper.map(status)).build()
+                status -> LoginResponse.builder().status(this.commonMapper.map(status)).build(),
+                (data) -> {
+                    String setCookie = String.format("refresh_token=%s; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=%d",
+                            data.getRefreshToken(),
+                            7 * 24 * 60 * 60
+                    );
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.add("Set-Cookie", setCookie);
+                    return headers;
+                }
         );
     }
 
@@ -37,9 +53,23 @@ public class UserAdapter implements UserApiDelegate {
     public ResponseEntity<RefreshTokenResponse> refreshToken(
             String authorization
     ) {
-        return this.userService.refresh(authorization).toResponseEntity(
+        String refreshToken = extractRefreshToken();
+        return this.userService.refresh(refreshToken).toResponseEntity(
                 data -> RefreshTokenResponse.builder().data(data).status(this.commonMapper.map(AppStatus.ok())).build(),
                 status -> RefreshTokenResponse.builder().status(this.commonMapper.map(status)).build()
         );
+    }
+
+    private static String extractRefreshToken() {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        
+        HttpServletRequest request = attributes.getRequest();
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) return null;
+
+        return Arrays.stream(cookies).filter(cookie ->
+                        "refresh_token".equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst().orElse("");
     }
 }

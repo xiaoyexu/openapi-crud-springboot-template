@@ -1,12 +1,10 @@
 package com.xuxiaoye.api.interceptors;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
@@ -16,6 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.xuxiaoye.api.bean.RequestContext;
@@ -112,6 +111,7 @@ public class JWTInterceptor implements HandlerInterceptor {
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         this.requestContext.setXUserId(userId);
+        this.requestContext.setAuthorization(authorization);
         return true;
     }
 }

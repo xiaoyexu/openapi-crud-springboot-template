@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.IntStream;
 
+import io.restassured.http.Cookies;
 import io.restassured.http.Header;
 import io.restassured.http.Headers;
 import io.restassured.specification.RequestSpecification;
@@ -275,7 +276,17 @@ public abstract class BaseTest {
     }
 
     protected String post(String urlPath, Headers headers, String requestBody, int httpStatus, Object... queryParams) {
-        RequestSpecification spec = given().log()
+        return post(urlPath, headers, null, requestBody, httpStatus, queryParams);
+    }
+
+    protected String post(String urlPath, Headers headers, Cookies cookies, String requestBody, int httpStatus, Object... queryParams) {
+        RequestSpecification spec = given();
+
+        if (cookies != null) {
+            spec.cookies(cookies);
+        }
+
+        spec.log()
                 .all(true)
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

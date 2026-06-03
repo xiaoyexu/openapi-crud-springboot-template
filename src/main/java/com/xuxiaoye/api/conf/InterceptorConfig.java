@@ -41,6 +41,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
                 .order(2)
                 .excludePathPatterns(Arrays.asList(
                         "/user/login",
+                        "/user/refresh",
                         "/api-docs/**",
                         "/swagger*/**"
                 ));

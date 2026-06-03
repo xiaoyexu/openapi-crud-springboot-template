@@ -108,11 +108,8 @@ public class RoleAdapter implements RolesApiDelegate {
             Integer offset,
             String sortBy
     ) {
-        AppResponse<FileResponse> resourceAppResponse = this.roleService.exportData(searchRoleRequest, Pagination.of(offset, limit, sortBy), "Roles");
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(resourceAppResponse.getData().getContentType());
-        headers.setContentDisposition(resourceAppResponse.getData().getContentDisposition());
-        return new ResponseEntity<>(resourceAppResponse.getData().getResource(), headers, HttpStatus.OK);
+        return this.roleService.exportData(searchRoleRequest, Pagination.of(offset, limit, sortBy), "Roles")
+                .toFileResponseEntity();
     }
 
     @Override

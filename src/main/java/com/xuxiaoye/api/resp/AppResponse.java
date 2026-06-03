@@ -8,6 +8,7 @@ import java.util.function.UnaryOperator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -20,19 +21,37 @@ public class AppResponse<T> implements Serializable {
     private AppStatus status;
 
     public <R> ResponseEntity<R> toResponseEntity(Function<T, R> okFunc, Function<AppStatus, R> errorFunc) {
+        return toResponseEntity(okFunc, errorFunc, null);
+    }
+
+    public <R> ResponseEntity<R> toResponseEntity(Function<T, R> okFunc, Function<AppStatus, R> errorFunc, Function<T, HttpHeaders> httpHeadersFunc) {
+        HttpHeaders headers = null;
         if (status.isOk()) {
             R result = okFunc.apply(this.data);
-            return new ResponseEntity<>(result, HttpStatus.OK);
+            headers = httpHeadersFunc == null ? null : httpHeadersFunc.apply(this.data);
+            return new ResponseEntity<>(result, headers, HttpStatus.OK);
         }
         R result = errorFunc.apply(this.status);
+
         return switch (status.getCode()) {
-            case "400" -> new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            case "401" -> new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
-            case "403" -> new ResponseEntity<>(result, HttpStatus.FORBIDDEN);
-            case "404" -> new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
-            case "503" -> new ResponseEntity<>(result, HttpStatus.SERVICE_UNAVAILABLE);
-            default -> new ResponseEntity<>(result, HttpStatus.INTERNAL_SERVER_ERROR);
+            case "400" -> new ResponseEntity<>(result, headers, HttpStatus.BAD_REQUEST);
+            case "401" -> new ResponseEntity<>(result, headers, HttpStatus.UNAUTHORIZED);
+            case "403" -> new ResponseEntity<>(result, headers, HttpStatus.FORBIDDEN);
+            case "404" -> new ResponseEntity<>(result, headers, HttpStatus.NOT_FOUND);
+            case "503" -> new ResponseEntity<>(result, headers, HttpStatus.SERVICE_UNAVAILABLE);
+            default -> new ResponseEntity<>(result, headers, HttpStatus.INTERNAL_SERVER_ERROR);
         };
+    }
+
+    public ResponseEntity<org.springframework.core.io.Resource> toFileResponseEntity() {
+        return this.toResponseEntity(data -> ((FileResponse) data).getResource(),
+                status -> null,
+                data -> {
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.setContentType(((FileResponse) data).getContentType());
+                    headers.setContentDisposition(((FileResponse) data).getContentDisposition());
+                    return headers;
+                });
     }
 
     public static <D> AppResponse<D> okWithData(D data) {

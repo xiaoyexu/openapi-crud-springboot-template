@@ -67,10 +67,7 @@ public class StudentAuditAdapter implements StudentAuditsApiDelegate {
             Integer offset,
             String sortBy
     ) {
-        AppResponse<FileResponse> resourceAppResponse = this.studentAuditService.exportStudentAudits(searchStudentAuditRequest, Pagination.of(offset, limit, sortBy));
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(resourceAppResponse.getData().getContentType());
-        headers.setContentDisposition(resourceAppResponse.getData().getContentDisposition());
-        return new ResponseEntity<>(resourceAppResponse.getData().getResource(), headers, HttpStatus.OK);
+        return this.studentAuditService.exportStudentAudits(searchStudentAuditRequest, Pagination.of(offset, limit, sortBy))
+                .toFileResponseEntity();
     }
 }

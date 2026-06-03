@@ -32,3 +32,4 @@ nb-configuration.xml
 /logs/
 .42c/
 .run/
+out/

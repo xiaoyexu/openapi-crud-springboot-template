@@ -117,11 +117,8 @@ public class StudentAdapter implements StudentsApiDelegate {
             Integer offset,
             String sortBy
     ) {
-        AppResponse<FileResponse> resourceAppResponse = this.studentService.exportStudents(searchStudentRequest, Pagination.of(offset, limit, sortBy));
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(resourceAppResponse.getData().getContentType());
-        headers.setContentDisposition(resourceAppResponse.getData().getContentDisposition());
-        return new ResponseEntity<>(resourceAppResponse.getData().getResource(), headers, HttpStatus.OK);
+        return this.studentService.exportStudents(searchStudentRequest, Pagination.of(offset, limit, sortBy))
+                .toFileResponseEntity();
     }
 
     @Override

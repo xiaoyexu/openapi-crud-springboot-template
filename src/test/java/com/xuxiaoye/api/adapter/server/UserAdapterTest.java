@@ -1,9 +1,12 @@
 package com.xuxiaoye.api.adapter.server;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
+import io.restassured.http.Cookie;
+import io.restassured.http.Cookies;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -128,7 +131,9 @@ class UserAdapterTest extends BaseTest {
                     "US000003,result.json",
             })
             void refresh(String userId, String responseJson) throws IOException {
-                String request = reader.withBase("requests").withEndPoint("user/login").withFileName("request.json").getContent();
+                String request = reader.withBase("requests")
+                        .withEndPoint("user/login")
+                        .withFileName("request.json").getContent();
 
                 String jsonResponse = post(
                         "/user/login",
@@ -143,12 +148,17 @@ class UserAdapterTest extends BaseTest {
 
                 LoginResponse loginResponse = objectMapper.readValue(jsonResponse, LoginResponse.class);
 
+                Cookie cookie = new Cookie.Builder(
+                        "refresh_token", loginResponse.getData().getRefreshToken()
+                ).build();
+
                 jsonResponse = post(
                         "/user/refresh",
                         HeaderBuilder.defaultHeader()
                                 .userId(userId)
-                                .authorizationToken(loginResponse.getData().getRefreshToken())
+//                                .authorizationToken(loginResponse.getData().getRefreshToken())
                                 .build(),
+                        new Cookies(List.of(cookie)),
                         request,
                         HttpStatus.OK.value()
                 );
@@ -161,28 +171,41 @@ class UserAdapterTest extends BaseTest {
         }
 
         @Nested
-        class Code401 {
+        class Code400 {
 
             @BeforeEach
             void before() {
-                reader = reader.withHttpStatus("401");
+                reader = reader.withHttpStatus("400");
             }
 
             @ParameterizedTest
             @CsvSource({
-                    "unauthorized.json",
+                    "bad_request.json",
             })
             void refresh(String responseJson) throws IOException {
+                String request = reader.withBase("requests")
+                        .withEndPoint("user/login")
+                        .withHttpStatus("200")
+                        .withFileName("request.json").getContent();
 
+                post(
+                        "/user/login",
+                        request,
+                        HttpStatus.OK.value()
+                );
                 String jsonResponse = post(
                         "/user/refresh",
-                        HeaderBuilder.defaultHeader().authorizationToken("a.b.c").build(),
-                        "{}",
-                        HttpStatus.UNAUTHORIZED.value()
+                        request,
+                        HttpStatus.BAD_REQUEST.value()
                 );
 
-                String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
-                assertThatJson(jsonResponse).isEqualTo(mockRes);
+                String mockRes = reader.withBase("responses")
+                        .withEndPoint("user/refresh")
+                        .withHttpStatus("400")
+                        .withFileName(responseJson).getContent();
+                assertThatJson(jsonResponse)
+                        .whenIgnoringPaths("data")
+                        .isEqualTo(mockRes);
             }
         }
     }

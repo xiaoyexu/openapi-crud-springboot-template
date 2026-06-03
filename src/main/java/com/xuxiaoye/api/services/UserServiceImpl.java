@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.xuxiaoye.api.bean.RequestContext;
+import io.jsonwebtoken.Claims;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -75,8 +76,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AppResponse<String> refresh(String refreshToken) {
+        String userId;
+        try {
+            Claims claims = JwtUtils.validateJWTToken(refreshToken, resourceConfig.getPublicKey());
+            userId = (String) claims.get("id");
+        } catch (Exception e) {
+            return AppResponse.failWithStatus(AppStatus.badRequest("Invalid access"));
+        }
+
         User dbUser = this.userDBService.getUserByIdAndRefreshToken(
-                requestContext.getXUserId(),
+                userId,
                 refreshToken
         );
 
