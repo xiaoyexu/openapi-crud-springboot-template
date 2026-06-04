@@ -35,7 +35,7 @@ public class UserAdapter implements UserApiDelegate {
             LoginRequest loginRequest
     ) {
         return this.userService.login(loginRequest).toResponseEntity(
-                data -> LoginResponse.builder().data(data).status(this.commonMapper.map(AppStatus.ok())).build(),
+                data -> LoginResponse.builder().data(this.commonMapper.map(data)).status(this.commonMapper.map(AppStatus.ok())).build(),
                 status -> LoginResponse.builder().status(this.commonMapper.map(status)).build(),
                 (data) -> {
                     String setCookie = String.format("refresh_token=%s; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=%d",
@@ -62,7 +62,7 @@ public class UserAdapter implements UserApiDelegate {
 
     private static String extractRefreshToken() {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        
+
         HttpServletRequest request = attributes.getRequest();
         Cookie[] cookies = request.getCookies();
         if (cookies == null) return null;

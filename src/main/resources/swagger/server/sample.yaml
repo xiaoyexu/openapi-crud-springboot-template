@@ -1036,8 +1036,8 @@ definitions:
     properties:
       accessToken:
         type: string
-      refreshToken:
-        type: string
+#      refreshToken:
+#        type: string
       expiresIn:
         type: string
   RefreshTokenResponse:

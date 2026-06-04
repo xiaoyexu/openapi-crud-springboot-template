@@ -8,7 +8,6 @@ import io.jsonwebtoken.Claims;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.xuxiaoye.api.adapter.api.server.dto.JWT;
 import com.xuxiaoye.api.adapter.api.server.dto.LoginRequest;
 import com.xuxiaoye.api.bean.TokenPair;
 import com.xuxiaoye.api.conf.ResourceConfig;
@@ -42,7 +41,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AppResponse<JWT> login(LoginRequest request) {
+    public AppResponse<com.xuxiaoye.api.bean.JWT> login(LoginRequest request) {
         User dbUser = userDBService.getUserByAccountNameAndPassword(
                 request.getUsername(),
                 JwtUtils.getSHA256(request.getPassword())
@@ -67,7 +66,7 @@ public class UserServiceImpl implements UserService {
             return AppResponse.failWithStatus(AppStatus.internalError());
         }
 
-        return AppResponse.okWithData(JWT.builder()
+        return AppResponse.okWithData(com.xuxiaoye.api.bean.JWT.builder()
                 .accessToken(tokenPair.accessToken())
                 .refreshToken(tokenPair.refreshToken())
                 .expiresIn("" + this.accessTokenExpiration)

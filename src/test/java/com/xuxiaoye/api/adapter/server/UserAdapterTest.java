@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.http.Cookie;
 import io.restassured.http.Cookies;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -135,29 +137,26 @@ class UserAdapterTest extends BaseTest {
                         .withEndPoint("user/login")
                         .withFileName("request.json").getContent();
 
-                String jsonResponse = post(
+                ExtractableResponse<Response> response = postExtractable(
                         "/user/login",
+                        HeaderBuilder.defaultHeader().build(),
+                        null,
                         request,
                         HttpStatus.OK.value()
                 );
+                String jsonResponse = response.asString();
+                String refreshToken = response.cookie("refresh_token");
 
                 String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
                 assertThatJson(jsonResponse)
                         .whenIgnoringPaths("data.accessToken", "data.refreshToken")
                         .isEqualTo(mockRes);
 
-                LoginResponse loginResponse = objectMapper.readValue(jsonResponse, LoginResponse.class);
-
-                Cookie cookie = new Cookie.Builder(
-                        "refresh_token", loginResponse.getData().getRefreshToken()
-                ).build();
+                Cookie cookie = new Cookie.Builder("refresh_token", refreshToken).build();
 
                 jsonResponse = post(
                         "/user/refresh",
-                        HeaderBuilder.defaultHeader()
-                                .userId(userId)
-//                                .authorizationToken(loginResponse.getData().getRefreshToken())
-                                .build(),
+                        HeaderBuilder.defaultHeader().userId(userId).build(),
                         new Cookies(List.of(cookie)),
                         request,
                         HttpStatus.OK.value()
