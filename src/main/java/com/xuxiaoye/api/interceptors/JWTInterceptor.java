@@ -51,7 +51,7 @@ public class JWTInterceptor implements HandlerInterceptor {
             this.requestContext.setXUserId(request.getHeader(HeaderConstant.X_USER_ID));
 
             List<SimpleGrantedAuthority> authRoles = List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
-            UserDetails userDetails = new User("Admin", "", authRoles);
+            UserDetails userDetails = new User("ADMIN", "", authRoles);
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, "", authRoles);
             SecurityContextHolder.getContext().setAuthentication(auth);
             return true;
@@ -100,7 +100,9 @@ public class JWTInterceptor implements HandlerInterceptor {
         if (!StringUtils.isBlank(authorities)) {
             List<SimpleGrantedAuthority> userAuthorities = new java.util.ArrayList<>(Arrays.stream(authorities.split(","))
                     .filter(StringUtils::isNotBlank)
-                    .map((role) -> new SimpleGrantedAuthority(authorities.toUpperCase()))
+                    .map(String::trim)
+                    .map(String::toUpperCase)
+                    .map(SimpleGrantedAuthority::new)
                     .toList()
             );
             grantedAuthorities.addAll(userAuthorities);

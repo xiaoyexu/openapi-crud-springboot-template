@@ -4,10 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import com.xuxiaoye.api.interfaces.OwnerChecker;
 import com.xuxiaoye.api.services.db.dto.entity.User;
 import com.xuxiaoye.api.services.db.mapper.UserDBMapper;
 
-public class UserDBService extends ServiceImpl<UserDBMapper, User> {
+public class UserDBService extends ServiceImpl<UserDBMapper, User> implements OwnerChecker {
     public boolean isOwner(String id, String createdBy) {
         User user = this.getById(id);
         return user != null && user.getCreatedBy().equals(createdBy);

@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.access.PermissionEvaluator;
 
@@ -16,7 +17,7 @@ import com.xuxiaoye.api.services.interfaces.*;
 
 public class ServiceConfig {
 
-    @Bean
+    @Bean("nonceCache")
     public Cache<String, Boolean> nonceCache() {
         return Caffeine.newBuilder()
                 .expireAfterWrite(5, TimeUnit.MINUTES)
@@ -24,13 +25,23 @@ public class ServiceConfig {
                 .build();
     }
 
+    @Bean("permissionCache")
+    public Cache<String, Boolean> permissionCache() {
+        return Caffeine.newBuilder()
+                .maximumSize(50)
+                .expireAfterWrite(10, TimeUnit.MINUTES)
+                .build();
+    }
+
     @Bean("P")
     PermissionEvaluator permissionEvaluator(
+            @Autowired @Qualifier("permissionCache") Cache<String, Boolean> cache,
             @Autowired StudentDBService studentDBService,
             @Autowired RoleDBService roleDBService,
             @Autowired UserDBService userDBService
     ) {
         return new PermissionServiceImpl(
+                cache,
                 studentDBService,
                 roleDBService,
                 userDBService

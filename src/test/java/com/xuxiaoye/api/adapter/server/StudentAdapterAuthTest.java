@@ -38,9 +38,9 @@ public class StudentAdapterAuthTest extends BaseTest {
     class GetSingleStudentTest {
         @ParameterizedTest
         @CsvSource(value = {
-                "ST000007;;guest;;401",
-                "ST000007;;member;;401",
-                "ST000007;;admin;;200",
+                "ST000007;;GUEST;;200",
+                "ST000007;;MEMBER;;200",
+                "ST000007;;ADMIN;;200",
                 "ST000007;;;student:get;200",
                 "ST000007;;other;;401",
                 "ST000007;;other;student:get;200",
