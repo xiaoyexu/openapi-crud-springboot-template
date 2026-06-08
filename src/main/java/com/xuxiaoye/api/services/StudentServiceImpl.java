@@ -172,10 +172,10 @@ public class StudentServiceImpl extends CRUDDbClient<
         Integer age = Integer.parseInt(ageValue);
 
         // default columns
-        String createdBy = (String) row.getCell(colIdx++).getValue();
-        String createdAt = (String) row.getCell(colIdx++).getValue();
-        String updatedBy = (String) row.getCell(colIdx++).getValue();
-        String updatedAt = (String) row.getCell(colIdx++).getValue();
+        String createdBy = row.getCellAsString(colIdx++).orElse(this.requestContext.getXUserId());
+        String createdAt = row.getCellAsString(colIdx++).orElse(LocalDateTime.now().toString());
+        String updatedBy = row.getCellAsString(colIdx++).orElse(this.requestContext.getXUserId());
+        String updatedAt = row.getCellAsString(colIdx++).orElse(LocalDateTime.now().toString());
 
         Student student = Student.builder()
                 .id(id)
