@@ -35,7 +35,7 @@ public class StudentAuditAdapter implements StudentAuditsApiDelegate {
             String authorization,
             String studentAuditId
     ) {
-        return this.studentAuditService.getStudentAudit(studentAuditId)
+        return this.studentAuditService.get(studentAuditId)
                 .toResponseEntity(
                         data -> GetStudentAuditResponse.builder().data(data).status(this.commonMapper.map(AppStatus.ok())).build(),
                         status -> GetStudentAuditResponse.builder().status(this.commonMapper.map(status)).build()
@@ -51,7 +51,7 @@ public class StudentAuditAdapter implements StudentAuditsApiDelegate {
             Integer offset,
             String sortBy
     ) {
-        return this.studentAuditService.searchStudentAudit(searchStudentAuditRequest, Pagination.of(offset, limit, sortBy))
+        return this.studentAuditService.search(searchStudentAuditRequest, Pagination.of(offset, limit, sortBy))
                 .toResponseEntity(
                         data -> SearchStudentAuditResponse.builder().data(data).status(this.commonMapper.map(AppStatus.ok())).build(),
                         status -> SearchStudentAuditResponse.builder().status(this.commonMapper.map(status)).build()
@@ -67,7 +67,7 @@ public class StudentAuditAdapter implements StudentAuditsApiDelegate {
             Integer offset,
             String sortBy
     ) {
-        return this.studentAuditService.exportStudentAudits(searchStudentAuditRequest, Pagination.of(offset, limit, sortBy))
+        return this.studentAuditService.exportData(searchStudentAuditRequest, Pagination.of(offset, limit, sortBy), "StudentAudits")
                 .toFileResponseEntity();
     }
 }

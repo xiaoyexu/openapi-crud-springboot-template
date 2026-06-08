@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.access.PermissionEvaluator;
 
-import com.xuxiaoye.api.adapter.server.mapper.RoleAuditMapper;
-import com.xuxiaoye.api.adapter.server.mapper.RoleMapper;
-import com.xuxiaoye.api.adapter.server.mapper.StudentAuditMapper;
-import com.xuxiaoye.api.adapter.server.mapper.StudentMapper;
+import com.xuxiaoye.api.adapter.server.mapper.*;
 import com.xuxiaoye.api.bean.RequestContext;
 import com.xuxiaoye.api.services.*;
 import com.xuxiaoye.api.services.db.*;
@@ -30,11 +27,13 @@ public class ServiceConfig {
     @Bean("P")
     PermissionEvaluator permissionEvaluator(
             @Autowired StudentDBService studentDBService,
-            @Autowired RoleDBService roleDBService
+            @Autowired RoleDBService roleDBService,
+            @Autowired UserDBService userDBService
     ) {
         return new PermissionServiceImpl(
                 studentDBService,
-                roleDBService
+                roleDBService,
+                userDBService
         );
     }
 
@@ -47,9 +46,28 @@ public class ServiceConfig {
     UserService userService(
             @Autowired RequestContext requestContext,
             @Autowired ResourceConfig resourceConfig,
+            @Autowired UserMapper userMapper,
             @Autowired UserDBService userDBService
     ) {
-        return new UserServiceImpl(requestContext, resourceConfig, userDBService);
+        return new UserServiceImpl(requestContext, resourceConfig, userMapper, userDBService);
+    }
+
+    @Bean
+    UserAuditDBService userAuditDBService() {
+        return new UserAuditDBService();
+    }
+
+    @Bean
+    UserAuditService userAuditService(
+            @Autowired RequestContext requestContext,
+            @Autowired UserAuditMapper userAuditMapper,
+            @Autowired UserAuditDBService userAuditDBService
+    ) {
+        return new UserAuditServiceImpl(
+                requestContext,
+                userAuditMapper,
+                userAuditDBService
+        );
     }
 
     @Bean
@@ -68,10 +86,11 @@ public class ServiceConfig {
 
     @Bean
     StudentAuditService studentAuditService(
+            @Autowired RequestContext requestContext,
             @Autowired StudentAuditMapper studentAuditMapper,
             @Autowired StudentAuditDBService studentAuditDBService
     ) {
-        return new StudentAuditServiceImpl(studentAuditMapper, studentAuditDBService);
+        return new StudentAuditServiceImpl(requestContext, studentAuditMapper, studentAuditDBService);
     }
 
     @Bean
@@ -110,5 +129,4 @@ public class ServiceConfig {
                 roleAuditDBService
         );
     }
-
 }

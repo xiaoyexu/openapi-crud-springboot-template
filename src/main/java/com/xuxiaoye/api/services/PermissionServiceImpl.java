@@ -9,19 +9,23 @@ import org.springframework.security.core.userdetails.User;
 
 import com.xuxiaoye.api.services.db.RoleDBService;
 import com.xuxiaoye.api.services.db.StudentDBService;
+import com.xuxiaoye.api.services.db.UserDBService;
 
 @Log4j2
 public class PermissionServiceImpl implements PermissionEvaluator {
 
     private final StudentDBService studentDBService;
     private final RoleDBService roleDBService;
+    private final UserDBService userDBService;
 
     public PermissionServiceImpl(
             StudentDBService studentDBService,
-            RoleDBService roleDBService
+            RoleDBService roleDBService,
+            UserDBService userDBService
     ) {
         this.studentDBService = studentDBService;
         this.roleDBService = roleDBService;
+        this.userDBService = userDBService;
     }
 
     @Override
@@ -33,6 +37,9 @@ public class PermissionServiceImpl implements PermissionEvaluator {
             }
             if (targetType.equalsIgnoreCase("role")) {
                 return roleDBService.isOwner((String) targetId, owner);
+            }
+            if (targetType.equalsIgnoreCase("user")) {
+                return userDBService.isOwner((String) targetId, owner);
             }
         }
         return hasPermission(authentication, targetType, permission);

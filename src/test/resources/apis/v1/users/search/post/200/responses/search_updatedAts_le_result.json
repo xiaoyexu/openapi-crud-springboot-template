@@ -1,0 +1,31 @@
+{
+  "data": {
+    "total": 6,
+    "data": [
+      {
+        "id": "US000001",
+        "accountName": "username1",
+        "passwordHash": "e1075933b26b5e4e50ab3dc3528eb3461214ba15b7a27b51f5dbc086912caf56",
+        "role": "Admin",
+        "createdBy": "system",
+        "createdAt": "2025-01-01T09:00:00",
+        "updatedBy": "user",
+        "updatedAt": "2025-02-01T09:00:00"
+      },
+      {
+        "id": "US000002",
+        "accountName": "username2",
+        "passwordHash": "bbc2711bf1d1c152b21b00cdadf89fa637c76238ffc871b17e1bb5ca9908a104",
+        "role": "Admin",
+        "createdBy": "user",
+        "createdAt": "2025-01-03T10:00:00",
+        "updatedBy": "system",
+        "updatedAt": "2025-02-03T10:00:00"
+      }
+    ]
+  },
+  "status": {
+    "code": "200",
+    "message": "ok"
+  }
+}

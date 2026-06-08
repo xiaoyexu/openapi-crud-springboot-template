@@ -76,8 +76,7 @@ public class RoleAuditServiceImpl extends CRUDDbClient<
         return new String[]{
                 "ACTION", // A - Add, U - Update , D - Delete
                 "ID",
-                // Add data column here
-                // "XXX",
+                "AUTHORITY",
                 "CREATED BY",
                 "CREATED AT",
                 "UPDATED BY",
@@ -89,6 +88,7 @@ public class RoleAuditServiceImpl extends CRUDDbClient<
     protected void writeRow(ExcelHelper.ExcelWriter excelWriter, int rowIdx, int colIdx, RoleAudit roleAudit) {
         excelWriter.value(rowIdx, colIdx++, "");
         excelWriter.value(rowIdx, colIdx++, roleAudit.getId());
+        excelWriter.value(rowIdx, colIdx++, roleAudit.getAuthority());
         excelWriter.value(rowIdx, colIdx++, roleAudit.getCreatedBy());
         excelWriter.value(rowIdx, colIdx++, roleAudit.getCreatedAt());
         excelWriter.value(rowIdx, colIdx++, roleAudit.getUpdatedBy());

@@ -195,6 +195,7 @@ public abstract class CRUDDbClient<
         String id = (String) row.getCell(colIdx++).getValue();
 
         if (StringUtils.isBlank(action) || StringUtils.isBlank(id)) {
+            log.info("Nothing to do action: [{}] id:[{}]", action, id);
             return AppResponse.ok();
         }
 

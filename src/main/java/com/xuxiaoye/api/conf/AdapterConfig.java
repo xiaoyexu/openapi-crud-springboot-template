@@ -17,6 +17,14 @@ public class AdapterConfig {
     }
 
     @Bean
+    UserAuditAdapter userAuditAdapter(
+            @Autowired CommonMapper commonMapper,
+            @Autowired UserAuditService userAuditService
+    ) {
+        return new UserAuditAdapter(commonMapper, userAuditService);
+    }
+
+    @Bean
     StudentAdapter studentAdapter(
             @Autowired CommonMapper commonMapper,
             @Autowired StudentService studentService
