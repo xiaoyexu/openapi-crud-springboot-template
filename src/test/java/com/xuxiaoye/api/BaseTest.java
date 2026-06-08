@@ -273,8 +273,14 @@ public abstract class BaseTest {
         return tokenPair.accessToken();
     }
 
+    protected Headers defaultHeader() {
+        return HeaderBuilder.defaultHeader()
+                .authorizationToken(buildToken("US000001", "ADMIN", ""))
+                .build();
+    }
+
     protected String post(String urlPath, String requestBody, int httpStatus, Object... queryParams) {
-        return post(urlPath, HeaderBuilder.defaultHeader().build(), requestBody, httpStatus, queryParams);
+        return post(urlPath, defaultHeader(), requestBody, httpStatus, queryParams);
     }
 
     protected String post(String urlPath, Headers headers, String requestBody, int httpStatus, Object... queryParams) {
@@ -317,7 +323,7 @@ public abstract class BaseTest {
     }
 
     protected String postAcceptAny(String urlPath, String requestBody, int httpStatus, Object... queryParams) {
-        return postAcceptAny(urlPath, HeaderBuilder.defaultHeader().build(), requestBody, httpStatus, queryParams);
+        return postAcceptAny(urlPath, defaultHeader(), requestBody, httpStatus, queryParams);
     }
 
     protected String postAcceptAny(String urlPath, Headers headers, String requestBody, int httpStatus, Object... queryParams) {
@@ -346,11 +352,11 @@ public abstract class BaseTest {
     }
 
     protected String postFile(String urlPath, String name, File file, int httpStatus) {
-        return postFile(urlPath, HeaderBuilder.defaultHeader().build(), name, file, httpStatus);
+        return postFile(urlPath, defaultHeader(), name, file, httpStatus);
     }
 
     protected String postFile(String urlPath, String name, File file, int httpStatus, Object... formParams) {
-        return postFile(urlPath, HeaderBuilder.defaultHeader().build(), name, file, httpStatus, formParams);
+        return postFile(urlPath, defaultHeader(), name, file, httpStatus, formParams);
     }
 
     protected String postFile(String urlPath, Headers headers, String name, File file, int httpStatus) {
@@ -395,7 +401,7 @@ public abstract class BaseTest {
     }
 
     protected String put(String urlPath, String requestBody, int httpStatus, Object... queryParams) {
-        return put(urlPath, HeaderBuilder.defaultHeader().build(), requestBody, httpStatus, queryParams);
+        return put(urlPath, defaultHeader(), requestBody, httpStatus, queryParams);
     }
 
     protected String put(String urlPath, Headers headers, String requestBody, int httpStatus, Object... queryParams) {
@@ -425,7 +431,7 @@ public abstract class BaseTest {
     }
 
     protected String get(String urlPath, int httpStatus, Object... queryParams) {
-        return get(urlPath, HeaderBuilder.defaultHeader().build(), httpStatus, queryParams);
+        return get(urlPath, defaultHeader(), httpStatus, queryParams);
     }
 
     protected String get(String urlPath, Headers headers, int httpStatus, Object... queryParams) {
@@ -454,7 +460,7 @@ public abstract class BaseTest {
     }
 
     protected String getAcceptAny(String urlPath, int httpStatus, Object... queryParams) {
-        return getAcceptAny(urlPath, HeaderBuilder.defaultHeader().build(), httpStatus, queryParams);
+        return getAcceptAny(urlPath, defaultHeader(), httpStatus, queryParams);
     }
 
     protected String getAcceptAny(String urlPath, Headers headers, int httpStatus, Object... queryParams) {
@@ -482,7 +488,7 @@ public abstract class BaseTest {
     }
 
     protected String delete(String urlPath, int httpStatus, Object... queryParams) {
-        return delete(urlPath, HeaderBuilder.defaultHeader().build(), httpStatus, queryParams);
+        return delete(urlPath, defaultHeader(), httpStatus, queryParams);
     }
 
     protected String delete(String urlPath, Headers headers, int httpStatus, Object... queryParams) {

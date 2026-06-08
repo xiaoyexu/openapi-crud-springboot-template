@@ -74,7 +74,7 @@ class JWTInterceptorTest {
         @Test
         public void testPreHandleByPass() throws Exception {
             JWTInterceptor jwtInterceptor = spy(
-                    new JWTInterceptor(requestContext, resourceConfig, cache, false)
+                    new JWTInterceptor(requestContext, resourceConfig, cache)
             );
             assertTrue(jwtInterceptor.preHandle(request, response, object));
         }
@@ -85,7 +85,7 @@ class JWTInterceptorTest {
         @Test
         public void testAllowGetMethodAnyways() throws Exception {
             JWTInterceptor jwtInterceptor = spy(
-                    new JWTInterceptor(requestContext, resourceConfig, cache, false)
+                    new JWTInterceptor(requestContext, resourceConfig, cache)
             );
             doReturn("").when(request).getHeader(AUTHORIZATION);
             doReturn("GET").when(request).getMethod();
@@ -96,7 +96,7 @@ class JWTInterceptorTest {
         public void testValidToken() throws Exception {
             String token = easyRandom.nextObject(String.class);
             JWTInterceptor jwtInterceptor = spy(
-                    new JWTInterceptor(requestContext, resourceConfig, cache, false)
+                    new JWTInterceptor(requestContext, resourceConfig, cache)
             );
             doReturn(token).when(request).getHeader(AUTHORIZATION);
 
@@ -116,7 +116,7 @@ class JWTInterceptorTest {
         public void testExpiredToken() {
             String token = easyRandom.nextObject(String.class);
             JWTInterceptor jwtInterceptor = spy(
-                    new JWTInterceptor(requestContext, resourceConfig, cache, false)
+                    new JWTInterceptor(requestContext, resourceConfig, cache)
             );
             doReturn(token).when(request).getHeader(AUTHORIZATION);
 

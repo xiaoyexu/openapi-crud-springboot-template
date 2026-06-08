@@ -19,6 +19,5 @@ spring:
           password:
   redis:
     enable: false
-bypassTokenCheck: true
 servicePublicKeyPath: test_certs/test_pub_key.der
 servicePrivateKeyPath: test_certs/test_pri_key.der

@@ -65,7 +65,6 @@ springdoc:
     enabled: true
     path: /swagger
     use-root-path: true
-bypassTokenCheck: ${BY_PASS_TOKEN_CHECK:false}
 admin:
   accessToken:
     expiration: ${ACCESS_EXPIRE_SECONDS:1800}
