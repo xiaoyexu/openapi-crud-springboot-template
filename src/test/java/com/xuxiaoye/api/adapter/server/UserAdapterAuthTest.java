@@ -23,7 +23,6 @@ import com.xuxiaoye.api.BaseTest;
 @ActiveProfiles("test")
 @Log4j2
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@TestPropertySource(properties = "bypassTokenCheck=false")
 @Order(11)
 public class UserAdapterAuthTest extends BaseTest {
     @LocalServerPort

@@ -24,7 +24,6 @@ import com.xuxiaoye.api.BaseTest;
 @Log4j2
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestClassOrder(ClassOrderer.OrderAnnotation.class)
-@TestPropertySource(properties = "bypassTokenCheck=false")
 public class RoleAdapterAuthTest extends BaseTest {
     @LocalServerPort
     private int port;

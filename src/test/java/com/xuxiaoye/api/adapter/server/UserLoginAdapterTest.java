@@ -32,7 +32,6 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 @ActiveProfiles("test")
 @Log4j2
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@TestPropertySource(properties = "bypassTokenCheck=false")
 @Order(800)
 class UserLoginAdapterTest extends BaseTest {
     @LocalServerPort

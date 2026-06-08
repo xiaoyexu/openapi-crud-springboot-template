@@ -75,35 +75,37 @@ public class UserServiceImpl extends CRUDDbClient<
 
     @Override
     public AppResponse<com.xuxiaoye.api.bean.JWT> login(LoginRequest request) {
-        com.xuxiaoye.api.services.db.dto.entity.User dbUser = userDBService.getUserByAccountNameAndPassword(
-                request.getUsername(),
-                JwtUtils.getSHA256(request.getPassword())
-        );
+        return handleDbCall(() -> {
+            com.xuxiaoye.api.services.db.dto.entity.User dbUser = userDBService.getUserByAccountNameAndPassword(
+                    request.getUsername(),
+                    JwtUtils.getSHA256(request.getPassword())
+            );
 
-        if (dbUser == null) {
-            return AppResponse.failWithStatus(AppStatus.badRequest("Invalid access"));
-        }
+            if (dbUser == null) {
+                return AppResponse.failWithStatus(AppStatus.badRequest("Invalid access"));
+            }
 
-        TokenPair tokenPair = JwtUtils.generateJWTTokenPair(
-                resourceConfig.getPrivateKey(),
-                this.accessTokenExpiration,
-                this.refreshTokenExpiration,
-                dbUser.getId(),
-                dbUser.getAccountName(),
-                buildClaims(dbUser)
-        );
+            TokenPair tokenPair = JwtUtils.generateJWTTokenPair(
+                    resourceConfig.getPrivateKey(),
+                    this.accessTokenExpiration,
+                    this.refreshTokenExpiration,
+                    dbUser.getId(),
+                    dbUser.getAccountName(),
+                    buildClaims(dbUser)
+            );
 
-        dbUser.setRefreshToken(tokenPair.refreshToken());
-        if (!userDBService.updateById(dbUser)) {
-            log.error("Fail to save refresh token");
-            return AppResponse.failWithStatus(AppStatus.internalError());
-        }
+            dbUser.setRefreshToken(tokenPair.refreshToken());
+            if (!userDBService.updateById(dbUser)) {
+                log.error("Fail to save refresh token");
+                return AppResponse.failWithStatus(AppStatus.internalError());
+            }
 
-        return AppResponse.okWithData(com.xuxiaoye.api.bean.JWT.builder()
-                .accessToken(tokenPair.accessToken())
-                .refreshToken(tokenPair.refreshToken())
-                .expiresIn("" + this.accessTokenExpiration)
-                .build());
+            return AppResponse.okWithData(com.xuxiaoye.api.bean.JWT.builder()
+                    .accessToken(tokenPair.accessToken())
+                    .refreshToken(tokenPair.refreshToken())
+                    .expiresIn("" + this.accessTokenExpiration)
+                    .build());
+        });
     }
 
     @Override
@@ -116,22 +118,24 @@ public class UserServiceImpl extends CRUDDbClient<
             return AppResponse.failWithStatus(AppStatus.badRequest("Invalid access"));
         }
 
-        com.xuxiaoye.api.services.db.dto.entity.User dbUser = this.userDBService.getUserByIdAndRefreshToken(
-                userId,
-                refreshToken
-        );
+        return handleDbCall(() -> {
+            com.xuxiaoye.api.services.db.dto.entity.User dbUser = this.userDBService.getUserByIdAndRefreshToken(
+                    userId,
+                    refreshToken
+            );
 
-        if (dbUser == null) {
-            return AppResponse.failWithStatus(AppStatus.badRequest("Invalid access"));
-        }
+            if (dbUser == null) {
+                return AppResponse.failWithStatus(AppStatus.badRequest("Invalid access"));
+            }
 
-        String newToken = JwtUtils.generateJWTToken(
-                resourceConfig.getPrivateKey(),
-                dbUser.getId(),
-                buildClaims(dbUser),
-                this.accessTokenExpiration
-        );
-        return AppResponse.okWithData(newToken);
+            String newToken = JwtUtils.generateJWTToken(
+                    resourceConfig.getPrivateKey(),
+                    dbUser.getId(),
+                    buildClaims(dbUser),
+                    this.accessTokenExpiration
+            );
+            return AppResponse.okWithData(newToken);
+        });
     }
 
     Map<String, Object> buildClaims(com.xuxiaoye.api.services.db.dto.entity.User dbUser) {

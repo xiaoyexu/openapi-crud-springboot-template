@@ -31,32 +31,19 @@ public class JWTInterceptor implements HandlerInterceptor {
     private final RequestContext requestContext;
     private final ResourceConfig resourceConfig;
     private final Cache<String, Boolean> cache;
-    private final boolean bypassTokenCheck;
 
     public JWTInterceptor(
             RequestContext requestContext,
             ResourceConfig resourceConfig,
-            Cache<String, Boolean> cache,
-            boolean bypassTokenCheck
+            Cache<String, Boolean> cache
     ) {
         this.requestContext = requestContext;
         this.resourceConfig = resourceConfig;
         this.cache = cache;
-        this.bypassTokenCheck = bypassTokenCheck;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if (this.bypassTokenCheck) {
-            this.requestContext.setXUserId(request.getHeader(HeaderConstant.X_USER_ID));
-
-            List<SimpleGrantedAuthority> authRoles = List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
-            UserDetails userDetails = new User("ADMIN", "", authRoles);
-            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, "", authRoles);
-            SecurityContextHolder.getContext().setAuthentication(auth);
-            return true;
-        }
-
         String traceId = request.getHeader(HeaderConstant.X_TRACE_ID);
         if (cache.getIfPresent(traceId) != null) {
             throw new ForbiddenException("Duplicated Request");

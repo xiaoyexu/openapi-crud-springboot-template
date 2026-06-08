@@ -8,13 +8,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
 public class WebSecurityConfig {
-    @Value("${bypassTokenCheck}")
-    private boolean bypassTokenCheck;
-
-    public static final String[] AUTH_WHITELIST = {
-            // Allow Swagger UI
-            "/ping",
-    };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

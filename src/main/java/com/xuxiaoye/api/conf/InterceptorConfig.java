@@ -15,8 +15,6 @@ import com.xuxiaoye.api.bean.RequestContext;
 import com.xuxiaoye.api.interceptors.JWTInterceptor;
 
 public class InterceptorConfig implements WebMvcConfigurer {
-    @Value("${bypassTokenCheck}")
-    private boolean bypassTokenCheck;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -33,7 +31,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 
     @Bean
     public JWTInterceptor jwtInterceptor() {
-        return new JWTInterceptor(requestContext, resourceConfig, cache, bypassTokenCheck);
+        return new JWTInterceptor(requestContext, resourceConfig, cache);
     }
 
     @Override
