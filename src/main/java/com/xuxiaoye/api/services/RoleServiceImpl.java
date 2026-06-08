@@ -17,6 +17,8 @@ import com.xuxiaoye.api.services.db.mapper.RoleDBMapper;
 import com.xuxiaoye.api.services.interfaces.RoleService;
 import com.xuxiaoye.api.utils.ExcelHelper;
 
+import java.time.LocalDateTime;
+
 import static com.xuxiaoye.api.client.BaseDbClient.Operator.*;
 
 @Log4j2
@@ -119,10 +121,10 @@ public class RoleServiceImpl extends CRUDDbClient<
     protected Role buildFromRow(String id, int colIdx, Row row) {
         String authority = row.getCell(colIdx++).asString();
         // default columns
-        String createdBy = (String) row.getCell(colIdx++).getValue();
-        String createdAt = (String) row.getCell(colIdx++).getValue();
-        String updatedBy = (String) row.getCell(colIdx++).getValue();
-        String updatedAt = (String) row.getCell(colIdx++).getValue();
+        String createdBy = row.getCellAsString(colIdx++).orElse(this.requestContext.getXUserId());
+        String createdAt = row.getCellAsString(colIdx++).orElse(LocalDateTime.now().toString());
+        String updatedBy = row.getCellAsString(colIdx++).orElse(this.requestContext.getXUserId());
+        String updatedAt = row.getCellAsString(colIdx++).orElse(LocalDateTime.now().toString());
 
         return Role.builder()
                 .id(id)
