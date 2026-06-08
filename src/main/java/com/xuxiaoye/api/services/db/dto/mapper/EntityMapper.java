@@ -18,4 +18,6 @@ public interface EntityMapper {
     StudentAudit map(com.xuxiaoye.api.services.db.dto.entity.Student student);
 
     RoleAudit map(Role role);
+
+    UserAudit map(User user);
 }

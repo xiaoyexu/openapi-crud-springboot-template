@@ -38,8 +38,9 @@ class StudentAuditServiceTest {
     @Test
     void exportStudentAuditError() {
         doThrow(new RuntimeException()).when(studentAuditDBService).page(any(Page.class), any(LambdaQueryWrapper.class));
-        AppResponse<FileResponse> response = studentAuditService.exportStudentAudits(
-                new SearchStudentAuditRequest(), Pagination.of(1, 1, "")
+        AppResponse<FileResponse> response = studentAuditService.exportData(
+                new SearchStudentAuditRequest(), Pagination.of(1, 1, ""),
+                "StudentAudits"
         );
         assertThat(response.isInternalError()).isTrue();
     }

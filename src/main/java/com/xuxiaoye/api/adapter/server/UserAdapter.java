@@ -1,23 +1,24 @@
 package com.xuxiaoye.api.adapter.server;
 
+import java.util.Arrays;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-
-import com.xuxiaoye.api.adapter.api.server.UserApiDelegate;
-import com.xuxiaoye.api.adapter.api.server.dto.LoginRequest;
-import com.xuxiaoye.api.adapter.api.server.dto.LoginResponse;
-import com.xuxiaoye.api.adapter.api.server.dto.RefreshTokenResponse;
-import com.xuxiaoye.api.adapter.server.mapper.CommonMapper;
-import com.xuxiaoye.api.resp.AppStatus;
-import com.xuxiaoye.api.services.interfaces.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
+import com.xuxiaoye.api.adapter.api.server.dto.*;
+import com.xuxiaoye.api.adapter.api.server.UsersApiDelegate;
+import com.xuxiaoye.api.adapter.server.mapper.CommonMapper;
+import com.xuxiaoye.api.bean.Pagination;
+import com.xuxiaoye.api.resp.AppStatus;
+import com.xuxiaoye.api.services.interfaces.UserService;
 
-public class UserAdapter implements UserApiDelegate {
+public class UserAdapter implements UsersApiDelegate {
 
     private final CommonMapper commonMapper;
     private final UserService userService;
@@ -35,7 +36,7 @@ public class UserAdapter implements UserApiDelegate {
             LoginRequest loginRequest
     ) {
         return this.userService.login(loginRequest).toResponseEntity(
-                data -> LoginResponse.builder().data(data).status(this.commonMapper.map(AppStatus.ok())).build(),
+                data -> LoginResponse.builder().data(this.commonMapper.map(data)).status(this.commonMapper.map(AppStatus.ok())).build(),
                 status -> LoginResponse.builder().status(this.commonMapper.map(status)).build(),
                 (data) -> {
                     String setCookie = String.format("refresh_token=%s; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=%d",
@@ -62,7 +63,7 @@ public class UserAdapter implements UserApiDelegate {
 
     private static String extractRefreshToken() {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        
+
         HttpServletRequest request = attributes.getRequest();
         Cookie[] cookies = request.getCookies();
         if (cookies == null) return null;
@@ -71,5 +72,100 @@ public class UserAdapter implements UserApiDelegate {
                         "refresh_token".equals(cookie.getName()))
                 .map(Cookie::getValue)
                 .findFirst().orElse("");
+    }
+
+    @Override
+    @PreAuthorize("@P.hasPermission(authentication, 'user', 'create')")
+    public ResponseEntity<CreateUserResponse> createSingleUser(
+            String authorization,
+            User createUserRequest
+    ) {
+        return this.userService.create(createUserRequest)
+                .toResponseEntity(
+                        data -> CreateUserResponse.builder().data(data).status(this.commonMapper.map(AppStatus.ok())).build(),
+                        status -> CreateUserResponse.builder().status(this.commonMapper.map(status)).build()
+                );
+    }
+
+    @Override
+    @PreAuthorize("@P.hasPermission(authentication, #userId, 'user', 'delete') or @P.hasPermission(authentication, #userId, 'user', 'delete_own')")
+    public ResponseEntity<DeleteUserResponse> deleteSingleUser(
+            String authorization,
+            String userId
+    ) {
+        return this.userService.deleteById(userId)
+                .toResponseEntity(
+                        data -> DeleteUserResponse.builder().data(data).status(this.commonMapper.map(AppStatus.ok())).build(),
+                        status -> DeleteUserResponse.builder().status(this.commonMapper.map(status)).build()
+                );
+    }
+
+    @Override
+    @PreAuthorize("@P.hasPermission(authentication, #userId, 'user', 'get') or @P.hasPermission(authentication, #userId, 'user', 'get_own')")
+    public ResponseEntity<GetUserResponse> getSingleUser(
+            String authorization,
+            String userId
+    ) {
+        return this.userService.get(userId)
+                .toResponseEntity(
+                        data -> GetUserResponse.builder().data(data).status(this.commonMapper.map(AppStatus.ok())).build(),
+                        status -> GetUserResponse.builder().status(this.commonMapper.map(status)).build()
+                );
+    }
+
+    @Override
+    @PreAuthorize("@P.hasPermission(authentication, 'user', 'search')")
+    public ResponseEntity<SearchUserResponse> searchUsers(
+            String authorization,
+            SearchUserRequest searchUserRequest,
+            Integer limit,
+            Integer offset,
+            String sortBy
+    ) {
+        return this.userService.search(searchUserRequest, Pagination.of(offset, limit, sortBy))
+                .toResponseEntity(
+                        data -> SearchUserResponse.builder().data(data).status(this.commonMapper.map(AppStatus.ok())).build(),
+                        status -> SearchUserResponse.builder().status(this.commonMapper.map(status)).build()
+                );
+    }
+
+    @Override
+    @PreAuthorize("@P.hasPermission(authentication, #userId, 'user', 'update') or @P.hasPermission(authentication, #userId, 'user', 'update_own')")
+    public ResponseEntity<UpdateUserResponse> updateSingleUser(
+            String authorization,
+            String userId,
+            User updateUserRequest
+    ) {
+        return this.userService.updateById(userId, updateUserRequest)
+                .toResponseEntity(
+                        data -> UpdateUserResponse.builder().data(data).status(this.commonMapper.map(AppStatus.ok())).build(),
+                        status -> UpdateUserResponse.builder().status(this.commonMapper.map(status)).build()
+                );
+    }
+
+    @Override
+    @PreAuthorize("@P.hasPermission(authentication, 'user', 'export')")
+    public ResponseEntity<org.springframework.core.io.Resource> exportUsers(
+            String authorization,
+            SearchUserRequest searchUserRequest,
+            Integer limit,
+            Integer offset,
+            String sortBy
+    ) {
+        return this.userService.exportData(searchUserRequest, Pagination.of(offset, limit, sortBy), "Users")
+                .toFileResponseEntity();
+    }
+
+    @Override
+    @PreAuthorize("@P.hasPermission(authentication, 'user', 'import')")
+    public ResponseEntity<ImportUserResponse> importUsers(
+            String authorization,
+            MultipartFile file
+    ) {
+        return this.userService.importData(file)
+                .toResponseEntity(
+                        data -> ImportUserResponse.builder().data(data).status(this.commonMapper.map(AppStatus.ok())).build(),
+                        status -> ImportUserResponse.builder().status(this.commonMapper.map(status)).build()
+                );
     }
 }

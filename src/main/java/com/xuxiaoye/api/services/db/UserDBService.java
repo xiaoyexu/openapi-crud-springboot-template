@@ -8,6 +8,11 @@ import com.xuxiaoye.api.services.db.dto.entity.User;
 import com.xuxiaoye.api.services.db.mapper.UserDBMapper;
 
 public class UserDBService extends ServiceImpl<UserDBMapper, User> {
+    public boolean isOwner(String id, String createdBy) {
+        User user = this.getById(id);
+        return user != null && user.getCreatedBy().equals(createdBy);
+    }
+
     public User getUserByAccountNameAndPassword(String username, String password) {
         LambdaUpdateWrapper<User> query = new LambdaUpdateWrapper<User>()
                 .eq(User::getAccountName, username)

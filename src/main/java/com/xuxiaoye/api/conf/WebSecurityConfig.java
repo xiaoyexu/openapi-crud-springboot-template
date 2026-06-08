@@ -14,7 +14,6 @@ public class WebSecurityConfig {
     public static final String[] AUTH_WHITELIST = {
             // Allow Swagger UI
             "/ping",
-            "/user/login"
     };
 
     @Bean

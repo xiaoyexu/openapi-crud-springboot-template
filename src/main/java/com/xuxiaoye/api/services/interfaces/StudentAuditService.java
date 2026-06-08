@@ -1,16 +1,8 @@
 package com.xuxiaoye.api.services.interfaces;
 
-import com.xuxiaoye.api.adapter.api.server.dto.StudentAudit;
-import com.xuxiaoye.api.adapter.api.server.dto.PagedStudentAudits;
-import com.xuxiaoye.api.adapter.api.server.dto.SearchStudentAuditRequest;
-import com.xuxiaoye.api.bean.Pagination;
-import com.xuxiaoye.api.resp.AppResponse;
-import com.xuxiaoye.api.resp.FileResponse;
+import com.xuxiaoye.api.adapter.api.server.dto.*;
+import com.xuxiaoye.api.adapter.server.mapper.StudentAuditMapper;
+import com.xuxiaoye.api.services.db.StudentAuditDBService;
 
-public interface StudentAuditService {
-    AppResponse<PagedStudentAudits> searchStudentAudit(SearchStudentAuditRequest searchStudentAuditRequest, Pagination pagination);
-
-    AppResponse<StudentAudit> getStudentAudit(String id);
-
-    AppResponse<FileResponse> exportStudentAudits(SearchStudentAuditRequest searchStudentAuditRequest, Pagination pagination);
+public interface StudentAuditService extends Service<StudentAudit, SearchStudentAuditRequest, PagedStudentAudits, StudentAuditMapper, StudentAuditDBService>{
 }

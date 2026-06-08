@@ -204,6 +204,11 @@ public class TableAuditLogInterceptor implements Interceptor, ApplicationContext
             audit.setAction(action);
             saveAuditAsync(entityInfo.entityAuditDBMapper, audit);
         }
+        if (entityInfo.entityClass == User.class) {
+            UserAudit audit = this.getEntityMapper().map((User) baseEntity);
+            audit.setAction(action);
+            saveAuditAsync(entityInfo.entityAuditDBMapper, audit);
+        }
     }
 
     EntityInfo identifyEntityClass(String msId) {
@@ -211,6 +216,8 @@ public class TableAuditLogInterceptor implements Interceptor, ApplicationContext
             return new EntityInfo(Student.class, StudentDBMapper.class, StudentAuditDBMapper.class);
         } else if (msId.contains("RoleDBMapper")) {
             return new EntityInfo(Role.class, RoleDBMapper.class, RoleAuditDBMapper.class);
+        } else if (msId.contains("UserDBMapper")) {
+            return new EntityInfo(User.class, UserDBMapper.class, UserAuditDBMapper.class);
         }
         return null;
     }

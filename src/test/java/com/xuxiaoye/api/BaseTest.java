@@ -9,6 +9,8 @@ import java.util.stream.IntStream;
 import io.restassured.http.Cookies;
 import io.restassured.http.Header;
 import io.restassured.http.Headers;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.ClassOrderer;
@@ -280,6 +282,10 @@ public abstract class BaseTest {
     }
 
     protected String post(String urlPath, Headers headers, Cookies cookies, String requestBody, int httpStatus, Object... queryParams) {
+        return postExtractable(urlPath, headers, cookies, requestBody, httpStatus, queryParams).asString();
+    }
+
+    protected ExtractableResponse<Response> postExtractable(String urlPath, Headers headers, Cookies cookies, String requestBody, int httpStatus, Object... queryParams) {
         RequestSpecification spec = given();
 
         if (cookies != null) {
@@ -307,8 +313,7 @@ public abstract class BaseTest {
                 .all(true)
                 .assertThat()
                 .statusCode(httpStatus)
-                .extract()
-                .asString();
+                .extract();
     }
 
     protected String postAcceptAny(String urlPath, String requestBody, int httpStatus, Object... queryParams) {

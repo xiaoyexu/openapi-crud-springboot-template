@@ -1,0 +1,23 @@
+{
+  "data": {
+    "total": 1,
+    "data": [
+      {
+        "auditId": 2,
+        "id": "US000002",
+        "action": "A",
+        "accountName": "username2",
+        "passwordHash": "bbc2711bf1d1c152b21b00cdadf89fa637c76238ffc871b17e1bb5ca9908a104",
+        "role": "Admin",
+        "createdBy": "user",
+        "createdAt": "2025-01-03T10:00:00",
+        "updatedBy": "system",
+        "updatedAt": "2025-02-03T10:00:00"
+      }
+    ]
+  },
+  "status": {
+    "code": "200",
+    "message": "ok"
+  }
+}
