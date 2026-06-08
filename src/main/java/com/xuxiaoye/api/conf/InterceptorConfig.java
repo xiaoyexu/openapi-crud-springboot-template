@@ -5,6 +5,7 @@ import java.util.Arrays;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Cache;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -27,6 +28,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
     ResourceConfig resourceConfig;
 
     @Autowired
+    @Qualifier("nonceCache")
     Cache<String, Boolean> cache;
 
     @Bean

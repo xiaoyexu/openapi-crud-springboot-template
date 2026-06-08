@@ -3,7 +3,7 @@
     "id": "3167a0b0-4041-4a6c-8130-50b264536f5d",
     "accountName": "username1",
     "passwordHash": "e1075933b26b5e4e50ab3dc3528eb3461214ba15b7a27b51f5dbc086912caf56",
-    "role": "Admin",
+    "role": "ADMIN",
     "createdBy": "US000001",
     "createdAt": "2026-06-05T16:31:27.723944",
     "updatedBy": "US000001",

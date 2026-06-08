@@ -16,12 +16,12 @@ CREATE TABLE USERS(
 );
 
 INSERT INTO USERS(ID,ACCOUNT_NAME,PASSWORD_HASH,ROLE,REFRESH_TOKEN,CREATED_BY,CREATED_AT,UPDATED_BY,UPDATED_AT) VALUES
-('US000001', 'username1', 'e1075933b26b5e4e50ab3dc3528eb3461214ba15b7a27b51f5dbc086912caf56', 'Admin',  null, 'system', '2025-01-01 09:00:00',  'user','2025-02-01 09:00:00'),
-('US000002', 'username2', 'bbc2711bf1d1c152b21b00cdadf89fa637c76238ffc871b17e1bb5ca9908a104', 'Admin',  null,   'user', '2025-01-03 10:00:00','system','2025-02-03 10:00:00'),
-('US000003', 'username3', 'd68379725d2d8a16e5f2cbcaf18e0baf84ea0aed81ed55b7c4f479e7cdab855d', 'Admin',  null, 'system', '2025-02-02 11:00:00',  'user','2025-03-02 11:00:00'),
-('US000004', 'username4', 'c9366c1bd693018b9ac3c43f1404d3063e7c62b73f93a3d3b17ec71411d5f10f', 'Member',  null,   'user', '2025-01-02 12:00:00','system','2025-02-02 12:00:00'),
-('US000005', 'username5', '253f4f19eb4886c3e9094b92c0080f5b4eecc52011669551a4cc96adb798d31c', 'Member',  null,   'user', '2025-02-03 13:00:00','system','2025-03-03 13:00:00'),
-('US000006', 'username6', '35632947cbe8b271f211797a975dfce06afcfc0b144adb0573f81df3f6bdb7f1', 'Member' , null, 'system', '2025-02-01 14:00:00',  'user','2025-03-01 14:00:00');
+('US000001', 'username1', 'e1075933b26b5e4e50ab3dc3528eb3461214ba15b7a27b51f5dbc086912caf56', 'ADMIN',  null, 'system', '2025-01-01 09:00:00',  'user','2025-02-01 09:00:00'),
+('US000002', 'username2', 'bbc2711bf1d1c152b21b00cdadf89fa637c76238ffc871b17e1bb5ca9908a104', 'ADMIN',  null,   'user', '2025-01-03 10:00:00','system','2025-02-03 10:00:00'),
+('US000003', 'username3', 'd68379725d2d8a16e5f2cbcaf18e0baf84ea0aed81ed55b7c4f479e7cdab855d', 'ADMIN',  null, 'system', '2025-02-02 11:00:00',  'user','2025-03-02 11:00:00'),
+('US000004', 'username4', 'c9366c1bd693018b9ac3c43f1404d3063e7c62b73f93a3d3b17ec71411d5f10f', 'MEMBER',  null,   'user', '2025-01-02 12:00:00','system','2025-02-02 12:00:00'),
+('US000005', 'username5', '253f4f19eb4886c3e9094b92c0080f5b4eecc52011669551a4cc96adb798d31c', 'MEMBER',  null,   'user', '2025-02-03 13:00:00','system','2025-03-03 13:00:00'),
+('US000006', 'username6', '35632947cbe8b271f211797a975dfce06afcfc0b144adb0573f81df3f6bdb7f1', 'MEMBER' , null, 'system', '2025-02-01 14:00:00',  'user','2025-03-01 14:00:00');
 
 --
 DROP TABLE IF EXISTS USERS_AUDIT;
@@ -41,12 +41,12 @@ CREATE TABLE USERS_AUDIT(
 );
 
 INSERT INTO USERS_AUDIT(ACTION,ID,ACCOUNT_NAME,PASSWORD_HASH,ROLE,REFRESH_TOKEN,CREATED_BY,CREATED_AT,UPDATED_BY,UPDATED_AT) VALUES
-('A','US000001', 'username1', 'e1075933b26b5e4e50ab3dc3528eb3461214ba15b7a27b51f5dbc086912caf56', 'Admin',  null, 'system', '2025-01-01 09:00:00',  'user','2025-02-01 09:00:00'),
-('A','US000002', 'username2', 'bbc2711bf1d1c152b21b00cdadf89fa637c76238ffc871b17e1bb5ca9908a104', 'Admin',  null,   'user', '2025-01-03 10:00:00','system','2025-02-03 10:00:00'),
-('A','US000003', 'username3', 'd68379725d2d8a16e5f2cbcaf18e0baf84ea0aed81ed55b7c4f479e7cdab855d', 'Admin',  null, 'system', '2025-02-02 11:00:00',  'user','2025-03-02 11:00:00'),
-('A','US000004', 'username4', 'c9366c1bd693018b9ac3c43f1404d3063e7c62b73f93a3d3b17ec71411d5f10f', 'Member',  null,   'user', '2025-01-02 12:00:00','system','2025-02-02 12:00:00'),
-('A','US000005', 'username5', '253f4f19eb4886c3e9094b92c0080f5b4eecc52011669551a4cc96adb798d31c', 'Member',  null,   'user', '2025-02-03 13:00:00','system','2025-03-03 13:00:00'),
-('A','US000006', 'username6', '35632947cbe8b271f211797a975dfce06afcfc0b144adb0573f81df3f6bdb7f1', 'Member' , null, 'system', '2025-02-01 14:00:00',  'user','2025-03-01 14:00:00');
+('A','US000001', 'username1', 'e1075933b26b5e4e50ab3dc3528eb3461214ba15b7a27b51f5dbc086912caf56', 'ADMIN',  null, 'system', '2025-01-01 09:00:00',  'user','2025-02-01 09:00:00'),
+('A','US000002', 'username2', 'bbc2711bf1d1c152b21b00cdadf89fa637c76238ffc871b17e1bb5ca9908a104', 'ADMIN',  null,   'user', '2025-01-03 10:00:00','system','2025-02-03 10:00:00'),
+('A','US000003', 'username3', 'd68379725d2d8a16e5f2cbcaf18e0baf84ea0aed81ed55b7c4f479e7cdab855d', 'ADMIN',  null, 'system', '2025-02-02 11:00:00',  'user','2025-03-02 11:00:00'),
+('A','US000004', 'username4', 'c9366c1bd693018b9ac3c43f1404d3063e7c62b73f93a3d3b17ec71411d5f10f', 'MEMBER',  null,   'user', '2025-01-02 12:00:00','system','2025-02-02 12:00:00'),
+('A','US000005', 'username5', '253f4f19eb4886c3e9094b92c0080f5b4eecc52011669551a4cc96adb798d31c', 'MEMBER',  null,   'user', '2025-02-03 13:00:00','system','2025-03-03 13:00:00'),
+('A','US000006', 'username6', '35632947cbe8b271f211797a975dfce06afcfc0b144adb0573f81df3f6bdb7f1', 'MEMBER' , null, 'system', '2025-02-01 14:00:00',  'user','2025-03-01 14:00:00');
 
 --
 
@@ -125,7 +125,7 @@ INSERT INTO ROLES(ID,AUTHORITY,CREATED_BY,CREATED_AT,UPDATED_BY,UPDATED_AT) VALU
 --
 ('ADMIN', '*:*',                                                                                  'system', '2025-02-01 14:00:00',  'user','2025-03-01 14:00:00'),
 ('MEMBER','user:refreshToken,student:search,student:get,studentAudit:search,studentAudit:get',    'system', '2025-02-01 14:00:00',  'user','2025-03-01 14:00:00'),
-('GUEST', 'student:search,student:get,user:login',                                                      'system', '2025-02-01 14:00:00',  'user','2025-03-01 14:00:00');
+('GUEST', 'student:search,student:get,user:login',                                                'system', '2025-02-01 14:00:00',  'user','2025-03-01 14:00:00');
 
 DROP TABLE IF EXISTS ROLES_AUDIT;
 CREATE TABLE ROLES_AUDIT(
