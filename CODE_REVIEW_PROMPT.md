@@ -11,87 +11,99 @@ Focus on production-readiness, maintainability, scalability, and industry best p
 ### Review Scope
 
 1. **Architecture & Design**
-  - Layered architecture compliance (Controller / Service / Repository)
-  - Separation of concerns
-  - Proper use of DTOs vs Entities
-  - Domain-driven design awareness
+    - Layered architecture compliance (Controller / Service / Repository)
+    - Separation of concerns
+    - Proper use of DTOs vs Entities
+    - Domain-driven design awareness
 
 2. **Spring Boot Best Practices**
-  - Correct usage of annotations (`@RestController`, `@Service`, `@Repository`, `@Component`)
-  - Application configuration (`application.yml` / `application.properties`)
-  - Profiles (`dev`, `prod`) usage
-  - Dependency injection (constructor-based only)
+    - Correct usage of annotations (`@RestController`, `@Service`, `@Repository`, `@Component`)
+    - Application configuration (`application.yml` / `application.properties`)
+    - Profiles (`dev`, `prod`) usage
+    - Dependency injection (constructor-based only)
 
 3. **REST API Design**
-  - RESTful URL structure
-  - HTTP methods correctness
-  - Status codes usage
-  - Request / Response DTO validation
+    - RESTful URL structure
+    - HTTP methods correctness
+    - Status codes usage
+    - Request / Response DTO validation
 
 4. **Exception Handling**
-  - Global exception handling (`@ControllerAdvice`)
-  - Consistent error response structure
-  - Avoid leaking stack traces
+    - Global exception handling (`@ControllerAdvice`)
+    - Consistent error response structure
+    - Avoid leaking stack traces
 
 5. **Validation & Input Sanitization**
-  - Use of `javax.validation` / `jakarta.validation`
-  - DTO-level validation
-  - Defensive programming
+    - Use of `javax.validation` / `jakarta.validation`
+    - DTO-level validation
+    - Defensive programming
 
 6. **Data Access Layer**
-  - JPA / Hibernate best practices
-  - N+1 query issues
-  - Transaction management (`@Transactional`)
-  - Database schema design
+    - JPA / Hibernate best practices
+    - N+1 query issues
+    - Transaction management (`@Transactional`)
+    - Database schema design
 
 7. **Security**
-  - Authentication & Authorization
-  - JWT / OAuth2 usage (if applicable)
-  - Sensitive data exposure
-  - CORS configuration
+    - Authentication & Authorization
+    - JWT / OAuth2 usage (if applicable)
+    - Sensitive data exposure
+    - CORS configuration
 
 8. **Testing**
-  - Unit tests (JUnit 5)
-  - Integration tests (`@SpringBootTest`)
-  - Mocking strategy (Mockito)
-  - Test coverage quality
+    - Unit tests (JUnit 5)
+    - Integration tests (`@SpringBootTest`)
+    - Mocking strategy (Mockito)
+    - Test coverage quality
 
 9. **Performance & Scalability**
-  - Thread-safety
-  - Connection pooling
-  - Caching strategy (Redis / Caffeine)
-  - Logging & monitoring readiness
+    - Thread-safety
+    - Connection pooling
+    - Caching strategy (Redis / Caffeine)
+    - Logging & monitoring readiness
 
 10. **Code Style & Maintainability**
-   - Clean Code principles
-   - SOLID adherence
-   - Magic numbers / hardcoded values
-   - Meaningful naming conventions
+     - Clean Code principles
+     - SOLID adherence
+     - Magic numbers / hardcoded values
+     - Meaningful naming conventions
 
 ---
 
 ### Output Format
-Output to improve.md, include below sections
+
+Clear up IMPROVE.md and write new output into this file
 
 # Project structure
+
 list down folder structure, design digram
 
+# Technology stack summary
+
+show in table with column category, technology, version, purpose, status, recommendation
+
 # Design/Architecture comparison with industrial standards
-list down design or architectural solution comparison with industrial
 
-# QA Unit Test summary
-list down project metrics, from source file/classes to unit test, test coverage etc.
+summarize design or architectural solution comparison with industrial
+show in table with column aspect, industry best practice, this project, status, gap, recommendation
 
-#Evaluation Summary
+# Code & QA Unit Test summary
+
+show project metrics in table with below columns: lines of code, number of classes, number of methods, number of unit tests, test coverage, api endpoints, database tables ,services, test classes etc.
+
+# Evaluation Summary
+
 a table with column category, score, assessment, total score at the end.
 
 # Pros and Cons
+
 list pros and cons of each category mentioned in above table, list down what done well and what need to improve
 
 #Recommendations
 list improvement item ordered by priority from high to low
 
 # Actions
+
 For each issue found, provide:
 
 - ✅ **Category**
@@ -106,10 +118,10 @@ Also include:
 - ✅ Weaknesses
 - ✅ Top 5 Actionable Improvements
 
-
 ---
 
 If specific files or packages are provided, prioritize reviewing:
+
 - Controllers
 - Services
 - Entities
@@ -127,62 +139,62 @@ Focus on production-readiness, maintainability, scalability, and industry best p
 ### Review Scope
 
 1. **Architecture & Design**
-  - Layered architecture compliance (Controller / Service / Repository)
-  - Separation of concerns
-  - Proper use of DTOs vs Entities
-  - Domain-driven design awareness
+    - Layered architecture compliance (Controller / Service / Repository)
+    - Separation of concerns
+    - Proper use of DTOs vs Entities
+    - Domain-driven design awareness
 
 2. **Spring Boot Best Practices**
-  - Correct usage of annotations (`@RestController`, `@Service`, `@Repository`, `@Component`)
-  - Application configuration (`application.yml` / `application.properties`)
-  - Profiles (`dev`, `prod`) usage
-  - Dependency injection (constructor-based only)
+    - Correct usage of annotations (`@RestController`, `@Service`, `@Repository`, `@Component`)
+    - Application configuration (`application.yml` / `application.properties`)
+    - Profiles (`dev`, `prod`) usage
+    - Dependency injection (constructor-based only)
 
 3. **REST API Design**
-  - RESTful URL structure
-  - HTTP methods correctness
-  - Status codes usage
-  - Request / Response DTO validation
+    - RESTful URL structure
+    - HTTP methods correctness
+    - Status codes usage
+    - Request / Response DTO validation
 
 4. **Exception Handling**
-  - Global exception handling (`@ControllerAdvice`)
-  - Consistent error response structure
-  - Avoid leaking stack traces
+    - Global exception handling (`@ControllerAdvice`)
+    - Consistent error response structure
+    - Avoid leaking stack traces
 
 5. **Validation & Input Sanitization**
-  - Use of `javax.validation` / `jakarta.validation`
-  - DTO-level validation
-  - Defensive programming
+    - Use of `javax.validation` / `jakarta.validation`
+    - DTO-level validation
+    - Defensive programming
 
 6. **Data Access Layer**
-  - JPA / Hibernate best practices
-  - N+1 query issues
-  - Transaction management (`@Transactional`)
-  - Database schema design
+    - JPA / Hibernate best practices
+    - N+1 query issues
+    - Transaction management (`@Transactional`)
+    - Database schema design
 
 7. **Security**
-  - Authentication & Authorization
-  - JWT / OAuth2 usage (if applicable)
-  - Sensitive data exposure
-  - CORS configuration
+    - Authentication & Authorization
+    - JWT / OAuth2 usage (if applicable)
+    - Sensitive data exposure
+    - CORS configuration
 
 8. **Testing**
-  - Unit tests (JUnit 5)
-  - Integration tests (`@SpringBootTest`)
-  - Mocking strategy (Mockito)
-  - Test coverage quality
+    - Unit tests (JUnit 5)
+    - Integration tests (`@SpringBootTest`)
+    - Mocking strategy (Mockito)
+    - Test coverage quality
 
 9. **Performance & Scalability**
-  - Thread-safety
-  - Connection pooling
-  - Caching strategy (Redis / Caffeine)
-  - Logging & monitoring readiness
+    - Thread-safety
+    - Connection pooling
+    - Caching strategy (Redis / Caffeine)
+    - Logging & monitoring readiness
 
 10. **Code Style & Maintainability**
-   - Clean Code principles
-   - SOLID adherence
-   - Magic numbers / hardcoded values
-   - Meaningful naming conventions
+     - Clean Code principles
+     - SOLID adherence
+     - Magic numbers / hardcoded values
+     - Meaningful naming conventions
 
 ---
 
@@ -205,6 +217,7 @@ Also include:
 ---
 
 If specific files or packages are provided, prioritize reviewing:
+
 - Controllers
 - Services
 - Entities

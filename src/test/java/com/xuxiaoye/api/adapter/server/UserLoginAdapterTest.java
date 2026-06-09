@@ -138,7 +138,7 @@ class UserLoginAdapterTest extends BaseTest {
 
                 ExtractableResponse<Response> response = postExtractable(
                         "/users/login",
-                        HeaderBuilder.defaultHeader().build(),
+                        HeaderBuilder.defaultHeader().authorizationToken("").build(),
                         null,
                         request,
                         HttpStatus.OK.value()
@@ -155,7 +155,7 @@ class UserLoginAdapterTest extends BaseTest {
 
                 jsonResponse = post(
                         "/users/refresh",
-                        HeaderBuilder.defaultHeader().userId(userId).build(),
+                        HeaderBuilder.defaultHeader().userId(userId).authorizationToken("").build(),
                         new Cookies(List.of(cookie)),
                         request,
                         HttpStatus.OK.value()
