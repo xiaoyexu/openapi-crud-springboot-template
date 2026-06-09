@@ -8,7 +8,9 @@ import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.function.TriConsumer;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlCommandType;
@@ -44,12 +46,41 @@ public class TableAuditLogInterceptor implements Interceptor, ApplicationContext
     record EntityInfo(Class<?> entityClass, Class<?> entityDBMapper, Class<?> entityAuditDBMapper) {
     }
 
-    public final static String ACTION_CREATE = "A";
-    public final static String ACTION_UPDATE = "U";
-    public final static String ACTION_DELETE = "D";
+    @Getter
+    public enum AuditAction {
+        CREATE("A"), UPDATE("U"), DELETE("D");
+
+        private final String action;
+
+        AuditAction(String action) {
+            this.action = action;
+        }
+
+        public static AuditAction fromAction(String action) {
+            for (AuditAction auditAction : AuditAction.values()) {
+                if (auditAction.action.equals(action)) {
+                    return auditAction;
+                }
+            }
+            throw new IllegalArgumentException("Unknow action: " + action);
+        }
+    }
+
     public final static String SUFFIX_AUDIT = "Audit";
     public final static String WRAPPER_KEY_ET = "et";
     public final static String WRAPPER_KEY_EW = "ew";
+
+    private final Map<Class, TriConsumer<EntityInfo, AuditAction, BaseEntity>> ENTITY_INFO_MAP = Map.of(
+            Student.class, (entityInfo, auditAction, baseEntity) -> saveAuditAsync(entityInfo.entityAuditDBMapper, this.getEntityMapper().map((Student) baseEntity), auditAction.action),
+            Role.class, (entityInfo, auditAction, baseEntity) -> saveAuditAsync(entityInfo.entityAuditDBMapper, this.getEntityMapper().map((Role) baseEntity), auditAction.action),
+            User.class, (entityInfo, auditAction, baseEntity) -> saveAuditAsync(entityInfo.entityAuditDBMapper, this.getEntityMapper().map((User) baseEntity), auditAction.action)
+    );
+
+    private final Map<String, EntityInfo> ENTITY_DB_MAP = Map.of(
+            "StudentDBMapper", new EntityInfo(Student.class, StudentDBMapper.class, StudentAuditDBMapper.class),
+            "RoleDBMapper", new EntityInfo(Role.class, RoleDBMapper.class, RoleAuditDBMapper.class),
+            "UserDBMapper", new EntityInfo(User.class, UserDBMapper.class, UserAuditDBMapper.class)
+    );
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
@@ -119,7 +150,7 @@ public class TableAuditLogInterceptor implements Interceptor, ApplicationContext
 
     private void handleInsert(EntityInfo entityInfo, Object parameter) {
         if (parameter instanceof BaseEntity) {
-            saveEntityAudit(entityInfo, ACTION_CREATE, (BaseEntity) parameter);
+            saveEntityAudit(entityInfo, AuditAction.CREATE, (BaseEntity) parameter);
         }
     }
 
@@ -146,7 +177,7 @@ public class TableAuditLogInterceptor implements Interceptor, ApplicationContext
             if (lastestEntity == null) {
                 // PK Id changed
                 // Log "Delete"
-                saveEntityAudit(entityInfo, ACTION_DELETE, entity);
+                saveEntityAudit(entityInfo, AuditAction.DELETE, entity);
                 // Log "Create" for new Pk Id
                 if (parameter instanceof Map) {
                     Object wrapper = ((Map<?, ?>) parameter).getOrDefault(WRAPPER_KEY_EW, null);
@@ -154,14 +185,14 @@ public class TableAuditLogInterceptor implements Interceptor, ApplicationContext
                         String paramName = extractNewId((UpdateWrapper<?>) wrapper);
                         String newId = (String) ((UpdateWrapper<?>) wrapper).getParamNameValuePairs().get(paramName);
                         BaseEntity newEntity = (BaseEntity) getEntityDBMapper(entityInfo.entityDBMapper).selectById(newId);
-                        saveEntityAudit(entityInfo, ACTION_CREATE, newEntity);
+                        saveEntityAudit(entityInfo, AuditAction.CREATE, newEntity);
                     }
 
                     if (wrapper instanceof LambdaUpdateWrapper<?>) {
                         String paramName = extractNewId((LambdaUpdateWrapper<?>) wrapper);
                         String newId = (String) ((LambdaUpdateWrapper<?>) wrapper).getParamNameValuePairs().get(paramName);
                         BaseEntity newEntity = (BaseEntity) getEntityDBMapper(entityInfo.entityDBMapper).selectById(newId);
-                        saveEntityAudit(entityInfo, ACTION_CREATE, newEntity);
+                        saveEntityAudit(entityInfo, AuditAction.CREATE, newEntity);
                     }
                 }
             } else {
@@ -169,10 +200,10 @@ public class TableAuditLogInterceptor implements Interceptor, ApplicationContext
                     Object etEntity = ((Map<?, ?>) parameter).getOrDefault(WRAPPER_KEY_ET, null);
                     Object wrapper = ((Map<?, ?>) parameter).getOrDefault(WRAPPER_KEY_EW, null);
                     if (etEntity instanceof BaseEntity) {
-                        saveEntityAudit(entityInfo, ACTION_UPDATE, (BaseEntity) etEntity);
+                        saveEntityAudit(entityInfo, AuditAction.UPDATE, (BaseEntity) etEntity);
                     }
                     if (wrapper instanceof UpdateWrapper<?> || wrapper instanceof LambdaUpdateWrapper<?>) {
-                        saveEntityAudit(entityInfo, ACTION_UPDATE, lastestEntity);
+                        saveEntityAudit(entityInfo, AuditAction.UPDATE, lastestEntity);
                     }
                 }
             }
@@ -180,11 +211,12 @@ public class TableAuditLogInterceptor implements Interceptor, ApplicationContext
     }
 
     protected void handleDelete(EntityInfo entityInfo, List<BaseEntity> deletedEntities) {
-        deletedEntities.forEach(deleteEntity -> saveEntityAudit(entityInfo, ACTION_DELETE, deleteEntity));
+        deletedEntities.forEach(deleteEntity -> saveEntityAudit(entityInfo, AuditAction.DELETE, deleteEntity));
     }
 
     @Async
-    protected int saveAuditAsync(Class<?> mapperClass, BaseAuditEntity auditEntity) {
+    protected int saveAuditAsync(Class<?> mapperClass, BaseAuditEntity auditEntity, String action) {
+        auditEntity.setAction(action);
         return getEntityDBMapper(mapperClass).insert(auditEntity);
     }
 
@@ -193,33 +225,20 @@ public class TableAuditLogInterceptor implements Interceptor, ApplicationContext
         TableAuditLogInterceptor.applicationContext = applicationContext;
     }
 
-    private void saveEntityAudit(EntityInfo entityInfo, String action, BaseEntity baseEntity) {
-        if (entityInfo.entityClass == Student.class) {
-            StudentAudit audit = this.getEntityMapper().map((Student) baseEntity);
-            audit.setAction(action);
-            saveAuditAsync(entityInfo.entityAuditDBMapper, audit);
-        }
-        if (entityInfo.entityClass == Role.class) {
-            RoleAudit audit = this.getEntityMapper().map((Role) baseEntity);
-            audit.setAction(action);
-            saveAuditAsync(entityInfo.entityAuditDBMapper, audit);
-        }
-        if (entityInfo.entityClass == User.class) {
-            UserAudit audit = this.getEntityMapper().map((User) baseEntity);
-            audit.setAction(action);
-            saveAuditAsync(entityInfo.entityAuditDBMapper, audit);
-        }
+    private void saveEntityAudit(EntityInfo entityInfo, AuditAction auditAction, BaseEntity baseEntity) {
+        ENTITY_INFO_MAP.get(entityInfo.entityClass).accept(entityInfo, auditAction, baseEntity);
     }
 
     EntityInfo identifyEntityClass(String msId) {
-        if (msId.contains("StudentDBMapper")) {
-            return new EntityInfo(Student.class, StudentDBMapper.class, StudentAuditDBMapper.class);
-        } else if (msId.contains("RoleDBMapper")) {
-            return new EntityInfo(Role.class, RoleDBMapper.class, RoleAuditDBMapper.class);
-        } else if (msId.contains("UserDBMapper")) {
-            return new EntityInfo(User.class, UserDBMapper.class, UserAuditDBMapper.class);
-        }
-        return null;
-    }
+        String dbMapperName = "";
 
+        int lastDot = msId.lastIndexOf('.');
+        if (lastDot > 0) {
+            int secondLastDot = msId.lastIndexOf('.', lastDot - 1);
+            if (secondLastDot > 0) {
+                dbMapperName = msId.substring(secondLastDot + 1, lastDot);
+            }
+        }
+        return ENTITY_DB_MAP.get(dbMapperName);
+    }
 }

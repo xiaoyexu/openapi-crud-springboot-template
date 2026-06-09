@@ -10,48 +10,48 @@ import com.xuxiaoye.api.services.interfaces.*;
 public class AdapterConfig {
     @Bean
     UserAdapter userAdapter(
-            @Autowired CommonMapper commonMapper,
-            @Autowired UserService userService
+            CommonMapper commonMapper,
+            UserService userService
     ) {
         return new UserAdapter(commonMapper, userService);
     }
 
     @Bean
     UserAuditAdapter userAuditAdapter(
-            @Autowired CommonMapper commonMapper,
-            @Autowired UserAuditService userAuditService
+            CommonMapper commonMapper,
+            UserAuditService userAuditService
     ) {
         return new UserAuditAdapter(commonMapper, userAuditService);
     }
 
     @Bean
     StudentAdapter studentAdapter(
-            @Autowired CommonMapper commonMapper,
-            @Autowired StudentService studentService
+            CommonMapper commonMapper,
+            StudentService studentService
     ) {
         return new StudentAdapter(commonMapper, studentService);
     }
 
     @Bean
     StudentAuditAdapter studentAuditAdapter(
-            @Autowired CommonMapper commonMapper,
-            @Autowired StudentAuditService studentAuditService
+            CommonMapper commonMapper,
+            StudentAuditService studentAuditService
     ) {
         return new StudentAuditAdapter(commonMapper, studentAuditService);
     }
 
     @Bean
     RoleAdapter roleAdapter(
-            @Autowired CommonMapper commonMapper,
-            @Autowired RoleService roleService
+            CommonMapper commonMapper,
+            RoleService roleService
     ) {
         return new RoleAdapter(commonMapper, roleService);
     }
 
     @Bean
     RoleAuditAdapter roleAuditAdapter(
-            @Autowired CommonMapper commonMapper,
-            @Autowired RoleAuditService roleAuditService
+            CommonMapper commonMapper,
+            RoleAuditService roleAuditService
     ) {
         return new RoleAuditAdapter(commonMapper, roleAuditService);
     }

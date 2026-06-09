@@ -55,7 +55,7 @@ public class UserAuditLogTest {
 
             List<UserAudit> audits = userAuditDBService.listAuditsByDataPkId(user.getId());
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
         }
 
         @Test
@@ -66,7 +66,7 @@ public class UserAuditLogTest {
 
             List<UserAudit> audits = userAuditDBService.listAuditsByDataPkId(user.getId());
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
         }
     }
 
@@ -80,7 +80,7 @@ public class UserAuditLogTest {
 
             List<UserAudit> audits = userAuditDBService.listAuditsByDataPkId(user.getId());
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
 
             // Update
             String updatedValue = easyRandom.nextObject(String.class);
@@ -90,8 +90,8 @@ public class UserAuditLogTest {
 
             audits = userAuditDBService.listAuditsByDataPkId(user.getId());
             assertThat(audits).hasSize(2);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
-            assertThat(audits.get(1).getAction()).isEqualTo(ACTION_UPDATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
+            assertThat(audits.get(1).getAction()).isEqualTo(AuditAction.UPDATE.getAction());
             assertThat(audits.get(1).getAccountName()).isEqualTo(updatedValue);
         }
 
@@ -103,7 +103,7 @@ public class UserAuditLogTest {
 
             List<UserAudit> audits = userAuditDBService.listAuditsByDataPkId(user.getId());
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
 
             // Update
             String updatedValue = easyRandom.nextObject(String.class);
@@ -113,8 +113,8 @@ public class UserAuditLogTest {
 
             audits = userAuditDBService.listAuditsByDataPkId(user.getId());
             assertThat(audits).hasSize(2);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
-            assertThat(audits.get(1).getAction()).isEqualTo(ACTION_UPDATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
+            assertThat(audits.get(1).getAction()).isEqualTo(AuditAction.UPDATE.getAction());
             assertThat(audits.get(1).getAccountName()).isEqualTo(updatedValue);
         }
 
@@ -126,7 +126,7 @@ public class UserAuditLogTest {
 
             List<UserAudit> audits = userAuditDBService.listAuditsByDataPkId(user.getId());
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
 
             User user2 = randomUser();
 
@@ -134,7 +134,7 @@ public class UserAuditLogTest {
 
             List<UserAudit> audits2 = userAuditDBService.listAuditsByDataPkId(user2.getId());
             assertThat(audits2).hasSize(1);
-            assertThat(audits2.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits2.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
 
             // Update
             String updatedValue = easyRandom.nextObject(String.class);
@@ -148,14 +148,14 @@ public class UserAuditLogTest {
 
             audits = userAuditDBService.listAuditsByDataPkId(user.getId());
             assertThat(audits).hasSize(2);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
-            assertThat(audits.get(1).getAction()).isEqualTo(ACTION_UPDATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
+            assertThat(audits.get(1).getAction()).isEqualTo(AuditAction.UPDATE.getAction());
             assertThat(audits.get(1).getAccountName()).isEqualTo(updatedValue);
 
             audits2 = userAuditDBService.listAuditsByDataPkId(user2.getId());
             assertThat(audits2).hasSize(2);
-            assertThat(audits2.get(0).getAction()).isEqualTo(ACTION_CREATE);
-            assertThat(audits2.get(1).getAction()).isEqualTo(ACTION_UPDATE);
+            assertThat(audits2.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
+            assertThat(audits2.get(1).getAction()).isEqualTo(AuditAction.UPDATE.getAction());
             assertThat(audits2.get(1).getAccountName()).isEqualTo(updatedValue2);
         }
 
@@ -167,7 +167,7 @@ public class UserAuditLogTest {
 
             List<UserAudit> audits = userAuditDBService.listAuditsByDataPkId(user.getId());
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
 
             // Update
             String updatedValue = easyRandom.nextObject(String.class);
@@ -180,8 +180,8 @@ public class UserAuditLogTest {
 
             audits = userAuditDBService.listAuditsByDataPkId(user.getId());
             assertThat(audits).hasSize(2);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
-            assertThat(audits.get(1).getAction()).isEqualTo(ACTION_UPDATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
+            assertThat(audits.get(1).getAction()).isEqualTo(AuditAction.UPDATE.getAction());
             assertThat(audits.get(1).getAccountName()).isEqualTo(updatedValue);
         }
 
@@ -193,7 +193,7 @@ public class UserAuditLogTest {
 
             List<UserAudit> audits = userAuditDBService.listAuditsByDataPkId(user.getId());
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
 
             // Update
             String updatedValue = easyRandom.nextObject(String.class);
@@ -207,8 +207,8 @@ public class UserAuditLogTest {
 
             audits = userAuditDBService.listAuditsByDataPkId(user.getId());
             assertThat(audits).hasSize(2);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
-            assertThat(audits.get(1).getAction()).isEqualTo(ACTION_UPDATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
+            assertThat(audits.get(1).getAction()).isEqualTo(AuditAction.UPDATE.getAction());
             assertThat(audits.get(1).getAccountName()).isEqualTo(updatedValue);
         }
 
@@ -220,7 +220,7 @@ public class UserAuditLogTest {
 
             List<UserAudit> audits = userAuditDBService.listAuditsByDataPkId(user.getId());
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
 
             // Update
             String newId = easyRandom.nextObject(String.class);
@@ -236,12 +236,12 @@ public class UserAuditLogTest {
 
             audits = userAuditDBService.listAuditsByDataPkId(user.getId());
             assertThat(audits).hasSize(2);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
-            assertThat(audits.get(1).getAction()).isEqualTo(ACTION_DELETE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
+            assertThat(audits.get(1).getAction()).isEqualTo(AuditAction.DELETE.getAction());
 
             audits = userAuditDBService.listAuditsByDataPkId(newId);
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
             assertThat(audits.get(0).getId()).isEqualTo(newId);
         }
 
@@ -253,7 +253,7 @@ public class UserAuditLogTest {
 
             List<UserAudit> audits = userAuditDBService.listAuditsByDataPkId(user.getId());
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
 
             // Update
             String newId = easyRandom.nextObject(String.class);
@@ -272,13 +272,13 @@ public class UserAuditLogTest {
 
             audits = userAuditDBService.listAuditsByDataPkId(user.getId());
             assertThat(audits).hasSize(2);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
-            assertThat(audits.get(1).getAction()).isEqualTo(ACTION_DELETE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
+            assertThat(audits.get(1).getAction()).isEqualTo(AuditAction.DELETE.getAction());
             assertThat(audits.get(1).getId()).isEqualTo(user.getId());
 
             audits = userAuditDBService.listAuditsByDataPkId(newId);
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
             assertThat(audits.get(0).getId()).isEqualTo(newId);
         }
     }
@@ -293,14 +293,14 @@ public class UserAuditLogTest {
 
             List<UserAudit> audits = userAuditDBService.listAuditsByDataPkId(user.getId());
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
 
             assertDoesNotThrow(() -> userDBService.removeById(user));
 
             audits = userAuditDBService.listAuditsByDataPkId(user.getId());
             assertThat(audits).hasSize(2);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
-            assertThat(audits.get(1).getAction()).isEqualTo(ACTION_DELETE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
+            assertThat(audits.get(1).getAction()).isEqualTo(AuditAction.DELETE.getAction());
         }
 
         @Test
@@ -311,14 +311,14 @@ public class UserAuditLogTest {
 
             List<UserAudit> audits = userAuditDBService.listAuditsByDataPkId(user.getId());
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
 
             assertDoesNotThrow(() -> userDBService.removeById(user.getId()));
 
             audits = userAuditDBService.listAuditsByDataPkId(user.getId());
             assertThat(audits).hasSize(2);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
-            assertThat(audits.get(1).getAction()).isEqualTo(ACTION_DELETE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
+            assertThat(audits.get(1).getAction()).isEqualTo(AuditAction.DELETE.getAction());
         }
     }
 }

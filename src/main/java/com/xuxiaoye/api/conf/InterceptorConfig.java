@@ -4,9 +4,7 @@ import java.util.Arrays;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Cache;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -16,18 +14,25 @@ import com.xuxiaoye.api.interceptors.JWTInterceptor;
 
 public class InterceptorConfig implements WebMvcConfigurer {
 
-    @Autowired
-    ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
-    @Autowired
-    RequestContext requestContext;
+    private final RequestContext requestContext;
 
-    @Autowired
-    ResourceConfig resourceConfig;
+    private final ResourceConfig resourceConfig;
 
-    @Autowired
-    @Qualifier("nonceCache")
-    Cache<String, Boolean> cache;
+    private final Cache<String, Boolean> cache;
+
+    public InterceptorConfig(
+            ObjectMapper objectMapper,
+            RequestContext requestContext,
+            ResourceConfig resourceConfig,
+            @Qualifier("nonceCache") Cache<String, Boolean> cache
+    ) {
+        this.objectMapper = objectMapper;
+        this.requestContext = requestContext;
+        this.resourceConfig = resourceConfig;
+        this.cache = cache;
+    }
 
     @Bean
     public JWTInterceptor jwtInterceptor() {

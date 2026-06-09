@@ -53,7 +53,7 @@ public class RoleAuditLogTest {
 
             List<RoleAudit> audits = roleAuditDBService.listAuditsByDataPkId(role.getId());
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
         }
 
         @Test
@@ -64,7 +64,7 @@ public class RoleAuditLogTest {
 
             List<RoleAudit> audits = roleAuditDBService.listAuditsByDataPkId(role.getId());
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
         }
     }
 
@@ -78,7 +78,7 @@ public class RoleAuditLogTest {
 
             List<RoleAudit> audits = roleAuditDBService.listAuditsByDataPkId(role.getId());
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
 
             // Update
             String updatedValue = easyRandom.nextObject(String.class);
@@ -88,8 +88,8 @@ public class RoleAuditLogTest {
 
             audits = roleAuditDBService.listAuditsByDataPkId(role.getId());
             assertThat(audits).hasSize(2);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
-            assertThat(audits.get(1).getAction()).isEqualTo(ACTION_UPDATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
+            assertThat(audits.get(1).getAction()).isEqualTo(AuditAction.UPDATE.getAction());
             assertThat(audits.get(1).getAuthority()).isEqualTo(updatedValue);
         }
 
@@ -101,7 +101,7 @@ public class RoleAuditLogTest {
 
             List<RoleAudit> audits = roleAuditDBService.listAuditsByDataPkId(role.getId());
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
 
             // Update
             String updatedValue = easyRandom.nextObject(String.class);
@@ -111,8 +111,8 @@ public class RoleAuditLogTest {
 
             audits = roleAuditDBService.listAuditsByDataPkId(role.getId());
             assertThat(audits).hasSize(2);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
-            assertThat(audits.get(1).getAction()).isEqualTo(ACTION_UPDATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
+            assertThat(audits.get(1).getAction()).isEqualTo(AuditAction.UPDATE.getAction());
             assertThat(audits.get(1).getAuthority()).isEqualTo(updatedValue);
         }
 
@@ -124,7 +124,7 @@ public class RoleAuditLogTest {
 
             List<RoleAudit> audits = roleAuditDBService.listAuditsByDataPkId(role.getId());
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
 
             Role role2 = randomRole();
 
@@ -132,7 +132,7 @@ public class RoleAuditLogTest {
 
             List<RoleAudit> audits2 = roleAuditDBService.listAuditsByDataPkId(role2.getId());
             assertThat(audits2).hasSize(1);
-            assertThat(audits2.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits2.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
 
             // Update
             String updatedValue = easyRandom.nextObject(String.class);
@@ -146,14 +146,14 @@ public class RoleAuditLogTest {
 
             audits = roleAuditDBService.listAuditsByDataPkId(role.getId());
             assertThat(audits).hasSize(2);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
-            assertThat(audits.get(1).getAction()).isEqualTo(ACTION_UPDATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
+            assertThat(audits.get(1).getAction()).isEqualTo(AuditAction.UPDATE.getAction());
             assertThat(audits.get(1).getAuthority()).isEqualTo(updatedValue);
 
             audits2 = roleAuditDBService.listAuditsByDataPkId(role2.getId());
             assertThat(audits2).hasSize(2);
-            assertThat(audits2.get(0).getAction()).isEqualTo(ACTION_CREATE);
-            assertThat(audits2.get(1).getAction()).isEqualTo(ACTION_UPDATE);
+            assertThat(audits2.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
+            assertThat(audits2.get(1).getAction()).isEqualTo(AuditAction.UPDATE.getAction());
             assertThat(audits2.get(1).getAuthority()).isEqualTo(updatedValue2);
         }
 
@@ -165,7 +165,7 @@ public class RoleAuditLogTest {
 
             List<RoleAudit> audits = roleAuditDBService.listAuditsByDataPkId(role.getId());
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
 
             // Update
             String updatedValue = easyRandom.nextObject(String.class);
@@ -178,8 +178,8 @@ public class RoleAuditLogTest {
 
             audits = roleAuditDBService.listAuditsByDataPkId(role.getId());
             assertThat(audits).hasSize(2);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
-            assertThat(audits.get(1).getAction()).isEqualTo(ACTION_UPDATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
+            assertThat(audits.get(1).getAction()).isEqualTo(AuditAction.UPDATE.getAction());
             assertThat(audits.get(1).getAuthority()).isEqualTo(updatedValue);
         }
 
@@ -191,7 +191,7 @@ public class RoleAuditLogTest {
 
             List<RoleAudit> audits = roleAuditDBService.listAuditsByDataPkId(role.getId());
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
 
             // Update
             String updatedValue = easyRandom.nextObject(String.class);
@@ -205,8 +205,8 @@ public class RoleAuditLogTest {
 
             audits = roleAuditDBService.listAuditsByDataPkId(role.getId());
             assertThat(audits).hasSize(2);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
-            assertThat(audits.get(1).getAction()).isEqualTo(ACTION_UPDATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
+            assertThat(audits.get(1).getAction()).isEqualTo(AuditAction.UPDATE.getAction());
             assertThat(audits.get(1).getAuthority()).isEqualTo(updatedValue);
         }
 
@@ -218,7 +218,7 @@ public class RoleAuditLogTest {
 
             List<RoleAudit> audits = roleAuditDBService.listAuditsByDataPkId(role.getId());
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
 
             // Update
             String newId = easyRandom.nextObject(String.class);
@@ -234,12 +234,12 @@ public class RoleAuditLogTest {
 
             audits = roleAuditDBService.listAuditsByDataPkId(role.getId());
             assertThat(audits).hasSize(2);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
-            assertThat(audits.get(1).getAction()).isEqualTo(ACTION_DELETE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
+            assertThat(audits.get(1).getAction()).isEqualTo(AuditAction.DELETE.getAction());
 
             audits = roleAuditDBService.listAuditsByDataPkId(newId);
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
             assertThat(audits.get(0).getId()).isEqualTo(newId);
         }
 
@@ -251,7 +251,7 @@ public class RoleAuditLogTest {
 
             List<RoleAudit> audits = roleAuditDBService.listAuditsByDataPkId(role.getId());
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
 
             // Update
             String newId = easyRandom.nextObject(String.class);
@@ -270,13 +270,13 @@ public class RoleAuditLogTest {
 
             audits = roleAuditDBService.listAuditsByDataPkId(role.getId());
             assertThat(audits).hasSize(2);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
-            assertThat(audits.get(1).getAction()).isEqualTo(ACTION_DELETE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
+            assertThat(audits.get(1).getAction()).isEqualTo(AuditAction.DELETE.getAction());
             assertThat(audits.get(1).getId()).isEqualTo(role.getId());
 
             audits = roleAuditDBService.listAuditsByDataPkId(newId);
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
             assertThat(audits.get(0).getId()).isEqualTo(newId);
         }
     }
@@ -291,14 +291,14 @@ public class RoleAuditLogTest {
 
             List<RoleAudit> audits = roleAuditDBService.listAuditsByDataPkId(role.getId());
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
 
             assertDoesNotThrow(() -> roleDBService.removeById(role));
 
             audits = roleAuditDBService.listAuditsByDataPkId(role.getId());
             assertThat(audits).hasSize(2);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
-            assertThat(audits.get(1).getAction()).isEqualTo(ACTION_DELETE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
+            assertThat(audits.get(1).getAction()).isEqualTo(AuditAction.DELETE.getAction());
         }
 
         @Test
@@ -309,14 +309,14 @@ public class RoleAuditLogTest {
 
             List<RoleAudit> audits = roleAuditDBService.listAuditsByDataPkId(role.getId());
             assertThat(audits).hasSize(1);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
 
             assertDoesNotThrow(() -> roleDBService.removeById(role.getId()));
 
             audits = roleAuditDBService.listAuditsByDataPkId(role.getId());
             assertThat(audits).hasSize(2);
-            assertThat(audits.get(0).getAction()).isEqualTo(ACTION_CREATE);
-            assertThat(audits.get(1).getAction()).isEqualTo(ACTION_DELETE);
+            assertThat(audits.get(0).getAction()).isEqualTo(AuditAction.CREATE.getAction());
+            assertThat(audits.get(1).getAction()).isEqualTo(AuditAction.DELETE.getAction());
         }
     }
 }
