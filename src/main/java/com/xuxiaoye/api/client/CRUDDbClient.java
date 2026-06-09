@@ -194,17 +194,19 @@ public abstract class CRUDDbClient<
         String action = (String) row.getCell(colIdx++).getValue();
         String id = (String) row.getCell(colIdx++).getValue();
 
-        if (StringUtils.isBlank(action) || StringUtils.isBlank(id)) {
-            log.info("Nothing to do action: [{}] id:[{}]", action, id);
+        if (StringUtils.isBlank(action)) {
+            return AppResponse.ok();
+        }
+        AuditAction auditAction = AuditAction.fromAction(action);
+        if ((AuditAction.UPDATE == auditAction || AuditAction.DELETE == auditAction) && StringUtils.isBlank(id)) {
             return AppResponse.ok();
         }
 
         PresentDto pEntity = buildFromRow(id, colIdx, row);
-        AppResponse<?> appResponse = switch (action) {
-            case ACTION_CREATE -> this.create(pEntity);
-            case ACTION_UPDATE -> this.updateById(id, pEntity);
-            case ACTION_DELETE -> this.deleteById(id);
-            default -> AppResponse.ok();
+        AppResponse<?> appResponse = switch (auditAction) {
+            case CREATE -> this.create(pEntity);
+            case UPDATE -> this.updateById(id, pEntity);
+            case DELETE -> this.deleteById(id);
         };
         if (!appResponse.isOk()) {
             return AppResponse.failWithStatus(AppStatus.badRequest("Failed to import id " + id + " error:" + appResponse.getStatus().getMessage()));

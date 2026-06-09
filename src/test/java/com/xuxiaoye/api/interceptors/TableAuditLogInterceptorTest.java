@@ -1,9 +1,11 @@
 package com.xuxiaoye.api.interceptors;
 
+import java.lang.reflect.Method;
+
 import lombok.extern.log4j.Log4j2;
 import org.apache.ibatis.mapping.MappedStatement;
-import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.plugin.Invocation;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.InjectMocks;
@@ -14,9 +16,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.xuxiaoye.api.Application;
 
-import java.lang.reflect.Method;
-
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -48,6 +49,13 @@ class TableAuditLogInterceptorTest {
         assertDoesNotThrow(() -> {
             tableAuditLogInterceptor.intercept(invocation);
         });
+    }
+
+    @Test
+    void testAuditActionFromError() {
+        assertThrows(IllegalArgumentException.class, () ->
+                TableAuditLogInterceptor.AuditAction.fromAction(new EasyRandom().nextObject(String.class))
+        );
     }
 
 //    @Test

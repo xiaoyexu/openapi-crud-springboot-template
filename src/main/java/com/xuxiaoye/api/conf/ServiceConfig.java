@@ -4,7 +4,6 @@ import java.util.concurrent.TimeUnit;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.access.PermissionEvaluator;
@@ -35,10 +34,10 @@ public class ServiceConfig {
 
     @Bean("P")
     PermissionEvaluator permissionEvaluator(
-            @Autowired @Qualifier("permissionCache") Cache<String, Boolean> cache,
-            @Autowired StudentDBService studentDBService,
-            @Autowired RoleDBService roleDBService,
-            @Autowired UserDBService userDBService
+            @Qualifier("permissionCache") Cache<String, Boolean> cache,
+            StudentDBService studentDBService,
+            RoleDBService roleDBService,
+            UserDBService userDBService
     ) {
         return new PermissionServiceImpl(
                 cache,
@@ -55,10 +54,10 @@ public class ServiceConfig {
 
     @Bean
     UserService userService(
-            @Autowired RequestContext requestContext,
-            @Autowired ResourceConfig resourceConfig,
-            @Autowired UserMapper userMapper,
-            @Autowired UserDBService userDBService
+            RequestContext requestContext,
+            ResourceConfig resourceConfig,
+            UserMapper userMapper,
+            UserDBService userDBService
     ) {
         return new UserServiceImpl(requestContext, resourceConfig, userMapper, userDBService);
     }
@@ -70,9 +69,9 @@ public class ServiceConfig {
 
     @Bean
     UserAuditService userAuditService(
-            @Autowired RequestContext requestContext,
-            @Autowired UserAuditMapper userAuditMapper,
-            @Autowired UserAuditDBService userAuditDBService
+            RequestContext requestContext,
+            UserAuditMapper userAuditMapper,
+            UserAuditDBService userAuditDBService
     ) {
         return new UserAuditServiceImpl(
                 requestContext,
@@ -88,18 +87,18 @@ public class ServiceConfig {
 
     @Bean
     StudentService studentService(
-            @Autowired RequestContext requestContext,
-            @Autowired StudentMapper studentMapper,
-            @Autowired StudentDBService studentDBService
+            RequestContext requestContext,
+            StudentMapper studentMapper,
+            StudentDBService studentDBService
     ) {
         return new StudentServiceImpl(requestContext, studentMapper, studentDBService);
     }
 
     @Bean
     StudentAuditService studentAuditService(
-            @Autowired RequestContext requestContext,
-            @Autowired StudentAuditMapper studentAuditMapper,
-            @Autowired StudentAuditDBService studentAuditDBService
+            RequestContext requestContext,
+            StudentAuditMapper studentAuditMapper,
+            StudentAuditDBService studentAuditDBService
     ) {
         return new StudentAuditServiceImpl(requestContext, studentAuditMapper, studentAuditDBService);
     }
@@ -116,9 +115,9 @@ public class ServiceConfig {
 
     @Bean
     RoleService roleService(
-            @Autowired RequestContext requestContext,
-            @Autowired RoleMapper roleMapper,
-            @Autowired RoleDBService roleDBService
+            RequestContext requestContext,
+            RoleMapper roleMapper,
+            RoleDBService roleDBService
     ) {
         return new RoleServiceImpl(requestContext, roleMapper, roleDBService);
     }
@@ -130,9 +129,9 @@ public class ServiceConfig {
 
     @Bean
     RoleAuditService roleAuditService(
-            @Autowired RequestContext requestContext,
-            @Autowired RoleAuditMapper roleAuditMapper,
-            @Autowired RoleAuditDBService roleAuditDBService
+            RequestContext requestContext,
+            RoleAuditMapper roleAuditMapper,
+            RoleAuditDBService roleAuditDBService
     ) {
         return new RoleAuditServiceImpl(
                 requestContext,
