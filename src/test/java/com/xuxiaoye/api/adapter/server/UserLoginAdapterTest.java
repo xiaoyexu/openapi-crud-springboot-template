@@ -32,7 +32,8 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 @ActiveProfiles("test")
 @Log4j2
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Order(800)
+@TestPropertySource(properties = "new test context")
+@Order(1)
 class UserLoginAdapterTest extends BaseTest {
     @LocalServerPort
     private int port;

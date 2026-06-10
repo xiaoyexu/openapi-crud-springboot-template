@@ -26,6 +26,7 @@ import com.xuxiaoye.api.services.db.mapper.UserDBMapper;
 import com.xuxiaoye.api.services.interfaces.UserService;
 import com.xuxiaoye.api.utils.ExcelHelper;
 import com.xuxiaoye.api.utils.JwtUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static com.xuxiaoye.api.client.BaseDbClient.Operator.*;
 
@@ -44,6 +45,7 @@ public class UserServiceImpl extends CRUDDbClient<
 
     private final UserMapper userMapper;
     private final UserDBService userDBService;
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${admin.accessToken.expiration}")
     private long accessTokenExpiration;
@@ -55,12 +57,14 @@ public class UserServiceImpl extends CRUDDbClient<
             RequestContext requestContext,
             ResourceConfig resourceConfig,
             UserMapper userMapper,
-            UserDBService userDBService
+            UserDBService userDBService,
+            PasswordEncoder passwordEncoder
     ) {
         this.requestContext = requestContext;
         this.resourceConfig = resourceConfig;
         this.userMapper = userMapper;
         this.userDBService = userDBService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -76,12 +80,11 @@ public class UserServiceImpl extends CRUDDbClient<
     @Override
     public AppResponse<com.xuxiaoye.api.bean.JWT> login(LoginRequest request) {
         return handleDbCall(() -> {
-            com.xuxiaoye.api.services.db.dto.entity.User dbUser = userDBService.getUserByAccountNameAndPassword(
-                    request.getUsername(),
-                    JwtUtils.getSHA256(request.getPassword())
+            com.xuxiaoye.api.services.db.dto.entity.User dbUser = userDBService.getUserByAccountName(
+                    request.getUsername()
             );
 
-            if (dbUser == null) {
+            if (dbUser == null || !passwordEncoder.matches(request.getPassword(), dbUser.getPasswordHash())) {
                 return AppResponse.failWithStatus(AppStatus.badRequest("Invalid access"));
             }
 

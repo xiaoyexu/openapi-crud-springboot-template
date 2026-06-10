@@ -14,10 +14,9 @@ public class UserDBService extends ServiceImpl<UserDBMapper, User> implements Ow
         return user != null && user.getCreatedBy().equals(createdBy);
     }
 
-    public User getUserByAccountNameAndPassword(String username, String password) {
-        LambdaUpdateWrapper<User> query = new LambdaUpdateWrapper<User>()
-                .eq(User::getAccountName, username)
-                .eq(User::getPasswordHash, password);
+    public User getUserByAccountName(String username) {
+        LambdaQueryWrapper<User> query = new LambdaQueryWrapper<User>()
+                .eq(User::getAccountName, username);
         return this.getOne(query);
     }
 
