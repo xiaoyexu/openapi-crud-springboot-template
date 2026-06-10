@@ -4,7 +4,7 @@
     "id": "US000001",
     "action": "A",
     "accountName": "username1",
-    "passwordHash": "e1075933b26b5e4e50ab3dc3528eb3461214ba15b7a27b51f5dbc086912caf56",
+    "passwordHash": "$2b$12$9MvpqVYIQDfm7yO6te/2..xvcvEbsY/hsXPtZPMg2Kfjn7HT6O6zm",
     "role": "ADMIN",
     "createdBy": "system",
     "createdAt": "2025-01-01T09:00:00",

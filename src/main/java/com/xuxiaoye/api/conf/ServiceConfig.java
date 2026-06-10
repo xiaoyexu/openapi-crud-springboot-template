@@ -13,6 +13,8 @@ import com.xuxiaoye.api.bean.RequestContext;
 import com.xuxiaoye.api.services.*;
 import com.xuxiaoye.api.services.db.*;
 import com.xuxiaoye.api.services.interfaces.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class ServiceConfig {
 
@@ -57,9 +59,10 @@ public class ServiceConfig {
             RequestContext requestContext,
             ResourceConfig resourceConfig,
             UserMapper userMapper,
-            UserDBService userDBService
+            UserDBService userDBService,
+            PasswordEncoder passwordEncoder
     ) {
-        return new UserServiceImpl(requestContext, resourceConfig, userMapper, userDBService);
+        return new UserServiceImpl(requestContext, resourceConfig, userMapper, userDBService, passwordEncoder);
     }
 
     @Bean
@@ -138,5 +141,10 @@ public class ServiceConfig {
                 roleAuditMapper,
                 roleAuditDBService
         );
+    }
+
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(12);
     }
 }

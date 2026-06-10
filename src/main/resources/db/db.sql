@@ -6,8 +6,10 @@ CREATE TABLE USERS(
   ID                      VARCHAR(50)  NOT NULL,
   CONSTRAINT PK_USERS     PRIMARY KEY (ID),
   ACCOUNT_NAME            VARCHAR(255) NOT NULL,
+  CONSTRAINT UK_USERS_ACCOUNT_NAME UNIQUE (ACCOUNT_NAME),
   PASSWORD_HASH           VARCHAR(255) NOT NULL,
   ROLE                    VARCHAR(50) NOT NULL,
+  INDEX IX_USERS_ROLE (ROLE),
   REFRESH_TOKEN           TEXT DEFAULT NULL,
   CREATED_BY              VARCHAR(255) NOT NULL,
   CREATED_AT              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -16,12 +18,12 @@ CREATE TABLE USERS(
 );
 
 INSERT INTO USERS(ID,ACCOUNT_NAME,PASSWORD_HASH,ROLE,REFRESH_TOKEN,CREATED_BY,CREATED_AT,UPDATED_BY,UPDATED_AT) VALUES
-('US000001', 'username1', 'e1075933b26b5e4e50ab3dc3528eb3461214ba15b7a27b51f5dbc086912caf56', 'ADMIN',  null, 'system', '2025-01-01 09:00:00',  'user','2025-02-01 09:00:00'),
-('US000002', 'username2', 'bbc2711bf1d1c152b21b00cdadf89fa637c76238ffc871b17e1bb5ca9908a104', 'ADMIN',  null,   'user', '2025-01-03 10:00:00','system','2025-02-03 10:00:00'),
-('US000003', 'username3', 'd68379725d2d8a16e5f2cbcaf18e0baf84ea0aed81ed55b7c4f479e7cdab855d', 'ADMIN',  null, 'system', '2025-02-02 11:00:00',  'user','2025-03-02 11:00:00'),
-('US000004', 'username4', 'c9366c1bd693018b9ac3c43f1404d3063e7c62b73f93a3d3b17ec71411d5f10f', 'MEMBER',  null,   'user', '2025-01-02 12:00:00','system','2025-02-02 12:00:00'),
-('US000005', 'username5', '253f4f19eb4886c3e9094b92c0080f5b4eecc52011669551a4cc96adb798d31c', 'MEMBER',  null,   'user', '2025-02-03 13:00:00','system','2025-03-03 13:00:00'),
-('US000006', 'username6', '35632947cbe8b271f211797a975dfce06afcfc0b144adb0573f81df3f6bdb7f1', 'MEMBER' , null, 'system', '2025-02-01 14:00:00',  'user','2025-03-01 14:00:00');
+('US000001', 'username1', '$2b$12$9MvpqVYIQDfm7yO6te/2..xvcvEbsY/hsXPtZPMg2Kfjn7HT6O6zm', 'ADMIN',  null, 'system', '2025-01-01 09:00:00',  'user','2025-02-01 09:00:00'),
+('US000002', 'username2', '$2b$12$4qwE4vJlBDbpM/CQK5hug.FbpEZX6W028lW/9dv7p02fbLyrMypEC', 'ADMIN',  null,   'user', '2025-01-03 10:00:00','system','2025-02-03 10:00:00'),
+('US000003', 'username3', '$2b$12$e8bQib9HafDZZLsiiTaGqO4D0zlIMhO.9AbNpv1POEQGBoPYmy1Sm', 'ADMIN',  null, 'system', '2025-02-02 11:00:00',  'user','2025-03-02 11:00:00'),
+('US000004', 'username4', '$2b$12$PvBfZqEkIITnLVqN5w7zhOcHar30Zh7WVIzPPOxO1K7JLTHukDgTq', 'MEMBER',  null,   'user', '2025-01-02 12:00:00','system','2025-02-02 12:00:00'),
+('US000005', 'username5', '$2b$12$P8PhCv6StfjcQJ8TJcfbG.Y7eofm54yEl6.tRM9VdKkzy7Mm77Jmm', 'MEMBER',  null,   'user', '2025-02-03 13:00:00','system','2025-03-03 13:00:00'),
+('US000006', 'username6', '$2b$12$L9p/Zhq13BnCE8hCpFN5JurzrGSjvaI3Rgj1nEgNJ862c2j2jCmka', 'MEMBER' , null, 'system', '2025-02-01 14:00:00',  'user','2025-03-01 14:00:00');
 
 --
 DROP TABLE IF EXISTS USERS_AUDIT;
@@ -30,6 +32,7 @@ CREATE TABLE USERS_AUDIT(
   CONSTRAINT PK_USERS_AUDIT PRIMARY KEY (AUDIT_ID),
   ACTION                  VARCHAR(1) NOT NULL,
   ID                      VARCHAR(50)  NOT NULL,
+  INDEX IX_USERS_AUDIT_ID (ID),
   ACCOUNT_NAME            VARCHAR(255) NOT NULL,
   PASSWORD_HASH           VARCHAR(255) NOT NULL,
   ROLE                    VARCHAR(50) NOT NULL,
@@ -41,12 +44,12 @@ CREATE TABLE USERS_AUDIT(
 );
 
 INSERT INTO USERS_AUDIT(ACTION,ID,ACCOUNT_NAME,PASSWORD_HASH,ROLE,REFRESH_TOKEN,CREATED_BY,CREATED_AT,UPDATED_BY,UPDATED_AT) VALUES
-('A','US000001', 'username1', 'e1075933b26b5e4e50ab3dc3528eb3461214ba15b7a27b51f5dbc086912caf56', 'ADMIN',  null, 'system', '2025-01-01 09:00:00',  'user','2025-02-01 09:00:00'),
-('A','US000002', 'username2', 'bbc2711bf1d1c152b21b00cdadf89fa637c76238ffc871b17e1bb5ca9908a104', 'ADMIN',  null,   'user', '2025-01-03 10:00:00','system','2025-02-03 10:00:00'),
-('A','US000003', 'username3', 'd68379725d2d8a16e5f2cbcaf18e0baf84ea0aed81ed55b7c4f479e7cdab855d', 'ADMIN',  null, 'system', '2025-02-02 11:00:00',  'user','2025-03-02 11:00:00'),
-('A','US000004', 'username4', 'c9366c1bd693018b9ac3c43f1404d3063e7c62b73f93a3d3b17ec71411d5f10f', 'MEMBER',  null,   'user', '2025-01-02 12:00:00','system','2025-02-02 12:00:00'),
-('A','US000005', 'username5', '253f4f19eb4886c3e9094b92c0080f5b4eecc52011669551a4cc96adb798d31c', 'MEMBER',  null,   'user', '2025-02-03 13:00:00','system','2025-03-03 13:00:00'),
-('A','US000006', 'username6', '35632947cbe8b271f211797a975dfce06afcfc0b144adb0573f81df3f6bdb7f1', 'MEMBER' , null, 'system', '2025-02-01 14:00:00',  'user','2025-03-01 14:00:00');
+('A','US000001', 'username1', '$2b$12$9MvpqVYIQDfm7yO6te/2..xvcvEbsY/hsXPtZPMg2Kfjn7HT6O6zm', 'ADMIN',  null, 'system', '2025-01-01 09:00:00',  'user','2025-02-01 09:00:00'),
+('A','US000002', 'username2', '$2b$12$4qwE4vJlBDbpM/CQK5hug.FbpEZX6W028lW/9dv7p02fbLyrMypEC', 'ADMIN',  null,   'user', '2025-01-03 10:00:00','system','2025-02-03 10:00:00'),
+('A','US000003', 'username3', '$2b$12$e8bQib9HafDZZLsiiTaGqO4D0zlIMhO.9AbNpv1POEQGBoPYmy1Sm', 'ADMIN',  null, 'system', '2025-02-02 11:00:00',  'user','2025-03-02 11:00:00'),
+('A','US000004', 'username4', '$2b$12$PvBfZqEkIITnLVqN5w7zhOcHar30Zh7WVIzPPOxO1K7JLTHukDgTq', 'MEMBER',  null,   'user', '2025-01-02 12:00:00','system','2025-02-02 12:00:00'),
+('A','US000005', 'username5', '$2b$12$P8PhCv6StfjcQJ8TJcfbG.Y7eofm54yEl6.tRM9VdKkzy7Mm77Jmm', 'MEMBER',  null,   'user', '2025-02-03 13:00:00','system','2025-03-03 13:00:00'),
+('A','US000006', 'username6', '$2b$12$L9p/Zhq13BnCE8hCpFN5JurzrGSjvaI3Rgj1nEgNJ862c2j2jCmka', 'MEMBER' , null, 'system', '2025-02-01 14:00:00',  'user','2025-03-01 14:00:00');
 
 --
 
@@ -59,6 +62,7 @@ CREATE TABLE STUDENTS(
   HEIGHT                  DECIMAL(5,2),
   BIRTHDAY                DATE,
   CREATED_BY              VARCHAR(200) NOT NULL,
+  INDEX IX_STUDENTS_CREATED_BY (CREATED_BY),
   CREATED_AT              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UPDATED_BY              VARCHAR(200) NOT NULL,
   UPDATED_AT              TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -82,6 +86,7 @@ CREATE TABLE STUDENTS_AUDIT(
   CONSTRAINT PK_STUDENTS_AUDIT PRIMARY KEY (AUDIT_ID),
   ACTION                  VARCHAR(1) NOT NULL,
   ID                      VARCHAR(50) NOT NULL,
+  INDEX IX_STUDENTS_AUDIT_ID (ID),
   NAME                    VARCHAR(200) NOT NULL,
   AGE                     INT NULL,
   HEIGHT                  DECIMAL(5,2),
@@ -133,6 +138,7 @@ CREATE TABLE ROLES_AUDIT(
   CONSTRAINT PK_ROLES_AUDIT PRIMARY KEY (AUDIT_ID),
   ACTION                  VARCHAR(1) NOT NULL,
   ID                      VARCHAR(50) NOT NULL,
+  INDEX IX_ROLES_AUDIT_ID (ID),
   AUTHORITY               TEXT DEFAULT NULL,
   CREATED_BY              VARCHAR(200) NOT NULL,
   CREATED_AT              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -189,7 +189,7 @@ public abstract class BaseTest {
             builder.lbu = "application";
             builder.authorizationUser = "12345";
             builder.authorizationApp = "app";
-            builder.authorizationToken = "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IlhvTTVOZjhMWjVjRUppMXNPRURsSUVmMUNXd3d0aUlMcjFXb1FrblVaNDgiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJlMzQ0YjNjOS1jYWNjLTQzMGUtOTk4Ni04NWFmYmRmMzIzNGQiLCJvaWQiOiJlMzQ0YjNjOS1jYWNjLTQzMGUtOTk4Ni04NWFmYmRmMzIzNGQiLCJpc01mYUxvZ2luIjpmYWxzZSwic3NvSWQiOiJCOTEwNDI4NjU5IiwicGFydHlJZCI6IkI5MTA0Mjg2NTkiLCJ2dElkIjoiVjgwMDEzMjkyOSIsImNjSWQiOiIwNzUyMjg1OTUiLCJoYXNQaWkiOnRydWUsImxlSWQiOiIiLCJscElkIjoiIiwiYWNyIjoiQjJDXzFBX1NlYW1sZXNzTWlncmF0aW9uX3NpZ251cG9yc2lnbmluIiwiaGFzX3BhcnR5X2lkIjoiWSIsIm5vbmNlIjoiZGVmYXVsdE5vbmNlIiwiYXpwIjoiZmYwYWVkZDktOGFlOC00NzlkLWI4OGYtYWM4OTQ4MDAwNjdkIiwidmVyIjoiMS4wIiwiaWF0IjoxNjkwNzkzNzU0LCJhdWQiOiJmZjBhZWRkOS04YWU4LTQ3OWQtYjg4Zi1hYzg5NDgwMDA2N2QiLCJleHAiOjE2OTA3OTU1NTQsImlzcyI6Imh0dHBzOi8vYWlhaGtucC5iMmNsb2dpbi5jb20vNGI0NzNkYjgtOWMwOC00MzU1LWI3YjEtNjJkNzM1NGNkMzI4L3YyLjAvIiwibmJmIjoxNjkwNzkzNzU0fQ.Al-hxjczmIyK8b8sbwYspJN-y5kNGC9pJE2ZXPb9Io1_EiMcOauYK4B4Jj_GbYVbjcAqcizJbMzq3oTF98oCKuQmi8r5T5RETu8SD2kER9EwKC1eoONeZV8IZeD2pjRtac9owe7qGM-Pl34nr01p8MSce20DE2DDTtMikVSCamdtF8X7imEXR8p1E60QluTyu-n4eNU7NyXy1qeDhC4RurclmhH4b3kzKzIi730DYs35-y0OPH6HbyatjWaDdSk3zvaSL5r_p5DQAaSF_kTrNmn6_Pnrq8x-rzbjNaXQHY5W_afW0Z5na9Lftcfv4ZgMuqP1yuhO6Qs5WiOh_xDSmg";
+            builder.authorizationToken = "";
             builder.forwardedFor = "192.168.0.10";
             builder.acceptLanguage = "zh_HK";
             builder.deviceId = "12345678";

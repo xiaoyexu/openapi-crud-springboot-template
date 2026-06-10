@@ -5,7 +5,7 @@
       {
         "id": "US000002",
         "accountName": "username2",
-        "passwordHash": "bbc2711bf1d1c152b21b00cdadf89fa637c76238ffc871b17e1bb5ca9908a104",
+        "passwordHash": "$2b$12$4qwE4vJlBDbpM/CQK5hug.FbpEZX6W028lW/9dv7p02fbLyrMypEC",
         "role": "ADMIN",
         "createdBy": "user",
         "createdAt": "2025-01-03T10:00:00",
@@ -15,7 +15,7 @@
       {
         "id": "US000004",
         "accountName": "username4",
-        "passwordHash": "c9366c1bd693018b9ac3c43f1404d3063e7c62b73f93a3d3b17ec71411d5f10f",
+        "passwordHash": "$2b$12$PvBfZqEkIITnLVqN5w7zhOcHar30Zh7WVIzPPOxO1K7JLTHukDgTq",
         "role": "MEMBER",
         "createdBy": "user",
         "createdAt": "2025-01-02T12:00:00",
