@@ -182,6 +182,16 @@ public class UserServiceImpl extends CRUDDbClient<
     }
 
     @Override
+    protected com.xuxiaoye.api.services.db.dto.entity.User populateFrom(
+            com.xuxiaoye.api.services.db.dto.entity.User updatedUser,
+            com.xuxiaoye.api.services.db.dto.entity.User dbUser
+    ) {
+        updatedUser.setPasswordHash(dbUser.getPasswordHash());
+        updatedUser.setRefreshToken(dbUser.getRefreshToken());
+        return updatedUser;
+    }
+
+    @Override
     protected String[] getHeaders() {
         return new String[]{
                 "ACTION", // A - Add, U - Update , D - Delete
@@ -203,9 +213,9 @@ public class UserServiceImpl extends CRUDDbClient<
         excelWriter.value(rowIdx, colIdx++, "");
         excelWriter.value(rowIdx, colIdx++, user.getId());
         excelWriter.value(rowIdx, colIdx++, user.getAccountName());
-        excelWriter.value(rowIdx, colIdx++, user.getPasswordHash());
+//        excelWriter.value(rowIdx, colIdx++, user.getPasswordHash());
         excelWriter.value(rowIdx, colIdx++, user.getRole());
-        excelWriter.value(rowIdx, colIdx++, user.getRefreshToken());
+//        excelWriter.value(rowIdx, colIdx++, user.getRefreshToken());
         excelWriter.value(rowIdx, colIdx++, user.getCreatedBy());
         excelWriter.value(rowIdx, colIdx++, user.getCreatedAt());
         excelWriter.value(rowIdx, colIdx++, user.getUpdatedBy());
@@ -227,9 +237,9 @@ public class UserServiceImpl extends CRUDDbClient<
         return User.builder()
                 .id(id)
                 .accountName(accountName)
-                .passwordHash(passwordHash)
+//                .passwordHash(passwordHash)
                 .role(role)
-                .refreshToken(refreshToke)
+//                .refreshToken(refreshToke)
                 // default columns
                 .createdBy(createdBy)
                 .createdAt(createdAt)

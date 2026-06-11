@@ -12,7 +12,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 
 import com.xuxiaoye.api.Application;
 import com.xuxiaoye.api.BaseTest;
@@ -70,7 +69,14 @@ public class UserAdapterAuthTest extends BaseTest {
                 ";other;user:create;200"
         }, delimiter = ';')
         public void testGetSingleUserWithValidToken(String userId, String roles, String authorities, int expectHttpStatus) throws IOException {
-            String request = reader.withBase("requests").withFileName("create.json").getContent();
+            String request = "{\n" +
+                    "  \"accountName\": \"acc" + easyRandom.nextObject(String.class) + "\",\n" +
+                    "  \"role\": \"ADMIN\",\n" +
+                    "  \"createdBy\": \"system\",\n" +
+                    "  \"createdAt\": \"2025-01-01T09:00:00\",\n" +
+                    "  \"updatedBy\": \"user\",\n" +
+                    "  \"updatedAt\": \"2025-02-01T09:00:00\"\n" +
+                    "}";
 
             post(
                     "/users",

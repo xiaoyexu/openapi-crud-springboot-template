@@ -14,9 +14,9 @@ import com.xuxiaoye.api.bean.PagedEntity;
 public interface UserMapper extends BaseMapper<User, PagedUsers, com.xuxiaoye.api.services.db.dto.entity.User> {
     @Mapping(target = "id", source = "id")
     @Mapping(target = "accountName", source = "accountName")
-    @Mapping(target = "passwordHash", source = "passwordHash")
+//    @Mapping(target = "passwordHash", source = "passwordHash")
     @Mapping(target = "role", source = "role")
-    @Mapping(target = "refreshToken", source = "refreshToken")
+//    @Mapping(target = "refreshToken", source = "refreshToken")
     @Mapping(target = "createdBy", source = "createdBy")
     @Mapping(target = "createdAt", source = "createdAt")
     @Mapping(target = "updatedBy", source = "updatedBy")
@@ -25,9 +25,9 @@ public interface UserMapper extends BaseMapper<User, PagedUsers, com.xuxiaoye.ap
 
     @Mapping(target = "id", source = "id")
     @Mapping(target = "accountName", source = "accountName")
-    @Mapping(target = "passwordHash", source = "passwordHash")
+//    @Mapping(target = "passwordHash", source = "passwordHash")
     @Mapping(target = "role", source = "role")
-    @Mapping(target = "refreshToken", source = "refreshToken")
+//    @Mapping(target = "refreshToken", source = "refreshToken")
     @Mapping(target = "createdBy", source = "createdBy")
     @Mapping(target = "createdAt", source = "createdAt")
     @Mapping(target = "updatedBy", source = "updatedBy")

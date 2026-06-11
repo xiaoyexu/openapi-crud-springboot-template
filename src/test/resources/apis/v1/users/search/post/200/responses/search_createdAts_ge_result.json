@@ -5,7 +5,6 @@
       {
         "id": "US000003",
         "accountName": "username3",
-        "passwordHash": "$2b$12$e8bQib9HafDZZLsiiTaGqO4D0zlIMhO.9AbNpv1POEQGBoPYmy1Sm",
         "role": "ADMIN",
         "createdBy": "system",
         "createdAt": "2025-02-02T11:00:00",
@@ -15,7 +14,6 @@
       {
         "id": "US000005",
         "accountName": "username5",
-        "passwordHash": "$2b$12$P8PhCv6StfjcQJ8TJcfbG.Y7eofm54yEl6.tRM9VdKkzy7Mm77Jmm",
         "role": "MEMBER",
         "createdBy": "user",
         "createdAt": "2025-02-03T13:00:00",

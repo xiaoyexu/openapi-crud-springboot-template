@@ -63,10 +63,10 @@ Focus on production-readiness, maintainability, scalability, and industry best p
    - Logging & monitoring readiness
 
 10. **Code Style & Maintainability**
-    - Clean Code principles
-    - SOLID adherence
-    - Magic numbers / hardcoded values
-    - Meaningful naming conventions
+   - Clean Code principles
+   - SOLID adherence
+   - Magic numbers / hardcoded values
+   - Meaningful naming conventions
 
 ---
 
@@ -191,10 +191,10 @@ Focus on production-readiness, maintainability, scalability, and industry best p
    - Logging & monitoring readiness
 
 10. **Code Style & Maintainability**
-    - Clean Code principles
-    - SOLID adherence
-    - Magic numbers / hardcoded values
-    - Meaningful naming conventions
+   - Clean Code principles
+   - SOLID adherence
+   - Magic numbers / hardcoded values
+   - Meaningful naming conventions
 
 ---
 

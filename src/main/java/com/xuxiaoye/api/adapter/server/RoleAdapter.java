@@ -33,6 +33,7 @@ public class RoleAdapter implements RolesApiDelegate {
     @Override
     @PreAuthorize("@P.hasPermission(authentication, 'role', 'create')")
     public ResponseEntity<CreateRoleResponse> createSingleRole(
+            String xTraceID,
             String authorization,
             Role createRoleRequest
     ) {
@@ -46,6 +47,7 @@ public class RoleAdapter implements RolesApiDelegate {
     @Override
     @PreAuthorize("@P.hasPermission(authentication, #roleId, 'role', 'delete') or @P.hasPermission(authentication, #roleId, 'role', 'delete_own')")
     public ResponseEntity<DeleteRoleResponse> deleteSingleRole(
+            String xTraceID,
             String authorization,
             String roleId
     ) {
@@ -59,6 +61,7 @@ public class RoleAdapter implements RolesApiDelegate {
     @Override
     @PreAuthorize("@P.hasPermission(authentication, #roleId, 'role', 'get') or @P.hasPermission(authentication, #roleId, 'role', 'get_own')")
     public ResponseEntity<GetRoleResponse> getSingleRole(
+            String xTraceID,
             String authorization,
             String roleId
     ) {
@@ -72,6 +75,7 @@ public class RoleAdapter implements RolesApiDelegate {
     @Override
     @PreAuthorize("@P.hasPermission(authentication, 'role', 'search')")
     public ResponseEntity<SearchRoleResponse> searchRoles(
+            String xTraceID,
             String authorization,
             SearchRoleRequest searchRoleRequest,
             Integer limit,
@@ -88,6 +92,7 @@ public class RoleAdapter implements RolesApiDelegate {
     @Override
     @PreAuthorize("@P.hasPermission(authentication, #roleId, 'role', 'update') or @P.hasPermission(authentication, #roleId, 'role', 'update_own')")
     public ResponseEntity<UpdateRoleResponse> updateSingleRole(
+            String xTraceID,
             String authorization,
             String roleId,
             Role updateRoleRequest
@@ -102,6 +107,7 @@ public class RoleAdapter implements RolesApiDelegate {
     @Override
     @PreAuthorize("@P.hasPermission(authentication, 'role', 'export')")
     public ResponseEntity<org.springframework.core.io.Resource> exportRoles(
+            String xTraceID,
             String authorization,
             SearchRoleRequest searchRoleRequest,
             Integer limit,
@@ -115,6 +121,7 @@ public class RoleAdapter implements RolesApiDelegate {
     @Override
     @PreAuthorize("@P.hasPermission(authentication, 'role', 'import')")
     public ResponseEntity<ImportRoleResponse> importRoles(
+            String xTraceID,
             String authorization,
             MultipartFile file
     ) {
