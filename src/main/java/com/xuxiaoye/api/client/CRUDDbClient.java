@@ -90,6 +90,10 @@ public abstract class CRUDDbClient<
         });
     }
 
+    protected Entity populateFrom(Entity updatedEntity, Entity dbEntity) {
+        return updatedEntity;
+    }
+
     @Override
     @Transactional
     public AppResponse<PresentDto> updateById(String id, PresentDto pEntity) {
@@ -105,6 +109,8 @@ public abstract class CRUDDbClient<
             }
 
             Entity updatedDbEntity = this.getMapper().mapToDB(pEntity);
+            // In case need to set db value
+            updatedDbEntity = populateFrom(updatedDbEntity, dbEntity);
             updatedDbEntity.setId(id);
             updatedDbEntity.setUpdatedBy(this.requestContext.getXUserId());
             updatedDbEntity.setUpdatedAt(LocalDateTime.now());

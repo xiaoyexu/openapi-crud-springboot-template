@@ -33,6 +33,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     @Override
     @PreAuthorize("@P.hasPermission(authentication, 'student', 'create')")
     public ResponseEntity<CreateStudentResponse> createSingleStudent(
+            String xTraceID,
             Student createStudentRequest
     ) {
         return this.studentService.create(createStudentRequest)
@@ -45,6 +46,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     @Override
     @PreAuthorize("@P.hasPermission(authentication, #studentId, 'student', 'delete') or @P.hasPermission(authentication, #studentId, 'student', 'delete_own')")
     public ResponseEntity<DeleteStudentResponse> deleteSingleStudent(
+            String xTraceID,
             String studentId
     ) {
         return this.studentService.deleteById(studentId)
@@ -57,6 +59,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     @Override
     @PreAuthorize("@P.hasPermission(authentication, #studentId, 'student', 'get') or @P.hasPermission(authentication, #studentId, 'student', 'get_own')")
     public ResponseEntity<GetStudentResponse> getSingleStudent(
+            String xTraceID,
             String studentId
     ) {
         return this.studentService.get(studentId)
@@ -69,6 +72,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     @Override
     @PreAuthorize("@P.hasPermission(authentication, 'student', 'list')")
     public ResponseEntity<SearchStudentResponse> listStudents(
+            String xTraceID,
             String authorization,
             Integer limit,
             Integer offset,
@@ -84,6 +88,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     @Override
     @PreAuthorize("@P.hasPermission(authentication, 'student', 'search')")
     public ResponseEntity<SearchStudentResponse> searchStudents(
+            String xTraceID,
             SearchStudentRequest searchStudentRequest,
             Integer limit,
             Integer offset,
@@ -99,6 +104,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     @Override
     @PreAuthorize("@P.hasPermission(authentication, #studentId, 'student', 'update') or @P.hasPermission(authentication, #studentId, 'student', 'update_own')")
     public ResponseEntity<UpdateStudentResponse> updateSingleStudent(
+            String xTraceID,
             String studentId,
             Student updateStudentRequest
     ) {
@@ -112,6 +118,7 @@ public class StudentAdapter implements StudentsApiDelegate {
     @Override
     @PreAuthorize("@P.hasPermission(authentication, 'student', 'export')")
     public ResponseEntity<org.springframework.core.io.Resource> exportStudents(
+            String xTraceID,
             SearchStudentRequest searchStudentRequest,
             Integer limit,
             Integer offset,
@@ -123,7 +130,10 @@ public class StudentAdapter implements StudentsApiDelegate {
 
     @Override
     @PreAuthorize("@P.hasPermission(authentication, 'student', 'import')")
-    public ResponseEntity<ImportStudentResponse> importStudents(MultipartFile file) {
+    public ResponseEntity<ImportStudentResponse> importStudents(
+            String xTraceID,
+            MultipartFile file
+    ) {
         return this.studentService.importData(file)
                 .toResponseEntity(
                         data -> ImportStudentResponse.builder().data(data).status(this.commonMapper.map(AppStatus.ok())).build(),

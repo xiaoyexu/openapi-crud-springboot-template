@@ -32,6 +32,7 @@ public class RoleAuditAdapter implements RoleAuditsApiDelegate {
     @Override
     @PreAuthorize("@P.hasPermission(authentication, #roleAuditId, 'roleAudit', 'get') or @P.hasPermission(authentication, #roleAuditId, 'roleAudit', 'get_own')")
     public ResponseEntity<GetRoleAuditResponse> getSingleRoleAudit(
+            String xTraceID,
             String authorization,
             String roleAuditId
     ) {
@@ -45,6 +46,7 @@ public class RoleAuditAdapter implements RoleAuditsApiDelegate {
     @Override
     @PreAuthorize("@P.hasPermission(authentication, 'roleAudit', 'search')")
     public ResponseEntity<SearchRoleAuditResponse> searchRoleAudits(
+            String xTraceID,
             String authorization,
             SearchRoleAuditRequest searchRoleAuditRequest,
             Integer limit,
@@ -61,6 +63,7 @@ public class RoleAuditAdapter implements RoleAuditsApiDelegate {
     @Override
     @PreAuthorize("@P.hasPermission(authentication, 'roleAudit', 'export')")
     public ResponseEntity<org.springframework.core.io.Resource> exportRoleAudits(
+            String xTraceID,
             String authorization,
             SearchRoleAuditRequest searchRoleAuditRequest,
             Integer limit,
