@@ -4,7 +4,7 @@
 
 **Project**: openapi-crud-springboot-template  
 **Technology**: Spring Boot 3.5.14, Java 17, MyBatis Plus, JWT Authentication (RSA)
-**Review Date**: 2026-06-10
+**Review Date**: 2026-06-11
 
 ---
 
@@ -208,20 +208,20 @@ src/
 
 # 5. Evaluation Summary
 
-| Category                         | Score      | Assessment        | Details                                                            |
-|----------------------------------|------------|-------------------|--------------------------------------------------------------------|
-| **Architecture & Design**        | 8/10       | Good              | Clean layered architecture, good separation of concerns            |
-| **Spring Boot Best Practices**   | 7/10       | Good              | Minor issues with @Value usage, missing prod profile               |
-| **REST API Design**              | 8/10       | Good              | RESTful URLs, proper HTTP methods, good response structure         |
-| **Exception Handling**           | 6/10       | Needs Improvement | Wrong HTTP status code (401 vs 403) for authorization errors       |
-| **Validation & Input**           | 6/10       | Needs Improvement | No @Valid annotations, manual validation only                      |
-| **Data Access Layer**            | 8/10       | Good              | MyBatis Plus best practices, audit interceptor                     |
-| **Security**                     | 7/10       | Good              | BCrypt + RSA JWT, but no rate limiting, traceId null check missing |
-| **Testing**                      | 8/10       | Good              | RestAssured integration tests, good coverage target                |
-| **Performance & Scalability**    | 7/10       | Good              | HikariCP configured, Caffeine cache, no distributed cache          |
-| **Code Style & Maintainability** | 7/10       | Good              | Clean code, minor magic numbers, static ApplicationContext         |
-| **Documentation**                | 7/10       | Good              | OpenAPI spec exists, but Swagger 2.0                               |
-| **TOTAL**                        | **7.3/10** | **Good**          | Solid foundation with room for improvement                         |
+| Category                         | Score      | Assessment        | Details                                                          |
+|----------------------------------|------------|-------------------|------------------------------------------------------------------|
+| **Architecture & Design**        | 8/10       | Good              | Clean layered architecture, good separation of concerns          |
+| **Spring Boot Best Practices**   | 7/10       | Good              | Minor issues with @Value usage, missing prod profile             |
+| **REST API Design**              | 8/10       | Good              | RESTful URLs, proper HTTP methods, good response structure       |
+| **Exception Handling**           | 6/10       | Needs Improvement | Wrong HTTP status code (401 vs 403) for authorization errors     |
+| **Validation & Input**           | 6/10       | Needs Improvement | No @Valid annotations, manual validation only                    |
+| **Data Access Layer**            | 8/10       | Good              | MyBatis Plus best practices, audit interceptor                   |
+| **Security**                     | 7/10       | Good              | BCrypt + RSA JWT, but no rate limiting, traceId null check issue |
+| **Testing**                      | 8/10       | Good              | RestAssured integration tests, good coverage target              |
+| **Performance & Scalability**    | 7/10       | Good              | HikariCP configured, Caffeine cache, no distributed cache        |
+| **Code Style & Maintainability** | 7/10       | Good              | Clean code, minor magic numbers, static ApplicationContext       |
+| **Documentation**                | 7/10       | Good              | OpenAPI spec exists, but Swagger 2.0                             |
+| **TOTAL**                        | **7.3/10** | **Good**          | Solid foundation with room for improvement                       |
 
 ---
 
@@ -280,7 +280,7 @@ src/
 
 - **No rate limiting**: API vulnerable to brute force attacks
 - **No token rotation on refresh**: Refresh tokens not rotated on use
-- **TraceId null check missing**: JWTAuthenticationFilter line 66 - potential NullPointerException
+- **TraceId null check issue**: JWTAuthenticationFilter line 66 - potential issue when traceId is null (cache.put with null key)
 
 ### Validation
 
@@ -296,9 +296,9 @@ src/
 
 ### Performance
 
-- **Limited cache size**: Caffeine cache with limited entries for permissions
+- **Limited cache size**: Caffeine cache with only 50 entries for permissions (ServiceConfig line 32)
 - **No Redis integration**: Not suitable for distributed deployment
-- **Missing database indexes**: No explicit index definitions in schema
+- **Missing database indexes**: No explicit index definitions for frequently queried columns
 
 ### Code Quality
 
@@ -348,7 +348,7 @@ public ResponseEntity<CreateRoleResponse> createSingleRole(
 ### 3. Security - Fix TraceId Null Check
 
 - **Category**: Security
-- **Problem**: JWTAuthenticationFilter line 66 - cache.getIfPresent(traceId) without null check
+- **Problem**: JWTAuthenticationFilter line 66 - cache.put(traceId, true) without null check
 - **Suggested Fix**: Add null check before using traceId as cache key
 - **Severity**: High
 
@@ -357,10 +357,14 @@ public ResponseEntity<CreateRoleResponse> createSingleRole(
 if (cache.getIfPresent(traceId) != null) {
     throw new ForbiddenException("Duplicated Request");
 }
+cache.put(traceId, true);  // NPE if traceId is null
 
 // Fixed
-if (traceId != null && cache.getIfPresent(traceId) != null) {
-    throw new ForbiddenException("Duplicated Request");
+if (traceId != null) {
+    if (cache.getIfPresent(traceId) != null) {
+        throw new ForbiddenException("Duplicated Request");
+    }
+    cache.put(traceId, true);
 }
 ```
 
@@ -383,8 +387,8 @@ if (traceId != null && cache.getIfPresent(traceId) != null) {
 ### 6. API - Migrate to OpenAPI 3.0
 
 - **Category**: Documentation
-- **Problem**: Using Swagger 2.0
-- **Suggested Fix**: Migrate to OpenAPI 3.0 specification
+- **Problem**: Using Swagger 2.0 (sample.yaml line 1: `swagger: "2.0"`)
+- **Suggested Fix**: Migrate specification to OpenAPI 3.0
 - **Severity**: Medium
 
 ### 7. Code - Remove Static ApplicationContext
@@ -401,27 +405,34 @@ if (traceId != null && cache.getIfPresent(traceId) != null) {
 - **Suggested Fix**: Use @ConfigurationProperties or constructor injection
 - **Severity**: Medium
 
+### 9. Performance - Increase Permission Cache Size
+
+- **Category**: Performance
+- **Problem**: Permission cache only has 50 entries (ServiceConfig line 32)
+- **Suggested Fix**: Increase cache size or use distributed cache
+- **Severity**: Medium
+
 ## 🟢 Low Priority
 
-### 9. Documentation - Add API Rate Limit Headers
+### 10. Documentation - Add API Rate Limit Headers
 
 - **Category**: Documentation
 - **Problem**: No rate limit headers in responses
 - **Suggested Fix**: Add X-RateLimit-* headers
 - **Severity**: Low
 
-### 10. Testing - Add Performance Tests
+### 11. Testing - Add Performance Tests
 
 - **Category**: Testing
 - **Problem**: No performance/load tests
 - **Suggested Fix**: Add JMeter or Gatling tests
 - **Severity**: Low
 
-### 11. Database - Add Indexes
+### 12. Database - Add Indexes
 
 - **Category**: Performance
-- **Problem**: No explicit indexes defined
-- **Suggested Fix**: Add indexes for frequently queried columns
+- **Problem**: No explicit indexes for frequently queried columns
+- **Suggested Fix**: Add indexes for created_by, role columns
 - **Severity**: Low
 
 ---
@@ -471,7 +482,7 @@ if (traceId != null && cache.getIfPresent(traceId) != null) {
 
 ## ✅ Category: Performance
 
-### ❌ Problem: Permission cache too small
+### ❌ Problem: Permission cache too small (50 entries)
 
 💡 **Suggested Fix**: Increase cache size or use distributed cache
 🔥 **Severity**: Medium
@@ -532,7 +543,8 @@ if (traceId != null && cache.getIfPresent(traceId) != null) {
 4. **Static ApplicationContext**: Anti-pattern in TableAuditLogInterceptor
 5. **Legacy API Spec**: Swagger 2.0 instead of OpenAPI 3.0
 6. **@Value Usage**: Should use @ConfigurationProperties
-7. **TraceId Null Check**: Potential NullPointerException in JWTAuthenticationFilter
+7. **TraceId Null Check**: Potential issue in JWTAuthenticationFilter
+8. **Small Permission Cache**: Only 50 entries may cause cache thrashing
 
 ## ✅ Top 5 Actionable Improvements
 
@@ -551,9 +563,10 @@ This is a well-architected Spring Boot project with a solid foundation. The gene
 Key improvements needed:
 - Fix the HTTP status code mapping for authorization errors
 - Add validation annotations to request DTOs
-- Fix TraceId null check to prevent NullPointerException
+- Fix TraceId null check to prevent potential issues
 - Implement rate limiting for production readiness
 - Remove static ApplicationContext anti-pattern
 - Consider migrating to OpenAPI 3.0
+- Increase permission cache size from 50 entries
 
 The code quality is good overall, with clear separation of concerns and good test coverage. Addressing the identified issues will significantly improve the production readiness of this application.
