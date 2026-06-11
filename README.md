@@ -2,6 +2,8 @@
 
 A production-ready Spring Boot template for building CRUD RESTful APIs with OpenAPI specification, JWT authentication, role-based authorization, and comprehensive audit logging.
 
+Demo at [www.xuxiaoye.com/tadmin/](https://www.xuxiaoye.com/tadmin/)
+
 ## Features
 
 - **OpenAPI-Driven Development**: Define your API in OpenAPI/Swagger specification and auto-generate server stubs
@@ -17,7 +19,7 @@ A production-ready Spring Boot template for building CRUD RESTful APIs with Open
 ## Technology Stack
 
 | Component         | Technology        | Version  |
-| ----------------- | ----------------- | -------- |
+|-------------------|-------------------|----------|
 | Framework         | Spring Boot       | 3.5.14   |
 | Database          | MyBatis Plus      | 3.5.10.1 |
 | API Documentation | SpringDoc OpenAPI | 2.8.5    |
@@ -105,7 +107,7 @@ public abstract class CRUDDbClient<
 The template maintains a clear separation between:
 
 | Layer          | DTO Type     | Purpose                                  |
-| -------------- | ------------ | ---------------------------------------- |
+|----------------|--------------|------------------------------------------|
 | API/Controller | `PresentDto` | External API contract, OpenAPI generated |
 | Database       | `Entity`     | Database schema, MyBatis Plus mapped     |
 
@@ -230,7 +232,7 @@ Each entity has a corresponding audit entity with additional fields:
 #### Role-Based Access Matrix
 
 | Role   | Create | Search | Get | Delete | Export | Import |
-| ------ | ------ | ------ | --- | ------ | ------ | ------ |
+|--------|--------|--------|-----|--------|--------|--------|
 | Admin  | ✓      | ✓      | ✓   | ✓      | ✓      | ✓      |
 | Member | ✓      | ✓      | ✓   | -      | ✓      | ✓      |
 | Owner  | ✓      | Own    | Own | Own    | Own    | -      |
@@ -362,7 +364,7 @@ mvn test jacoco:check
 ### Environment Variables
 
 | Variable                 | Description           | Default     |
-| ------------------------ | --------------------- | ----------- |
+|--------------------------|-----------------------|-------------|
 | `DB_HOST`                | Database host         | `localhost` |
 | `DB_PORT`                | Database port         | `3306`      |
 | `DB_SCHEMA`              | Database name         | `dev`       |
