@@ -2,15 +2,16 @@
 
 ## Project Overview
 
-**Project**: openapi-crud-springboot-template  
-**Technology**: Spring Boot 3.5.14, Java 17, MyBatis Plus, JWT Authentication (RSA)
-**Review Date**: 2026-06-11
+**Project**: `openapi-crud-springboot-template`  
+**Review Baseline**: `CODE_REVIEW_PROMPT.md`  
+**Review Date**: 2026-06-12  
+**Primary Stack**: Spring Boot 3.5.14, Java 17, MyBatis Plus, OpenAPI Generator (Swagger 2.0 spec), RestAssured
 
 ---
 
-# 1. Project Structure
+# Project Structure
 
-```
+```text
 src/
 ├── main/
 │   ├── java/com/xuxiaoye/api/
@@ -38,8 +39,6 @@ src/
 │   │   │   └── CRUDDbClient.java               # Generic CRUD implementation
 │   │   ├── common/exceptions/                  # Exception handling
 │   │   │   ├── GlobalExceptionHandler.java
-│   │   │   ├── AppException.java
-│   │   │   └── ...
 │   │   ├── conf/                               # Configuration classes
 │   │   │   ├── WebSecurityConfig.java
 │   │   │   ├── ServiceConfig.java
@@ -147,426 +146,218 @@ src/
 
 ---
 
-# 2. Technology Stack Summary
+# Technology Stack Summary
 
-| Category  | Technology              | Version          | Purpose                      | Status      | Recommendation                 |
-|-----------|-------------------------|------------------|------------------------------|-------------|--------------------------------|
-| Framework | Spring Boot             | 3.5.14           | Application framework        | ✅ Current   | Upgrade to latest 3.x          |
-| Language  | Java                    | 17               | Programming language         | ✅ Current   | Consider Java 21 LTS           |
-| ORM       | MyBatis Plus            | 3.5.10.1         | Data access                  | ✅ Good      | Consider adding Flyway         |
-| Database  | MySQL                   | 8.2.0            | Primary database             | ✅ Good      | Connection pool configured     |
-| Security  | Spring Security         | Boot managed     | Authentication/Authorization | ✅ Good      | Add rate limiting              |
-| API Spec  | OpenAPI/Swagger         | 2.0              | API documentation            | ⚠️ Legacy   | Migrate to OpenAPI 3.0         |
-| API Doc   | springdoc-openapi       | 2.8.5            | Swagger UI                   | ✅ Good      | -                              |
-| JWT       | jjwt                    | 0.12.3           | Token handling (RSA)         | ✅ Good      | -                              |
-| Caching   | Caffeine                | 3.2.4            | Local cache                  | ✅ Good      | Consider Redis for distributed |
-| Testing   | RestAssured             | Spring Boot Test | Integration testing          | ✅ Excellent | -                              |
-| Testing   | JUnit 5                 | Boot managed     | Unit testing                 | ✅ Good      | -                              |
-| Build     | Maven                   | -                | Build tool                   | ✅ Good      | -                              |
-| Logging   | Log4j2                  | -                | Logging framework            | ✅ Good      | -                              |
-| Excel     | FastExcel               | 0.18.0           | Excel import/export          | ✅ Good      | -                              |
-| Mapping   | MapStruct               | 1.5.5            | DTO mapping                  | ✅ Good      | -                              |
+| Category             | Technology                              |                Version | Purpose                                       | Status | Recommendation                                           |
+|----------------------|-----------------------------------------|-----------------------:|-----------------------------------------------|--------|----------------------------------------------------------|
+| Framework            | Spring Boot                             |                 3.5.14 | Application runtime and dependency management | Good   | Keep 3.x current patch level                             |
+| Language             | Java                                    |                     17 | Main language runtime                         | Good   | Plan Java 21 LTS upgrade                                 |
+| API Spec             | Swagger/OpenAPI                         | 2.0 (`swagger: "2.0"`) | API contract source for generator             | Legacy | Migrate to OpenAPI 3.x                                   |
+| API Generator        | openapi-generator-maven-plugin          |                 7.12.0 | Generate delegates/models                     | Good   | Add generation drift checks in CI                        |
+| Data Access          | MyBatis Plus                            |               3.5.10.1 | ORM/query abstraction                         | Good   | Introduce migration tool (Flyway/Liquibase)              |
+| Dynamic Datasource   | dynamic-datasource-spring-boot3-starter |                  4.3.1 | Datasource routing support                    | Good   | Document prod routing behavior                           |
+| Security             | Spring Security + JWT (jjwt)            |  Boot managed / 0.12.3 | AuthN/AuthZ and token validation              | Good   | Add rate limiting and token rotation                     |
+| Caching              | Caffeine                                |                  3.2.4 | In-memory nonce/permission cache              | Basic  | Evaluate Redis for multi-node deployments                |
+| API Documentation UI | springdoc-openapi-starter-webmvc-ui     |                  2.8.5 | Swagger UI exposure                           | Good   | Validate with OpenAPI 3 migration plan                   |
+| Logging              | Log4j2                                  |           Boot managed | Operational logging                           | Good   | Add structured logging fields (traceId/userId/errorCode) |
+| Testing              | RestAssured + JUnit 5                   |           Boot managed | API/integration + unit tests                  | Strong | Add negative-path security and perf tests                |
+| Coverage             | JaCoCo plugin                           |                  0.8.7 | Coverage report and gate                      | Good   | Keep 80% gate, publish report artifact in CI             |
 
 ---
 
-# 3. Design/Architecture Comparison with Industry Standards
+# Design/Architecture Comparison with Industry Standards
 
-| Aspect                     | Industry Best Practice                              | This Project                         | Status     | Gap                        | Recommendation               |
-|----------------------------|-----------------------------------------------------|--------------------------------------|------------|----------------------------|------------------------------|
-| **Layered Architecture**   | Clear separation: Controller → Service → Repository | Adapter → Service → DBService        | ✅ Good     | None                       | -                            |
-| **DTO Usage**              | Separate DTOs for API, Service, and DB layers       | Single DTO layer (generated)         | ⚠️ Partial | Missing service-level DTOs | Add transformation layer     |
-| **Dependency Injection**   | Constructor-based injection only                    | Mostly constructor injection         | ⚠️ Partial | @Value in UserServiceImpl  | Use @ConfigurationProperties |
-| **Configuration**          | Externalized config with profiles                   | application.yaml with profiles       | ✅ Good     | No prod profile            | Add prod profile             |
-| **API Versioning**         | URL-based (/v1/, /v2/)                              | URL-based (/api/v1/)                 | ✅ Good     | None                       | -                            |
-| **Error Handling**         | Global exception handler with RFC 7807              | @ControllerAdvice with ErrorResponse | ⚠️ Partial | Wrong 401/403 status code  | Fix status code mapping      |
-| **Transaction Management** | Declarative @Transactional                          | @Transactional on service methods    | ✅ Good     | None                       | -                            |
-| **Audit Logging**          | Automatic via interceptors/aspects                  | TableAuditLogInterceptor             | ✅ Good     | Async may lose logs        | Add retry mechanism          |
-| **Caching Strategy**       | Multi-level (L1 local, L2 distributed)              | Caffeine only                        | ⚠️ Basic   | No distributed cache       | Consider Redis for scale     |
-| **Security**               | OAuth2/JWT with proper token management             | JWT with RSA keys + BCrypt           | ✅ Good     | No rate limiting           | Implement rate limiting      |
-| **API Documentation**      | OpenAPI 3.0+ with contract tests                    | Swagger 2.0                          | ⚠️ Legacy  | Contract tests exist       | Migrate to OpenAPI 3.0       |
+| Aspect               | Industry Best Practice                                         | This Project                                                      | Status     | Gap                                                         | Recommendation                                 |
+|----------------------|----------------------------------------------------------------|-------------------------------------------------------------------|------------|-------------------------------------------------------------|------------------------------------------------|
+| Layering             | Clear boundary: API -> Application -> Data                     | Adapter -> Service -> DBService                                   | Good       | Minor cross-cut concerns in service base classes            | Keep layering, reduce static/global state      |
+| Error Model          | Business errors explicit, system errors exceptional            | `AppResponse` dominant, exception classes partly unused/commented | Partial    | Mixed strategy not fully codified                           | Finalize one policy and enforce in review      |
+| Dependency Injection | Constructor-first, config objects over field injection         | Mostly constructor DI, several `@Value` fields                    | Partial    | Scattered config binding                                    | Consolidate with `@ConfigurationProperties`    |
+| Validation           | DTO validation at boundary with `@Valid`                       | Mostly manual validation in service                               | Needs work | Controller boundary validation missing                      | Add `@Valid` + constraint annotations          |
+| Security AuthZ       | Correct 401/403 semantics, endpoint protection, abuse controls | JWT filter + auth rules are in place                              | Partial    | `AuthorizationDeniedException` mapped to 401, no rate limit | Return 403, add rate limiting                  |
+| API Contract         | OpenAPI 3.x + strict CI linting                                | Swagger 2.0 with generator                                        | Partial    | Legacy spec format                                          | Plan staged migration to OpenAPI 3             |
+| Transactions         | Business rollback policy documented and enforced               | `handleDbCall` wrapper with rollback for runtime/db exceptions    | Partial    | AppException catch currently commented out                  | Reconcile wrapper strategy with current policy |
+| Caching              | Fit-for-purpose local + distributed strategy                   | Caffeine only, one cache size 50                                  | Basic      | Weak for horizontal scale                                   | Tune sizes and add distributed option          |
+| Observability        | Correlation IDs, structured errors, metrics                    | Request context present; error responses lack trace fields        | Partial    | Limited correlation at API error boundary                   | Add traceId/errorCode to error response schema |
 
 ---
 
-# 4. Code & QA Unit Test Summary
+# Code & QA Unit Test Summary
 
-| Metric                       | Value  | Notes                          |
-|------------------------------|--------|--------------------------------|
-| **Lines of Code (Main)**     | ~5,200 | Java source files              |
-| **Lines of Code (Test)**     | ~5,700 | Test files                     |
-| **Number of Classes**        | ~100   | Main source classes            |
-| **Number of Test Classes**   | ~35    | Test classes                   |
-| **Test Coverage (Target)**   | 80%    | Configured in JaCoCo           |
-| **API Endpoints**            | ~30+   | Generated from OpenAPI spec    |
-| **Database Tables**          | 8      | 4 main + 4 audit tables        |
-| **Services**                 | 8      | 4 main + 4 audit services      |
-| **DB Services**              | 8      | MyBatis Plus services          |
-| **Controllers/Adapters**     | 4      | Role, Student, User, RoleAudit |
-| **Test Classes per Service** | ~2-3   | Unit + Integration tests       |
-| **Code-to-Test Ratio**       | 1:1.1  | Good balance                   |
+Metrics collected from local workspace (`src/**`, `pom.xml`, `sample.yaml`, `db.sql`):
 
----
-
-# 5. Evaluation Summary
-
-| Category                         | Score      | Assessment        | Details                                                          |
-|----------------------------------|------------|-------------------|------------------------------------------------------------------|
-| **Architecture & Design**        | 8/10       | Good              | Clean layered architecture, good separation of concerns          |
-| **Spring Boot Best Practices**   | 7/10       | Good              | Minor issues with @Value usage, missing prod profile             |
-| **REST API Design**              | 8/10       | Good              | RESTful URLs, proper HTTP methods, good response structure       |
-| **Exception Handling**           | 6/10       | Needs Improvement | Wrong HTTP status code (401 vs 403) for authorization errors     |
-| **Validation & Input**           | 6/10       | Needs Improvement | No @Valid annotations, manual validation only                    |
-| **Data Access Layer**            | 8/10       | Good              | MyBatis Plus best practices, audit interceptor                   |
-| **Security**                     | 7/10       | Good              | BCrypt + RSA JWT, but no rate limiting, traceId null check issue |
-| **Testing**                      | 8/10       | Good              | RestAssured integration tests, good coverage target              |
-| **Performance & Scalability**    | 7/10       | Good              | HikariCP configured, Caffeine cache, no distributed cache        |
-| **Code Style & Maintainability** | 7/10       | Good              | Clean code, minor magic numbers, static ApplicationContext       |
-| **Documentation**                | 7/10       | Good              | OpenAPI spec exists, but Swagger 2.0                             |
-| **TOTAL**                        | **7.3/10** | **Good**          | Solid foundation with room for improvement                       |
+| Metric                 |                 Value | Notes                                                        |
+|------------------------|----------------------:|--------------------------------------------------------------|
+| Lines of code (main)   |                 5,100 | `find src/main/java -name '*.java'                           | xargs wc -l` |
+| Lines of code (test)   |                 5,901 | `find src/test/java -name '*.java'                           | xargs wc -l` |
+| Main Java files        |                    91 | Includes generated and handwritten source in `src/main/java` |
+| Test Java files        |                    34 | `*Test.java` count is 33                                     |
+| Class/enum definitions |                    67 | `grep`-based estimate                                        |
+| Public methods         |                   216 | `grep -RE "public .*\("` estimate                            |
+| Test methods (`@Test`) |                   144 | Annotation count                                             |
+| API paths in spec      |                    29 | `sample.yaml` path entries                                   |
+| DB tables in schema    |                     6 | `CREATE TABLE` count in `db.sql`                             |
+| ServiceImpl classes    |                     7 | `*ServiceImpl.java`                                          |
+| DB service classes     |                     6 | `*DBService.java`                                            |
+| Coverage gate          | 80% line + 80% branch | From JaCoCo plugin config                                    |
 
 ---
 
-# 6. Pros and Cons
+# Evaluation Summary
 
-## ✅ Strengths
-
-### Architecture & Design
-
-- **Clean layered architecture**: Clear separation between Adapter → Service → DBService layers
-- **Generic CRUD implementation**: `CRUDDbClient` provides reusable CRUD operations
-- **OpenAPI code generation**: Contract-first development with generated code
-- **Audit logging**: Automatic audit trail via `TableAuditLogInterceptor`
-- **Delegate pattern**: OpenAPI generates delegate interfaces for clean separation
-
-### Spring Boot Best Practices
-
-- **Constructor-based DI**: Most services use constructor injection
-- **Externalized configuration**: Environment variables supported
-- **Actuator integration**: Health checks and metrics exposed
-- **HikariCP configured**: Connection pool properly set up in application.yaml
-
-### REST API Design
-
-- **RESTful URLs**: Proper resource-based URLs (`/roles`, `/students`)
-- **Consistent response structure**: `AppResponse<T>` wrapper for all responses
-- **Proper HTTP methods**: GET for retrieval, POST for creation, PUT for update, DELETE for removal
-- **Pagination support**: Built-in pagination with offset/limit
-
-### Testing
-
-- **RestAssured integration tests**: Comprehensive API testing
-- **Contract tests**: Spring Cloud Contract for API contracts
-- **Test data management**: JSON file-based test data
-- **JaCoCo coverage**: 80% line and branch coverage target
-- **Dynamic token generation**: No hardcoded test tokens
-
-### Data Access
-
-- **MyBatis Plus**: Efficient query building with Lambda expressions
-- **Pagination**: Built-in pagination support
-- **Dynamic queries**: Flexible search with multiple filter types
-- **Audit interceptor**: Automatic audit trail
-
-### Security
-
-- **BCrypt password hashing**: Uses Spring Security's PasswordEncoder (line 87 in UserServiceImpl)
-- **RSA JWT tokens**: Asymmetric key signing for better security
-- **Refresh token storage**: Stores refresh tokens in database
-- **Role-based authorization**: @PreAuthorize with custom PermissionEvaluator
-- **CORS configuration**: Whitelist-based configuration
-
-## ❌ Weaknesses
-
-### Security
-
-- **No rate limiting**: API vulnerable to brute force attacks
-- **No token rotation on refresh**: Refresh tokens not rotated on use
-- **TraceId null check issue**: JWTAuthenticationFilter line 66 - potential issue when traceId is null (cache.put with null key)
-
-### Validation
-
-- **No @Valid annotations**: Request DTOs not validated at controller level
-- **Manual validation only**: Validation scattered in service layer
-- **No input sanitization**: Potential XSS vulnerabilities in string inputs
-
-### Exception Handling
-
-- **Wrong status code**: AuthorizationDeniedException returns 401 instead of 403 (GlobalExceptionHandler line 37-42)
-- **Missing trace ID**: No correlation ID in error responses
-- **Leaking implementation details**: Stack traces may expose internal structure
-
-### Performance
-
-- **Limited cache size**: Caffeine cache with only 50 entries for permissions (ServiceConfig line 32)
-- **No Redis integration**: Not suitable for distributed deployment
-- **Missing database indexes**: No explicit index definitions for frequently queried columns
-
-### Code Quality
-
-- **Magic numbers**: Hardcoded values like cache sizes
-- **@Value in services**: Should use constructor injection or @ConfigurationProperties
-- **Static ApplicationContext**: Anti-pattern in TableAuditLogInterceptor
-- **Swagger 2.0**: Legacy specification (should migrate to OpenAPI 3.0)
+| Category                        |  Score (/10) | Assessment        | Key Notes                                                                  |
+|---------------------------------|-------------:|-------------------|----------------------------------------------------------------------------|
+| Architecture & Design           |          8.2 | Good              | Strong generic CRUD base + clear layers                                    |
+| Spring Boot Best Practices      |          7.4 | Good              | Mostly good DI; scattered `@Value` remains                                 |
+| REST API Design                 |          8.0 | Good              | Resource-style endpoints and consistent wrappers                           |
+| Exception Handling              |          6.6 | Needs Improvement | Policy drift (`AppResponse` vs commented exception path), 401/403 mismatch |
+| Validation & Input Sanitization |          6.4 | Needs Improvement | Boundary validation (`@Valid`) is weak                                     |
+| Data Access Layer               |          8.1 | Good              | MyBatis Plus + audit interceptor patterns are solid                        |
+| Security                        |          7.2 | Good              | JWT/RBAC strong base; abuse controls missing                               |
+| Testing                         |          8.3 | Good              | Strong RestAssured presence and good volume                                |
+| Performance & Scalability       |          7.0 | Moderate          | Local cache only, limited distributed readiness                            |
+| Code Style & Maintainability    |          7.6 | Good              | Clean base abstractions, some anti-pattern leftovers                       |
+| Documentation                   |          8.2 | Good              | Multiple review/error guides now present                                   |
+| **TOTAL**                       | **7.6 / 10** | **Good**          | Production-capable with targeted hardening items                           |
 
 ---
 
-# 7. Recommendations (Priority Order)
+# Pros and Cons
 
-## 🔴 High Priority
+## Pros
 
-### 1. Exception Handling - Fix HTTP Status Code
+- **Architecture & Design**: Generic `CRUDDbClient` reduces repeated CRUD code; adapter/service separation is clear.
+- **Error-flow modernization**: `ifOk()` chaining is now used in shared CRUD paths (`search`, `exportData`) and guidance docs exist.
+- **Security baseline**: Stateless JWT + RBAC + permission evaluator pattern is in place.
+- **Data layer**: Audit logging interceptor and MyBatis Plus query utilities are practical for CRUD-heavy systems.
+- **Testing**: Large automated suite with RestAssured and contract tooling support.
+- **Documentation**: Quality/process docs now include checklists and error handling guidance.
 
-- **Category**: Exception Handling
-- **Problem**: AuthorizationDeniedException returns 401 instead of 403 (GlobalExceptionHandler.java:37-42)
-- **Suggested Fix**: Return HttpStatus.FORBIDDEN for authorization failures
-- **Severity**: High
+## Cons
 
-```java
-// Current (incorrect)
-@ExceptionHandler({AuthorizationDeniedException.class})
-public ResponseEntity<ErrorResponse> handlerAuthorizationDeniedException(...) {
-    return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);  // Should be FORBIDDEN
-}
-```
-
-### 2. Validation - Add @Valid Annotations
-
-- **Category**: Validation
-- **Problem**: No @Valid on controller endpoints
-- **Suggested Fix**: Add @Valid and @Validated annotations
-- **Severity**: High
-
-```java
-// In adapter classes
-@Override
-@PreAuthorize("@P.hasPermission(authentication, 'role', 'create')")
-public ResponseEntity<CreateRoleResponse> createSingleRole(
-        String authorization,
-        @Valid @RequestBody Role createRoleRequest  // Add @Valid
-) {
-```
-
-### 3. Security - Fix TraceId Null Check
-
-- **Category**: Security
-- **Problem**: JWTAuthenticationFilter line 66 - cache.put(traceId, true) without null check
-- **Suggested Fix**: Add null check before using traceId as cache key
-- **Severity**: High
-
-```java
-// Current (problematic)
-if (cache.getIfPresent(traceId) != null) {
-    throw new ForbiddenException("Duplicated Request");
-}
-cache.put(traceId, true);  // NPE if traceId is null
-
-// Fixed
-if (traceId != null) {
-    if (cache.getIfPresent(traceId) != null) {
-        throw new ForbiddenException("Duplicated Request");
-    }
-    cache.put(traceId, true);
-}
-```
-
-## 🟡 Medium Priority
-
-### 4. Performance - Add Rate Limiting
-
-- **Category**: Security
-- **Problem**: No rate limiting on endpoints
-- **Suggested Fix**: Implement Bucket4j or similar
-- **Severity**: Medium
-
-### 5. Configuration - Add Production Profile
-
-- **Category**: Configuration
-- **Problem**: No production profile defined
-- **Suggested Fix**: Create application-prod.yaml with production settings
-- **Severity**: Medium
-
-### 6. API - Migrate to OpenAPI 3.0
-
-- **Category**: Documentation
-- **Problem**: Using Swagger 2.0 (sample.yaml line 1: `swagger: "2.0"`)
-- **Suggested Fix**: Migrate specification to OpenAPI 3.0
-- **Severity**: Medium
-
-### 7. Code - Remove Static ApplicationContext
-
-- **Category**: Code Quality
-- **Problem**: Static ApplicationContext in TableAuditLogInterceptor (line 35)
-- **Suggested Fix**: Use proper dependency injection
-- **Severity**: Medium
-
-### 8. Code - Replace @Value with Constructor Injection
-
-- **Category**: Code Quality
-- **Problem**: @Value annotations in UserServiceImpl (lines 50-54)
-- **Suggested Fix**: Use @ConfigurationProperties or constructor injection
-- **Severity**: Medium
-
-### 9. Performance - Increase Permission Cache Size
-
-- **Category**: Performance
-- **Problem**: Permission cache only has 50 entries (ServiceConfig line 32)
-- **Suggested Fix**: Increase cache size or use distributed cache
-- **Severity**: Medium
-
-## 🟢 Low Priority
-
-### 10. Documentation - Add API Rate Limit Headers
-
-- **Category**: Documentation
-- **Problem**: No rate limit headers in responses
-- **Suggested Fix**: Add X-RateLimit-* headers
-- **Severity**: Low
-
-### 11. Testing - Add Performance Tests
-
-- **Category**: Testing
-- **Problem**: No performance/load tests
-- **Suggested Fix**: Add JMeter or Gatling tests
-- **Severity**: Low
-
-### 12. Database - Add Indexes
-
-- **Category**: Performance
-- **Problem**: No explicit indexes for frequently queried columns
-- **Suggested Fix**: Add indexes for created_by, role columns
-- **Severity**: Low
+- **Exception handling inconsistency**: `AppException` conversion path in `BaseDbClient.handleDbCall` is commented, while legacy exception classes still exist.
+- **HTTP status semantics**: `AuthorizationDeniedException` currently returns 401 instead of 403 in `GlobalExceptionHandler`.
+- **Validation gap**: DTO boundary validation via `@Valid` is largely absent; service-level manual checks dominate.
+- **Configuration style drift**: Multiple `@Value` fields where typed config objects would improve maintainability.
+- **Scalability**: Permission cache max size is 50 and no distributed cache/rate limiting strategy is implemented.
+- **Contract modernization**: API source contract still Swagger 2.0.
 
 ---
 
-# 8. Actions
+# Recommendations (Priority: High -> Low)
 
-## ✅ Category: Security
-
-### ❌ Problem: No rate limiting on authentication endpoints
-
-💡 **Suggested Fix**: Implement Bucket4j for rate limiting
-🔥 **Severity**: Medium
-
-### ❌ Problem: Refresh tokens not rotated on use
-
-💡 **Suggested Fix**: Implement token rotation strategy
-🔥 **Severity**: Medium
-
-### ❌ Problem: TraceId null check missing in JWTAuthenticationFilter
-
-💡 **Suggested Fix**: Add null check before using traceId as cache key
-🔥 **Severity**: High
-
-## ✅ Category: Validation
-
-### ❌ Problem: No @Valid annotations on request DTOs
-
-💡 **Suggested Fix**: Add @Valid to all @RequestBody parameters
-🔥 **Severity**: High
-
-### ❌ Problem: Validation logic scattered in service layer
-
-💡 **Suggested Fix**: Centralize validation using custom validators
-🔥 **Severity**: Medium
-
-## ✅ Category: Exception Handling
-
-### ❌ Problem: AuthorizationDeniedException returns 401 instead of 403
-
-💡 **Suggested Fix**: Fix status code mapping in GlobalExceptionHandler
-🔥 **Severity**: High
-
-### ❌ Problem: No correlation ID in error responses
-
-💡 **Suggested Fix**: Add trace ID to ErrorResponse
-🔥 **Severity**: Medium
-
-## ✅ Category: Performance
-
-### ❌ Problem: Permission cache too small (50 entries)
-
-💡 **Suggested Fix**: Increase cache size or use distributed cache
-🔥 **Severity**: Medium
-
-## ✅ Category: Code Quality
-
-### ❌ Problem: Static ApplicationContext in TableAuditLogInterceptor
-
-💡 **Suggested Fix**: Use proper DI via @Autowired ApplicationContext
-🔥 **Severity**: Medium
-
-### ❌ Problem: @Value annotations in UserServiceImpl
-
-💡 **Suggested Fix**: Use @ConfigurationProperties or constructor injection
-🔥 **Severity**: Medium
-
-### ❌ Problem: Magic numbers (cache size)
-
-💡 **Suggested Fix**: Extract to constants
-🔥 **Severity**: Low
-
-## ✅ Category: Configuration
-
-### ❌ Problem: No production profile defined
-
-💡 **Suggested Fix**: Create application-prod.yaml
-🔥 **Severity**: Medium
-
-## ✅ Category: Documentation
-
-### ❌ Problem: Using Swagger 2.0 instead of OpenAPI 3.0
-
-💡 **Suggested Fix**: Migrate specification to OpenAPI 3.0
-🔥 **Severity**: Medium
+1. **[High] Fix authorization status mapping**: return 403 for authorization-denied scenarios in `GlobalExceptionHandler`.
+2. **[High] Finalize exception policy**: if business failures are `AppResponse`-based, remove/replace dead exception paths or re-enable conversion consistently.
+3. **[High] Add boundary validation**: enforce `@Valid` and constraint annotations on request DTOs/delegate methods.
+4. **[High] Add rate limiting on auth-sensitive endpoints**: login/refresh/import/export should have abuse protection.
+5. **[Medium] Replace scattered `@Value` with `@ConfigurationProperties`**.
+6. **[Medium] Remove static `ApplicationContext` usage in audit interceptor and use explicit injection strategy**.
+7. **[Medium] Improve error observability**: include traceId/errorCode in API error responses.
+8. **[Medium] Tune cache strategy**: revisit nonce/permission cache sizing and eviction policy.
+9. **[Low] Migrate Swagger 2.0 spec to OpenAPI 3.x in planned phases**.
+10. **[Low] Add performance/load test profile and CI stage**.
 
 ---
 
-# 9. Overall Assessment
+# Actions
 
-## ✅ Overall Code Quality Score: **7.3/10**
+## Critical/High
 
-## ✅ Strengths
+- ✅ **Category**: Exception Handling  
+  ❌ **Problem**: Authorization denied is mapped to 401 (`GlobalExceptionHandler`)  
+  💡 **Suggested Fix**: Use `HttpStatus.FORBIDDEN` and align response body code/message with 403 semantics  
+  🔥 **Severity**: **High**
 
-1. **Clean Architecture**: Well-structured layered design with clear separation of concerns
-2. **Generic CRUD Framework**: Reusable `CRUDDbClient` reduces boilerplate significantly
-3. **Comprehensive Testing**: RestAssured integration tests with good coverage targets
-4. **Audit Logging**: Automatic audit trail implementation via interceptors
-5. **OpenAPI Integration**: Contract-first development with code generation
-6. **Strong Security**: BCrypt password hashing + RSA JWT tokens
-7. **Constructor Injection**: Most services follow DI best practices
-8. **HikariCP Configured**: Connection pool properly set up
+- ✅ **Category**: Exception Handling / Architecture  
+  ❌ **Problem**: Mixed strategy: custom exception classes present, but AppException conversion catch is commented in `BaseDbClient`  
+  💡 **Suggested Fix**: Choose one policy and apply uniformly (either remove unused exception classes or restore+test conversion path)  
+  🔥 **Severity**: **High**
 
-## ✅ Weaknesses
+- ✅ **Category**: Validation  
+  ❌ **Problem**: Boundary DTO validation is weak (`@Valid` usage missing in adapter layer)  
+  💡 **Suggested Fix**: Add `@Valid` and DTO constraints; keep service validation for business rules only  
+  🔥 **Severity**: **High**
 
-1. **Wrong HTTP Status Code**: AuthorizationDeniedException returns 401 instead of 403
-2. **Missing Validation**: No @Valid annotations, manual validation only
-3. **No Rate Limiting**: API vulnerable to abuse
-4. **Static ApplicationContext**: Anti-pattern in TableAuditLogInterceptor
-5. **Legacy API Spec**: Swagger 2.0 instead of OpenAPI 3.0
-6. **@Value Usage**: Should use @ConfigurationProperties
-7. **TraceId Null Check**: Potential issue in JWTAuthenticationFilter
-8. **Small Permission Cache**: Only 50 entries may cause cache thrashing
+- ✅ **Category**: Security  
+  ❌ **Problem**: No endpoint rate limiting for authentication and high-risk APIs  
+  💡 **Suggested Fix**: Add Bucket4j/Redis-based limiter for `/users/login`, `/users/refresh`, imports  
+  🔥 **Severity**: **High**
 
-## ✅ Top 5 Actionable Improvements
+## Medium
 
-1. **🔴 High**: Fix exception handler status code (403 vs 401) for AuthorizationDeniedException
-2. **🔴 High**: Add @Valid annotations to all request DTOs
-3. **🔴 High**: Fix TraceId null check in JWTAuthenticationFilter
-4. **🟡 Medium**: Implement rate limiting on authentication endpoints
-5. **🟡 Medium**: Remove static ApplicationContext in TableAuditLogInterceptor
+- ✅ **Category**: Code Style / Configuration  
+  ❌ **Problem**: Scattered `@Value` usage (`UserServiceImpl`, `ScheduledTasks`, `RequestContextInterceptor`, `ResourceConfig`)  
+  💡 **Suggested Fix**: Introduce typed config groups via `@ConfigurationProperties`  
+  🔥 **Severity**: **Medium**
+
+- ✅ **Category**: Maintainability  
+  ❌ **Problem**: Static `ApplicationContext` in `TableAuditLogInterceptor` increases hidden coupling  
+  💡 **Suggested Fix**: Replace static holder with direct injected collaborators and explicit lifecycle wiring  
+  🔥 **Severity**: **Medium**
+
+- ✅ **Category**: Observability  
+  ❌ **Problem**: Error responses lack trace correlation fields  
+  💡 **Suggested Fix**: Add `traceId` and stable `errorCode` to `ErrorResponse` mapping  
+  🔥 **Severity**: **Medium**
+
+- ✅ **Category**: Performance/Scalability  
+  ❌ **Problem**: Permission cache size (`maximumSize(50)`) may underfit real RBAC cardinality  
+  💡 **Suggested Fix**: Tune based on access patterns and add metrics; consider distributed cache path  
+  🔥 **Severity**: **Medium**
+
+## Low
+
+- ✅ **Category**: API Lifecycle  
+  ❌ **Problem**: Contract source remains Swagger 2.0  
+  💡 **Suggested Fix**: Stage migration to OpenAPI 3.x with compatibility tests  
+  🔥 **Severity**: **Low**
+
+- ✅ **Category**: Testing  
+  ❌ **Problem**: Limited explicit load/performance testing strategy  
+  💡 **Suggested Fix**: Add a baseline Gatling/JMeter scenario for auth + CRUD hotspots  
+  🔥 **Severity**: **Low**
 
 ---
 
-# 10. Conclusion
+# Implemented Improvements (Merged from Previous Summary)
 
-This is a well-architected Spring Boot project with a solid foundation. The generic CRUD framework, audit logging implementation, and strong security practices (BCrypt + RSA JWT) are particularly noteworthy. The project demonstrates good practices in layered architecture, testing, and configuration management.
+The following items were already implemented and are now normalized into this report:
 
-Key improvements needed:
-- Fix the HTTP status code mapping for authorization errors
-- Add validation annotations to request DTOs
-- Fix TraceId null check to prevent potential issues
-- Implement rate limiting for production readiness
-- Remove static ApplicationContext anti-pattern
-- Consider migrating to OpenAPI 3.0
-- Increase permission cache size from 50 entries
+1. `ifOk()` pattern promoted in shared CRUD flows (`search` and `exportData` in `CRUDDbClient`).
+2. `convertToAppStatus(...)` utility centralized in `BaseDbClient` (conversion helper exists, but AppException catch usage currently commented).
+3. Documentation added for review and error-handling process:
+   - `docs/EXCEPTION_HANDLING_GUIDE.md`
+   - `docs/ERROR_HANDLING_GUIDE.md`
+   - `docs/CODE_REVIEW_CHECKLIST.md`
 
-The code quality is good overall, with clear separation of concerns and good test coverage. Addressing the identified issues will significantly improve the production readiness of this application.
+---
+
+# Overall Code Quality Score
+
+- ✅ **Overall Code Quality Score**: **7.6 / 10**
+
+## Strengths
+
+- Strong base architecture with reusable CRUD abstractions.
+- Good integration testing density and coverage gate policy.
+- Security baseline is solid (JWT + RBAC + stateless session).
+- Error-handling documentation maturity improved significantly.
+
+## Weaknesses
+
+- Exception policy inconsistency remains a key governance gap.
+- Validation and HTTP status semantics need tightening.
+- Production-hardening controls (rate limiting, distributed cache) are incomplete.
+
+## Top 5 Actionable Improvements
+
+1. Fix 401/403 mapping in `GlobalExceptionHandler`.
+2. Finalize and enforce one error strategy (`AppResponse` vs custom exceptions).
+3. Add `@Valid` + constraint annotations at API boundary.
+4. Implement rate limiting for auth-sensitive endpoints.
+5. Replace static `ApplicationContext` and consolidate config binding.
+
+---
+
+# Conclusion
+
+The project is production-capable for controlled environments and demonstrates strong architectural fundamentals. The primary quality risk is not core architecture, but **policy consistency at error boundaries** (exception vs explicit result) and **edge hardening** (validation semantics, authorization HTTP mapping, abuse controls). Closing these gaps should move the project from **7.6/10** to the **8.5+** range.

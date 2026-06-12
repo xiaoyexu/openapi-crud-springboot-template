@@ -23,8 +23,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.xuxiaoye.api.bean.RequestContext;
-import com.xuxiaoye.api.common.exceptions.ForbiddenException;
-import com.xuxiaoye.api.common.exceptions.JWTExpiredException;
 import com.xuxiaoye.api.constant.HeaderConstant;
 import com.xuxiaoye.api.conf.ResourceConfig;
 import com.xuxiaoye.api.utils.JwtUtils;
@@ -64,7 +62,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     protected void authenticateRequest(HttpServletRequest request) {
         String traceId = request.getHeader(HeaderConstant.X_TRACE_ID);
         if (cache.getIfPresent(traceId) != null) {
-            throw new ForbiddenException("Duplicated Request");
+            throw new RuntimeException("Duplicated Request");
         }
         cache.put(traceId, true);
 
@@ -81,7 +79,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
             Date expirationTime = claims.getExpiration();
             if (expirationTime.before(new Date())) {
-                throw new JWTExpiredException("JWT Token Expired");
+                throw new RuntimeException("JWT Token Expired");
             }
 
             String userId = (String) claims.get("id");

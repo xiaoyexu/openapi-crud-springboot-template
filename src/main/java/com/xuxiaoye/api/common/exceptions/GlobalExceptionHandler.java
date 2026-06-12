@@ -27,12 +27,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler({AppException.class})
-    public @ResponseBody ResponseEntity<ErrorResponse> handlerAppException(AppException ex, WebRequest webRequest) {
-        log.error(ex.getLocalizedMessage());
-        ErrorResponse response = new ErrorResponse(ex.getStatus());
-        return new ResponseEntity<>(response, ex.getHttpStatus());
-    }
+//    @ExceptionHandler({AppException.class})
+//    public @ResponseBody ResponseEntity<ErrorResponse> handlerAppException(AppException ex, WebRequest webRequest) {
+//        log.error(ex.getLocalizedMessage());
+//        ErrorResponse response = new ErrorResponse(ex.getStatus());
+//        return new ResponseEntity<>(response, ex.getHttpStatus());
+//    }
 
     @ExceptionHandler({AuthorizationDeniedException.class})
     public @ResponseBody ResponseEntity<ErrorResponse> handlerAuthorizationDeniedException(AuthorizationDeniedException ex, WebRequest webRequest) {

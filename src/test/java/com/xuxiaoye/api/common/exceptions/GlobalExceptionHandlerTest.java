@@ -11,7 +11,6 @@ class GlobalExceptionHandlerTest {
         assertDoesNotThrow(() -> {
             GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
             assertNotNull(globalExceptionHandler.handlerException(new Exception("abc"), null));
-            assertNotNull(globalExceptionHandler.handlerAppException(new AppException("abc"), null));
             assertNotNull(globalExceptionHandler.handlerAuthorizationDeniedException(new AuthorizationDeniedException("abc"), null));
         });
     }

@@ -27,6 +27,18 @@ public class StudentAuditServiceImpl extends CRUDDbClient<
         StudentAuditDBService
         > implements StudentAuditService {
 
+    // ========== Exception Handling & ifOk() Pattern Guidelines ==========
+    //
+    // Error Handling Strategy:
+    // 1. Business logic failures -> return AppResponse.failWithStatus()
+    // 2. Database errors -> automatically wrapped by handleDbCall()
+    // 3. AppException thrown during processing -> caught by BaseDbClient
+    //
+    // Built-in Functionality (inherited from CRUDDbClient):
+    // - exportData(): uses ifOk() pattern for elegant Excel export with error handling
+    // - importData(): uses ifOkElse() in handleRow() for CRUD operation chaining
+    // ========================================================================
+
     private final StudentAuditMapper studentAuditMapper;
     private final StudentAuditDBService studentAuditDBService;
 

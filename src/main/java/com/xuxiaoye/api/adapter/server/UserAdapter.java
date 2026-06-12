@@ -52,6 +52,17 @@ public class UserAdapter implements UsersApiDelegate {
     }
 
     @Override
+    public ResponseEntity<LogoutResponse> logout(
+            String xTraceID,
+            String authorization
+    ) {
+        return this.userService.logout().toResponseEntity(
+                data -> LogoutResponse.builder().data(data).status(this.commonMapper.map(AppStatus.ok())).build(),
+                status -> LogoutResponse.builder().status(this.commonMapper.map(status)).build()
+        );
+    }
+
+    @Override
     public ResponseEntity<RefreshTokenResponse> refreshToken(
             String xTraceID,
             String authorization

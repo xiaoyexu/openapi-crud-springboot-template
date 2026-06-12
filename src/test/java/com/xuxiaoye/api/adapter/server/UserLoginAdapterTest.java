@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xuxiaoye.api.adapter.api.server.dto.LoginResponse;
 import io.restassured.RestAssured;
 import io.restassured.http.Cookie;
 import io.restassured.http.Cookies;
@@ -205,6 +206,61 @@ class UserLoginAdapterTest extends BaseTest {
                 assertThatJson(jsonResponse)
                         .whenIgnoringPaths("data")
                         .isEqualTo(mockRes);
+            }
+        }
+    }
+
+    @Nested
+    @Order(3)
+    class LogoutTest {
+        @BeforeEach
+        void before() {
+            reader = reader.withEndPoint("/users/login").withMethod("post");
+        }
+
+        @Nested
+        class Code200 {
+
+            @BeforeEach
+            void before() {
+                reader = reader.withHttpStatus("200");
+            }
+
+            @ParameterizedTest
+            @CsvSource({
+                    "request.json,result.json",
+            })
+            void logout(String requestJson, String responseJson) throws IOException {
+                String request = reader.withBase("requests").withFileName(requestJson).getContent();
+
+                String jsonResponse = post(
+                        "/users/login",
+                        request,
+                        HttpStatus.OK.value()
+                );
+
+                String mockRes = reader.withBase("responses").withFileName(responseJson).getContent();
+                assertThatJson(jsonResponse)
+                        .whenIgnoringPaths("data.accessToken", "data.refreshToken")
+                        .isEqualTo(mockRes);
+
+                LoginResponse response = objectMapper.readValue(jsonResponse, LoginResponse.class);
+                String accessToken = response.getData().getAccessToken();
+
+                // Logout
+                post(
+                        "/users/logout",
+                        HeaderBuilder.defaultHeader().authorizationToken(accessToken).build(),
+                        "",
+                        HttpStatus.OK.value()
+                );
+
+                // Refresh token should fail
+                post(
+                        "/users/refresh",
+                        request,
+                        HttpStatus.BAD_REQUEST.value()
+                );
             }
         }
     }

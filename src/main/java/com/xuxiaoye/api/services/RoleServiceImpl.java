@@ -32,6 +32,23 @@ public class RoleServiceImpl extends CRUDDbClient<
         RoleDBService
         > implements RoleService {
 
+    // ========== Exception Handling & ifOk() Pattern Guidelines ==========
+    // 
+    // Error Handling Strategy:
+    // 1. Business logic failures (validation, missing entity) -> return AppResponse.failWithStatus()
+    // 2. Database errors -> automatically wrapped by handleDbCall()
+    // 3. AppException thrown during processing -> caught by BaseDbClient and converted to AppResponse
+    // 
+    // Using ifOk() Functional Pattern:
+    // For operations that chain multiple service calls or transforms:
+    //   return this.getUser(id).ifOk(user -> {
+    //       // proceed with business logic only if operation succeeds
+    //       return AppResponse.okWithData(transformedData);
+    //   });
+    //
+    // importData() and exportData() already use ifOk() pattern (inherited from CRUDDbClient)
+    // ========================================================================
+
     private final RoleMapper roleMapper;
     private final RoleDBService roleDBService;
 

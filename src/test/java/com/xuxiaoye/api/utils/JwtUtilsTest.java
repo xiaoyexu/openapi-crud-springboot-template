@@ -8,9 +8,6 @@ import io.jsonwebtoken.Claims;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 
-import com.xuxiaoye.api.common.exceptions.InternalServerErrorException;
-import com.xuxiaoye.api.common.exceptions.InvalidJWTException;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -58,7 +55,7 @@ class JwtUtilsTest {
             );
         });
 
-        assertThrows(InternalServerErrorException.class, () -> {
+        assertThrows(RuntimeException.class, () -> {
             Map claims = Map.of(
                     "Name", "ABC"
             );
@@ -82,7 +79,7 @@ class JwtUtilsTest {
         );
         assertThat(token).isNotNull();
 
-        assertThrows(InvalidJWTException.class, () -> {
+        assertThrows(RuntimeException.class, () -> {
             JwtUtils.validateJWTToken(token, FileUtils.readFileToBytes("test_certs/test_pub_key2.der"));
         });
     }

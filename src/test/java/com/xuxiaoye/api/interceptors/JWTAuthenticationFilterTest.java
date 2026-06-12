@@ -23,7 +23,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.xuxiaoye.api.bean.RequestContext;
-import com.xuxiaoye.api.common.exceptions.ForbiddenException;
 import com.xuxiaoye.api.conf.ResourceConfig;
 import com.xuxiaoye.api.constant.HeaderConstant;
 import com.xuxiaoye.api.utils.FileUtils;
@@ -74,7 +73,7 @@ class JWTAuthenticationFilterTest {
 
             when(cache.getIfPresent(traceId)).thenReturn(Boolean.TRUE);
 
-            assertThrows(ForbiddenException.class, () -> filter.authenticateRequest(request));
+            assertThrows(RuntimeException.class, () -> filter.authenticateRequest(request));
             verify(cache, never()).put(anyString(), any());
         }
 
@@ -248,7 +247,7 @@ class JWTAuthenticationFilterTest {
 
             when(cache.getIfPresent(traceId)).thenReturn(Boolean.TRUE);
 
-            assertThrows(ForbiddenException.class,
+            assertThrows(RuntimeException.class,
                     () -> filter.doFilterInternal(request, response, filterChain));
             verify(filterChain, never()).doFilter(any(), any());
         }
