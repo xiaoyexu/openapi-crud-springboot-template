@@ -48,6 +48,7 @@ public abstract class CRUDDbClient<
 
     protected RequestContext requestContext;
 
+
     @Override
     public AppResponse<PresentDto> get(String id) {
         return handleDbCall(() -> {
@@ -165,17 +166,9 @@ public abstract class CRUDDbClient<
 
     @Override
     public AppResponse<PresentPagedEntities> search(SearchRequest searchRequest, Pagination pagination) {
-        return handleDbCall(() -> {
-            Page<Entity> page = new Page<>(pagination.getOffset(), pagination.getLimit());
-            LambdaQueryWrapper<Entity> query = new LambdaQueryWrapper<>();
-
-            query = buildQuery(query, searchRequest, pagination);
-
-            Page<Entity> entityPageResult = this.getDBService().page(page, query);
-            PagedEntity<PresentDto> pagedEntities = new PagedEntity<>(page.getTotal(),
-                    this.getMapper().mapListToPresent(entityPageResult.getRecords()));
-            return AppResponse.okWithData(this.getMapper().mapPagedToPresent(pagedEntities));
-        });
+        // Use ifOk() chain: searchInternal handles DB/query flow, then map to API page DTO.
+        return this.searchInternal(searchRequest, pagination)
+                .ifOk(this.getMapper()::mapPagedToPresent);
     }
 
     @Transactional
@@ -209,6 +202,7 @@ public abstract class CRUDDbClient<
         }
 
         PresentDto pEntity = buildFromRow(id, colIdx, row);
+        // Perform CRUD operation and add import context to error messages
         AppResponse<?> appResponse = switch (auditAction) {
             case CREATE -> this.create(pEntity);
             case UPDATE -> this.updateById(id, pEntity);
@@ -229,35 +223,33 @@ public abstract class CRUDDbClient<
     }
 
     public AppResponse<FileResponse> exportData(SearchRequest searchRequest, Pagination pagination, String sheetName) {
-        AppResponse<PagedEntity<PresentDto>> pagedFilesAppResponse = this.searchInternal(searchRequest, pagination);
-        if (!pagedFilesAppResponse.isOk()) {
-            return AppResponse.failWithStatus(pagedFilesAppResponse.getStatus());
-        }
+        // Using ifOk() chain style: if search succeeds, proceed with export; otherwise propagate error
+        return this.searchInternal(searchRequest, pagination).ifOk(pagedEntity -> {
+            ExcelHelper.ExcelWriter excelWriter = ExcelHelper.getWriter();
+            excelWriter
+                    .newWorkbook(sheetName, "1.0")
+                    .newWorkSheet(sheetName);
 
-        ExcelHelper.ExcelWriter excelWriter = ExcelHelper.getWriter();
-        excelWriter
-                .newWorkbook(sheetName, "1.0")
-                .newWorkSheet(sheetName);
+            String[] headers = getHeaders();
+            IntStream.range(0, headers.length).forEach(idx -> {
+                excelWriter.value(0, idx, headers[idx]);
+            });
 
-        String[] headers = getHeaders();
-        IntStream.range(0, headers.length).forEach(idx -> {
-            excelWriter.value(0, idx, headers[idx]);
+            List<PresentDto> pagedEntities = pagedEntity.getData();
+            IntStream.range(0, pagedEntities.size()).forEach(idx -> {
+                PresentDto presentDto = pagedEntities.get(idx);
+                writeRow(excelWriter, idx + 1, 0, presentDto);
+            });
+
+            excelWriter.finish();
+
+            FileResponse fileResponse = new FileResponse();
+            fileResponse.setFilename(String.format("%s_%s.xlsx", sheetName, parseDateTimeToString(LocalDateTime.now(), "yyyyMMdd(HH:mm:ss)")));
+            fileResponse.setContentType(MediaType.valueOf("application/vnd.ms-excel"));
+            fileResponse.setContentDisposition(ContentDisposition.parse(String.format("attachment; filename=%s", fileResponse.getFilename())));
+
+            fileResponse.setResource(new ByteArrayResource(excelWriter.getBytes()));
+            return fileResponse;
         });
-
-        List<PresentDto> pagedEntities = pagedFilesAppResponse.getData().getData();
-        IntStream.range(0, pagedEntities.size()).forEach(idx -> {
-            PresentDto presentDto = pagedEntities.get(idx);
-            writeRow(excelWriter, idx + 1, 0, presentDto);
-        });
-
-        excelWriter.finish();
-
-        FileResponse fileResponse = new FileResponse();
-        fileResponse.setFilename(String.format("%s_%s.xlsx", sheetName, parseDateTimeToString(LocalDateTime.now(), "yyyyMMdd(HH:mm:ss)")));
-        fileResponse.setContentType(MediaType.valueOf("application/vnd.ms-excel"));
-        fileResponse.setContentDisposition(ContentDisposition.parse(String.format("attachment; filename=%s", fileResponse.getFilename())));
-
-        fileResponse.setResource(new ByteArrayResource(excelWriter.getBytes()));
-        return AppResponse.okWithData(fileResponse);
     }
 }

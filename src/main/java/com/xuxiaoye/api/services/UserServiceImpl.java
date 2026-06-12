@@ -41,6 +41,28 @@ public class UserServiceImpl extends CRUDDbClient<
         UserDBService
         > implements UserService {
 
+    // ========== Exception Handling Guidelines ==========
+    // See: docs/EXCEPTION_HANDLING_GUIDE.md
+    //
+    // This service demonstrates advanced patterns for services with
+    // complex business logic and exception handling:
+    //
+    // 1. Expected business failures (badRequest, unauthorized)
+    //    -> return AppResponse.failWithStatus()
+    //
+    // 2. Try-catch for technical/external failures (JWT validation)
+    //    -> catch specific exceptions and convert to AppResponse
+    //
+    // 3. Database operations
+    //    -> wrapped by handleDbCall() automatically
+    //
+    // 4. Token/JWT related operations
+    //    -> convert token parsing exceptions to badRequest status
+    //    -> NOT throwing SecurityException directly
+    //
+    // If adding new exception types, use convertToAppStatus() method.
+    // ===================================================
+
     private final ResourceConfig resourceConfig;
 
     private final UserMapper userMapper;
@@ -98,6 +120,8 @@ public class UserServiceImpl extends CRUDDbClient<
             );
 
             dbUser.setRefreshToken(tokenPair.refreshToken());
+
+            // Using functional chain: only build JWT if DB update succeeds
             if (!userDBService.updateById(dbUser)) {
                 log.error("Fail to save refresh token");
                 return AppResponse.failWithStatus(AppStatus.internalError());
@@ -112,7 +136,23 @@ public class UserServiceImpl extends CRUDDbClient<
     }
 
     @Override
+    public AppResponse<String> logout() {
+        return handleDbCall(() -> {
+            com.xuxiaoye.api.services.db.dto.entity.User dbUser = userDBService.getById(
+                    this.requestContext.getXUserId()
+            );
+            dbUser.setRefreshToken("");
+            if (!userDBService.updateById(dbUser)) {
+                log.error("Fail to logout user");
+                return AppResponse.failWithStatus(AppStatus.internalError());
+            }
+            return AppResponse.okWithData("Logout successful");
+        });
+    }
+
+    @Override
     public AppResponse<String> refresh(String refreshToken) {
+        // Try to extract userId from token
         String userId;
         try {
             Claims claims = JwtUtils.validateJWTToken(refreshToken, resourceConfig.getPublicKey());
@@ -197,9 +237,7 @@ public class UserServiceImpl extends CRUDDbClient<
                 "ACTION", // A - Add, U - Update , D - Delete
                 "ID",
                 "ACCOUNT NAME",
-                "PASSWORD HASHED",
                 "ROLE",
-                "REFRESH TOKEN",
                 // "XXX",
                 "CREATED BY",
                 "CREATED AT",
@@ -213,9 +251,7 @@ public class UserServiceImpl extends CRUDDbClient<
         excelWriter.value(rowIdx, colIdx++, "");
         excelWriter.value(rowIdx, colIdx++, user.getId());
         excelWriter.value(rowIdx, colIdx++, user.getAccountName());
-//        excelWriter.value(rowIdx, colIdx++, user.getPasswordHash());
         excelWriter.value(rowIdx, colIdx++, user.getRole());
-//        excelWriter.value(rowIdx, colIdx++, user.getRefreshToken());
         excelWriter.value(rowIdx, colIdx++, user.getCreatedBy());
         excelWriter.value(rowIdx, colIdx++, user.getCreatedAt());
         excelWriter.value(rowIdx, colIdx++, user.getUpdatedBy());
@@ -225,9 +261,7 @@ public class UserServiceImpl extends CRUDDbClient<
     @Override
     protected User buildFromRow(String id, int colIdx, Row row) {
         String accountName = row.getCellAsString(colIdx++).orElse(null);
-        String passwordHash = row.getCellAsString(colIdx++).orElse(null);
         String role = row.getCellAsString(colIdx++).orElse(null);
-        String refreshToke = row.getCellAsString(colIdx++).orElse(null);
         // default columns
         String createdBy = row.getCellAsString(colIdx++).orElse(this.requestContext.getXUserId());
         String createdAt = row.getCellAsString(colIdx++).orElse(LocalDateTime.now().toString());
@@ -237,9 +271,7 @@ public class UserServiceImpl extends CRUDDbClient<
         return User.builder()
                 .id(id)
                 .accountName(accountName)
-//                .passwordHash(passwordHash)
                 .role(role)
-//                .refreshToken(refreshToke)
                 // default columns
                 .createdBy(createdBy)
                 .createdAt(createdAt)

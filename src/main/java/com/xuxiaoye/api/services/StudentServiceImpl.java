@@ -41,6 +41,24 @@ public class StudentServiceImpl extends CRUDDbClient<
         StudentDBService
         > implements StudentService {
 
+    // ========== Exception Handling & ifOk() Pattern Guidelines ==========
+    //
+    // Error Handling Strategy:
+    // 1. Business validation (age != null) -> return AppResponse.failWithStatus()
+    // 2. Database errors -> automatically wrapped by handleDbCall()
+    // 3. AppException thrown during processing -> caught by BaseDbClient and converted to AppResponse
+    //
+    // Using ifOk() Functional Pattern:
+    // Best used for chaining dependent operations:
+    //   return this.search(request, pagination).ifOk(pagedEntity -> {
+    //       // only execute if search succeeds, otherwise error propagates automatically
+    //       return AppResponse.okWithData(transform(pagedEntity));
+    //   });
+    //
+    // importData() and exportData() already use ifOk() pattern (inherited from CRUDDbClient)
+    // The handleRow() method uses ifOkElse() for elegant CRUD operation chaining
+    // ========================================================================
+
     private final StudentMapper studentMapper;
     private final StudentDBService studentDBService;
 
@@ -110,59 +128,6 @@ public class StudentServiceImpl extends CRUDDbClient<
             return AppResponse.failWithStatus(AppStatus.badRequest("Missing Age"));
         }
         return AppResponse.ok();
-    }
-
-
-    @Override
-    public AppResponse<FileResponse> exportStudents(SearchStudentRequest searchStudentRequest, Pagination pagination) {
-        AppResponse<PagedStudents> pagedStudentsAppResponse = this.search(searchStudentRequest, pagination);
-        if (!pagedStudentsAppResponse.isOk()) {
-            return AppResponse.failWithStatus(pagedStudentsAppResponse.getStatus());
-        }
-
-        ExcelHelper.ExcelWriter excelHelper = ExcelHelper.getWriter();
-        excelHelper
-                .newWorkbook("Student", "1.0")
-                .newWorkSheet("Student");
-
-        String[] headers = new String[]{
-                "ACTION", // A - Add, U - Update , D - Delete
-                "ID",
-                "NAME",
-                "AGE",
-                // "XXX",
-                "CREATED BY",
-                "CREATED AT",
-                "UPDATED BY",
-                "UPDATED AT"
-        };
-        IntStream.range(0, headers.length).forEach(idx -> {
-            excelHelper.value(0, idx, headers[idx]);
-        });
-
-        List<Student> students = pagedStudentsAppResponse.getData().getData();
-        IntStream.range(0, students.size()).forEach(idx -> {
-            Student student = students.get(idx);
-            int rowIdx = idx + 1;
-            int colIdx = 0;
-            excelHelper.value(rowIdx, colIdx++, "");
-            excelHelper.value(rowIdx, colIdx++, student.getId());
-            excelHelper.value(rowIdx, colIdx++, student.getName());
-            excelHelper.value(rowIdx, colIdx++, "" + student.getAge());
-            excelHelper.value(rowIdx, colIdx++, student.getCreatedBy());
-            excelHelper.value(rowIdx, colIdx++, student.getCreatedAt());
-            excelHelper.value(rowIdx, colIdx++, student.getUpdatedBy());
-            excelHelper.value(rowIdx, colIdx++, student.getUpdatedAt());
-        });
-        excelHelper.finish();
-
-        FileResponse fileResponse = new FileResponse();
-        fileResponse.setFilename(String.format("Students_%s.xlsx", parseDateTimeToString(LocalDateTime.now(), "yyyyMMdd(HH:mm:ss)")));
-        fileResponse.setContentType(MediaType.valueOf("application/vnd.ms-excel"));
-        fileResponse.setContentDisposition(ContentDisposition.parse(String.format("attachment; filename=%s", fileResponse.getFilename())));
-
-        fileResponse.setResource(new ByteArrayResource(excelHelper.getBytes()));
-        return AppResponse.okWithData(fileResponse);
     }
 
     @Override

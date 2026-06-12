@@ -140,6 +140,40 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/ErrorResponse'
+  /users/logout:
+    post:
+      tags:
+        - users
+      description: Logout
+      operationId: logout
+      parameters:
+        - $ref: '#/parameters/X-Trace-ID'
+        - $ref: '#/parameters/Access-Token'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LogoutResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
   /users/refresh:
     post:
       tags:
@@ -1503,6 +1537,12 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/JWT'
+      status:
+        $ref: '#/definitions/ResponseStatus'
+  LogoutResponse:
+    properties:
+      data:
+        type: string
       status:
         $ref: '#/definitions/ResponseStatus'
   JWT:

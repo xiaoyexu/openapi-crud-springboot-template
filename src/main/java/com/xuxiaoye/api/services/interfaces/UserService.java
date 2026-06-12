@@ -9,5 +9,7 @@ import com.xuxiaoye.api.resp.AppResponse;
 public interface UserService extends Service<User, SearchUserRequest, PagedUsers, UserMapper, UserDBService> {
     AppResponse<com.xuxiaoye.api.bean.JWT> login(LoginRequest request);
 
+    AppResponse<String> logout();
+
     AppResponse<String> refresh(String refreshToken);
 }

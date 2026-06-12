@@ -13,9 +13,6 @@ import io.jsonwebtoken.Jwts;
 import lombok.extern.log4j.Log4j2;
 
 import com.xuxiaoye.api.bean.TokenPair;
-import com.xuxiaoye.api.common.exceptions.InternalServerErrorException;
-import com.xuxiaoye.api.common.exceptions.InvalidJWTException;
-import com.xuxiaoye.api.common.exceptions.JWTExpiredException;
 
 @Log4j2
 public class JwtUtils {
@@ -45,7 +42,7 @@ public class JwtUtils {
             PrivateKey privateKey = getPriKey(privateKeyBytes);
             return generateJWTToken(privateKey, subject, claims, seconds);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            throw new InternalServerErrorException("Generate JWT Failed");
+            throw new RuntimeException("Generate JWT Failed");
         }
     }
 
@@ -54,7 +51,7 @@ public class JwtUtils {
             PrivateKey privateKey = getPriKey(privateKeyBytes);
             return generateJWTToken(privateKey, subject, claims, 60);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            throw new InternalServerErrorException("Generate JWT Failed");
+            throw new RuntimeException("Generate JWT Failed");
         }
     }
 
@@ -63,7 +60,7 @@ public class JwtUtils {
             PrivateKey privateKey = getPriKey(privateKeyBytes);
             return generateJWTTokenPair(privateKey, accessTokenExpireSeconds, refreshTokenExpireSeconds, userId, username, claims);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            throw new InternalServerErrorException("Generate JWT Failed");
+            throw new RuntimeException("Generate JWT Failed");
         }
     }
 
@@ -73,16 +70,16 @@ public class JwtUtils {
         return new TokenPair(accessToken, freshToken);
     }
 
-    public static Claims validateJWTToken(String token, byte[] publicKeyBytes) throws JWTExpiredException, InvalidJWTException {
+    public static Claims validateJWTToken(String token, byte[] publicKeyBytes) {
         try {
             PublicKey publicKey = getPubKey(publicKeyBytes);
             return Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(token).getPayload();
         } catch (ExpiredJwtException e) {
             log.error(e.getLocalizedMessage());
-            throw new JWTExpiredException("JWT Expired");
+            throw new RuntimeException("JWT Expired");
         } catch (Exception e) {
             log.error(e.getLocalizedMessage());
-            throw new InvalidJWTException("Invalid JWT value");
+            throw new RuntimeException("Invalid JWT value");
         }
     }
 

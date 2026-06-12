@@ -124,7 +124,7 @@ public class StudentAdapter implements StudentsApiDelegate {
             Integer offset,
             String sortBy
     ) {
-        return this.studentService.exportStudents(searchStudentRequest, Pagination.of(offset, limit, sortBy))
+        return this.studentService.exportData(searchStudentRequest, Pagination.of(offset, limit, sortBy), "Students")
                 .toFileResponseEntity();
     }
 

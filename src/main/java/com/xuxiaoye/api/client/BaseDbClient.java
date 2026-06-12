@@ -178,18 +178,38 @@ public class BaseDbClient {
         }
     }
 
+    /**
+     * Converts a business layer ResponseStatus to AppStatus.
+     * Used for converting AppException status to AppResponse status.
+     * This centralizes the conversion logic for all Services.
+     *
+     * @param responseStatus the ResponseStatus from AppException
+     * @return converted AppStatus
+     */
+    protected AppStatus convertToAppStatus(com.xuxiaoye.api.resp.ResponseStatus responseStatus) {
+        return AppStatus.builder()
+                .code(responseStatus.getCode())
+                .message(responseStatus.getMessage())
+                .build();
+    }
+
     public <T> AppResponse<T> handleDbCall(Supplier<AppResponse<T>> logic) {
         try {
             return logic.get();
+//        } catch (com.xuxiaoye.api.common.exceptions.AppException appEx) {
+//            // Known business exceptions: convert ResponseStatus to AppStatus, no rollback
+//            log.warn("business exception: {}", appEx.getLocalizedMessage());
+//            AppStatus appStatus = convertToAppStatus(appEx.getStatus());
+//            return AppResponse.failWithStatus(appStatus);
         } catch (MyBatisSystemException ex) {
             log.error("db call error: {}", ex.getLocalizedMessage());
-            // Rollback
+            // System error: Rollback
             rollback();
             AppStatus appStatus = AppStatus.builder().code("500").message(ex.getLocalizedMessage()).build();
             return AppResponse.failWithStatus(appStatus);
         } catch (RuntimeException ex) {
             log.error("db call runtime error: {}", ex.getLocalizedMessage());
-            // Rollback
+            // System error: Rollback
             rollback();
             AppStatus appStatus = AppStatus.builder().code("500").message(ex.getLocalizedMessage()).build();
             return AppResponse.failWithStatus(appStatus);
