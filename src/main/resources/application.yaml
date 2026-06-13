@@ -30,28 +30,16 @@ spring:
     servlet:
       path: ${WEB_BASE_PATH:/api/v1}
 management:
-  endpoint:
-    health:
-      show-details: never
-  #  server:
-  #    port: 9998
-  health:
-    db:
-      enabled: true
-    mongo:
-      enabled: false
-    redis:
-      enabled: false
-    defaults:
-      enabled: false
   endpoints:
     web:
-      base-path: ${WEB_BASE_PATH:/api/v1}
+      base-path: /
       path-mapping:
         health: ping
       exposure:
-        include: prometheus,metrics,info,health
-    enabled-by-default: true
+        include: metrics,info,health
+  info:
+    git:
+      mode: full
   prometheus:
     metrics:
       export:

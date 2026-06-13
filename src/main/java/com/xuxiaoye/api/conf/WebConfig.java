@@ -31,7 +31,7 @@ public class WebConfig {
             public void addInterceptors(@Autowired(required = true) InterceptorRegistry registry) {
                 registry.addInterceptor(requestContextInterceptor)
                         .addPathPatterns("/**")
-                        .excludePathPatterns("/health").order(1);
+                        .excludePathPatterns("/ping", "/info").order(1);
             }
         };
     }
