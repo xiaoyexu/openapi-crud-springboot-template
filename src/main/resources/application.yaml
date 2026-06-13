@@ -28,7 +28,7 @@ spring:
       max-request-size: 10MB
   mvc:
     servlet:
-      path: ${WEB_BASE_PATH:/api/v1}
+      path: ${WEB_BASE_PATH:/open-api/v1}
 management:
   endpoints:
     web:
