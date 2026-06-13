@@ -16,7 +16,8 @@ public class WebSecurityConfig {
             "/users/refresh",
             "/api-docs/**",
             "/swagger*/**",
-            "/ping"
+            "/ping",
+            "/info"
     };
 
     @Bean
