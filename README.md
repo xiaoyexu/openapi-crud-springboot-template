@@ -85,11 +85,12 @@ The `CRUDDbClient` provides a generic base implementation for all CRUD operation
 
 ```java
 public abstract class CRUDDbClient<
-        PresentDto,           // API-facing DTO (from OpenAPI)
-        SearchRequest,         // Search/filter request DTO
-        PresentPagedEntities,  // Paginated response DTO
-        PresentMapper,          // Mapper between PresentDto and Entity
-        Entity extends DBEntity<String>,  // Database entity
+        IdType,                     // ID type (e.g., String, Long)
+        PresentDto,                  // API-facing DTO (from OpenAPI)
+        SearchRequest,               // Search/filter request DTO
+        PresentPagedEntities,        // Paginated response DTO
+        PresentMapper,               // Mapper between PresentDto and Entity
+        Entity extends DBEntity<IdType>,  // Database entity
         DBMapper extends BaseMapper<Entity>,  // MyBatis mapper
         DBService extends ServiceImpl<DBMapper, Entity>  // MyBatis Plus service
 > extends BaseDbClient implements Service<...>
@@ -122,7 +123,7 @@ The template maintains a clear separation between:
 The `RequestContext` bean carries request-scoped information throughout the application:
 
 ```java
-// Set by JWTInterceptor
+// Set by JWTAuthenticationFilter
 requestContext.setXUserId(userId);
 requestContext.setAuthorization(authorization);
 
@@ -167,7 +168,7 @@ MyBatis interceptor for automatic audit logging:
 - Stores audit records asynchronously (`@Async`)
 - Supports audit tables with `{TABLE}_AUDIT` naming convention
 
-#### 4. JWTInterceptor
+#### 4. JWTAuthenticationFilter
 
 Handles authentication and authorization:
 
@@ -193,9 +194,9 @@ Implements Spring Security's `PermissionEvaluator`:
 @Data
 public abstract class DBEntity<T> {
     protected T id;                    // Primary key (UUID)
-    protected String createdBy;       // Creator user ID
+    protected String createdBy;        // Creator user ID
     protected LocalDateTime createdAt; // Creation timestamp
-    protected String updatedBy;       // Last modifier user ID
+    protected String updatedBy;        // Last modifier user ID
     protected LocalDateTime updatedAt; // Last modification timestamp
 }
 ```
@@ -274,24 +275,32 @@ src/
 │   │   │   │   ├── dto/                  # Generated DTOs
 │   │   │   │   └── Api.java              # Generated API interface
 │   │   │   └── server/
-│   │   │       └── mapper/               # Generated MyBatis mappers
+│   │   │       └── RoleAdapter.java      # Server adapters
 │   │   ├── bean/                         # Core beans and DTOs
+│   │   │   ├── CustomRequestAttribute.java
 │   │   │   ├── JWT.java
 │   │   │   ├── PagedEntity.java
 │   │   │   ├── Pagination.java
-│   │   │   └── RequestContext.java
+│   │   │   ├── RequestContext.java
+│   │   │   ├── SortField.java
+│   │   │   └── TokenPair.java
 │   │   ├── client/                       # Base clients for DB operations
+│   │   │   ├── BaseApiClient.java        # API client utilities
 │   │   │   ├── BaseDbClient.java         # Query utilities
 │   │   │   └── CRUDDbClient.java         # CRUD implementation
+│   │   ├── common/exceptions/            # Exception handling
+│   │   │   └── GlobalExceptionHandler.java
 │   │   ├── conf/                         # Configuration classes
 │   │   │   ├── AdapterConfig.java
+│   │   │   ├── InterceptorConfig.java
 │   │   │   ├── MybatisPlusConfig.java
+│   │   │   ├── ResourceConfig.java
 │   │   │   ├── ServiceConfig.java
 │   │   │   ├── SwaggerConfig.java
 │   │   │   └── WebSecurityConfig.java
 │   │   ├── constant/                      # Application constants
 │   │   ├── interceptors/                 # Request interceptors
-│   │   │   ├── JWTInterceptor.java
+│   │   │   ├── JWTAuthenticationFilter.java
 │   │   │   ├── RequestContextInterceptor.java
 │   │   │   └── TableAuditLogInterceptor.java
 │   │   ├── interfaces/                   # Custom interfaces
@@ -299,26 +308,65 @@ src/
 │   │   ├── resp/                         # Response wrappers
 │   │   │   ├── AppResponse.java
 │   │   │   ├── AppStatus.java
-│   │   │   └── FileResponse.java
+│   │   │   ├── ErrorResponse.java
+│   │   │   ├── FileResponse.java
+│   │   │   └── ResponseStatus.java
 │   │   ├── services/                     # Business logic implementations
 │   │   │   ├── interfaces/               # Service interfaces
-│   │   │   └── db/                        # Database entities and mappers
-│   │   │       ├── dto/entity/            # DB entities
-│   │   │       ├── dto/mapper/            # Entity mappers
-│   │   │       └── mapper/                # MyBatis mappers
+│   │   │   │   ├── Service.java
+│   │   │   │   ├── RoleService.java
+│   │   │   │   ├── RoleAuditService.java
+│   │   │   │   ├── StudentService.java
+│   │   │   │   ├── StudentAuditService.java
+│   │   │   │   ├── UserService.java
+│   │   │   │   └── UserAuditService.java
+│   │   │   ├── db/                        # Database services
+│   │   │   │   ├── RoleDBService.java
+│   │   │   │   ├── RoleAuditDBService.java
+│   │   │   │   ├── StudentDBService.java
+│   │   │   │   ├── StudentAuditDBService.java
+│   │   │   │   ├── UserDBService.java
+│   │   │   │   ├── UserAuditDBService.java
+│   │   │   │   └── dto/
+│   │   │   │       ├── entity/            # DB entities
+│   │   │   │       └── mapper/           # Entity mappers
+│   │   │   ├── PermissionServiceImpl.java
+│   │   │   ├── RoleServiceImpl.java
+│   │   │   ├── RoleAuditServiceImpl.java
+│   │   │   ├── StudentServiceImpl.java
+│   │   │   ├── StudentAuditServiceImpl.java
+│   │   │   ├── UserServiceImpl.java
+│   │   │   ├── UserAuditServiceImpl.java
+│   │   │   └── ScheduledTasks.java
 │   │   └── utils/                        # Utility classes
+│   │       ├── ContextUtils.java
 │   │       ├── DateTimeUtils.java
 │   │       ├── ExcelHelper.java
+│   │       ├── FileUtils.java
+│   │       ├── JacksonUtils.java
 │   │       ├── JwtUtils.java
-│   │       └── ...
+│   │       ├── LogUtils.java
+│   │       ├── RandomUtils.java
+│   │       └── SerializableUtils.java
 │   └── resources/
 │       ├── application.yaml               # Main configuration
 │       ├── application-local.yaml        # Local development config
 │       ├── db/db.sql                     # Database schema
 │       └── swagger/server/sample.yaml    # OpenAPI specification
 └── test/
-    ├── java/                             # Unit and integration tests
+    ├── java/com/xuxiaoye/api/
+    │   ├── BaseClass.java                # Test base class
+    │   ├── BaseTest.java                 # RestAssured base test
+    │   ├── adapter/                      # Adapter tests
+    │   ├── bean/                        # Bean tests
+    │   ├── client/                      # Client tests
+    │   ├── common/exceptions/           # Exception tests
+    │   ├── interceptors/                # Interceptor tests
+    │   ├── resp/                        # Response tests
+    │   ├── services/                    # Service tests
+    │   └── utils/                       # Utility tests
     └── resources/
+        ├── application-test.yaml
         ├── apis/                         # API test fixtures
         ├── contracts/                    # Contract tests
         └── test_certs/                   # Test certificates
@@ -584,7 +632,7 @@ curl -X POST http://localhost:6666/api/v1/students/import \
 The `TableAuditLogInterceptor` automatically logs all database changes:
 
 | Action | Description |
-| ------ | ----------- |
+|--------|-------------|
 | **A**  | Insert/Add  |
 | **U**  | Update      |
 | **D**  | Delete      |
