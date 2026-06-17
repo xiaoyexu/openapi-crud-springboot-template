@@ -32,6 +32,7 @@ import static com.xuxiaoye.api.client.BaseDbClient.Operator.*;
 
 @Log4j2
 public class UserServiceImpl extends CRUDDbClient<
+        String,
         User,
         SearchUserRequest,
         PagedUsers,

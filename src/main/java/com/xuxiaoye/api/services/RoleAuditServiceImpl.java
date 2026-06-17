@@ -17,6 +17,7 @@ import static com.xuxiaoye.api.client.BaseDbClient.Operator.*;
 
 @Log4j2
 public class RoleAuditServiceImpl extends CRUDDbClient<
+        String,
         RoleAudit,
         SearchRoleAuditRequest,
         PagedRoleAudits,

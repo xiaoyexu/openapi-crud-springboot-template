@@ -2,6 +2,8 @@ package com.xuxiaoye.api.client;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -29,6 +31,7 @@ import com.xuxiaoye.api.resp.FileResponse;
 import com.xuxiaoye.api.services.db.dto.entity.DBEntity;
 import com.xuxiaoye.api.services.interfaces.Service;
 import com.xuxiaoye.api.utils.ExcelHelper;
+import com.xuxiaoye.api.utils.SerializableUtils;
 import com.xuxiaoye.api.bean.RequestContext;
 
 import static com.xuxiaoye.api.constant.CommonConstants.OK;
@@ -37,20 +40,29 @@ import static com.xuxiaoye.api.utils.DateTimeUtils.parseDateTimeToString;
 
 @Log4j2
 public abstract class CRUDDbClient<
+        IdType extends Serializable,
         PresentDto,
         SearchRequest,
         PresentPagedEntities,
         PresentMapper extends com.xuxiaoye.api.adapter.server.mapper.BaseMapper<PresentDto, PresentPagedEntities, Entity>,
-        Entity extends DBEntity<String>,
+        Entity extends DBEntity<IdType>,
         DBMapper extends BaseMapper<Entity>,
         DBService extends ServiceImpl<DBMapper, Entity>
-        > extends BaseDbClient implements Service<PresentDto, SearchRequest, PresentPagedEntities, PresentMapper, DBService> {
+        > extends BaseDbClient implements Service<IdType, PresentDto, SearchRequest, PresentPagedEntities, PresentMapper, DBService> {
 
     protected RequestContext requestContext;
 
+    protected boolean shouldGenerateId(Entity entity) {
+        return true;
+    }
+
+    protected IdType generateId() {
+        // Default implementation generates a random UUID string ID. Override if different ID generation logic is needed.
+        return (IdType) UUID.randomUUID().toString();
+    }
 
     @Override
-    public AppResponse<PresentDto> get(String id) {
+    public AppResponse<PresentDto> get(IdType id) {
         return handleDbCall(() -> {
             Entity entity = this.getDBService().getById(id);
             if (entity == null) {
@@ -74,8 +86,8 @@ public abstract class CRUDDbClient<
             return validateResult;
         }
 
-        if (StringUtils.isBlank(dbEntity.getId())) {
-            dbEntity.setId(UUID.randomUUID().toString());
+        if (dbEntity.getId() == null && shouldGenerateId(dbEntity)) {
+            dbEntity.setId(generateId());
         }
 
         return handleDbCall(() -> {
@@ -97,7 +109,7 @@ public abstract class CRUDDbClient<
 
     @Override
     @Transactional
-    public AppResponse<PresentDto> updateById(String id, PresentDto pEntity) {
+    public AppResponse<PresentDto> updateById(IdType id, PresentDto pEntity) {
         return handleDbCall(() -> {
             AppResponse<PresentDto> validateResult = validate(pEntity);
             if (!validateResult.isOk()) {
@@ -128,7 +140,7 @@ public abstract class CRUDDbClient<
 
     @Override
     @Transactional
-    public AppResponse<String> deleteById(String id) {
+    public AppResponse<String> deleteById(IdType id) {
         return handleDbCall(() -> {
             if (this.getDBService().getById(id) == null) {
                 return AppResponse.failWithStatus(AppStatus.notFound());
@@ -184,20 +196,31 @@ public abstract class CRUDDbClient<
         return handleDbCall(() -> ExcelHelper.getReader(readableWorkbook).process(this::handleRow));
     }
 
-    protected PresentDto buildFromRow(String id, int colIdx, Row row) {
+    protected PresentDto buildFromRow(IdType id, int colIdx, Row row) {
         return null;
+    }
+
+    protected boolean isSerializableBlank(IdType id) {
+        return SerializableUtils.isSerializableBlank(id);
     }
 
     protected AppResponse<String> handleRow(Row row) {
         int colIdx = 0;
         String action = (String) row.getCell(colIdx++).getValue();
-        String id = (String) row.getCell(colIdx++).getValue();
+
+        IdType id = null;
+        Object idObject = row.getCell(colIdx++).getValue();
+        if (idObject instanceof BigDecimal) {
+            id = (IdType) Long.valueOf(((BigDecimal) idObject).longValue());
+        } else {
+            id = (IdType) idObject;
+        }
 
         if (StringUtils.isBlank(action)) {
             return AppResponse.ok();
         }
         AuditAction auditAction = AuditAction.fromAction(action);
-        if ((AuditAction.UPDATE == auditAction || AuditAction.DELETE == auditAction) && StringUtils.isBlank(id)) {
+        if ((AuditAction.UPDATE == auditAction || AuditAction.DELETE == auditAction) && isSerializableBlank(id)) {
             return AppResponse.ok();
         }
 
@@ -209,7 +232,7 @@ public abstract class CRUDDbClient<
             case DELETE -> this.deleteById(id);
         };
         if (!appResponse.isOk()) {
-            return AppResponse.failWithStatus(AppStatus.badRequest("Failed to import id " + id + " error:" + appResponse.getStatus().getMessage()));
+            return AppResponse.failWithStatus(AppStatus.badRequest("Failed to " + auditAction.name().toLowerCase() + " id " + id + " error:" + appResponse.getStatus().getMessage()));
         }
         return AppResponse.ok();
     }

@@ -6,7 +6,7 @@ import com.xuxiaoye.api.adapter.server.mapper.UserMapper;
 import com.xuxiaoye.api.services.db.UserDBService;
 import com.xuxiaoye.api.resp.AppResponse;
 
-public interface UserService extends Service<User, SearchUserRequest, PagedUsers, UserMapper, UserDBService> {
+public interface UserService extends Service<String, User, SearchUserRequest, PagedUsers, UserMapper, UserDBService> {
     AppResponse<com.xuxiaoye.api.bean.JWT> login(LoginRequest request);
 
     AppResponse<String> logout();

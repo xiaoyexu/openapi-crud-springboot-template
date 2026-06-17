@@ -1,6 +1,6 @@
 package com.xuxiaoye.api.interfaces;
 
 @FunctionalInterface
-public interface OwnerChecker {
-    boolean isOwner(String targetId, String owner);
+public interface OwnerChecker<T> {
+    boolean isOwner(T targetId, String owner);
 }

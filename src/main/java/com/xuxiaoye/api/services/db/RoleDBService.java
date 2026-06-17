@@ -6,7 +6,7 @@ import com.xuxiaoye.api.interfaces.OwnerChecker;
 import com.xuxiaoye.api.services.db.dto.entity.Role;
 import com.xuxiaoye.api.services.db.mapper.RoleDBMapper;
 
-public class RoleDBService extends ServiceImpl<RoleDBMapper, Role> implements OwnerChecker {
+public class RoleDBService extends ServiceImpl<RoleDBMapper, Role> implements OwnerChecker<String> {
     public boolean isOwner(String id, String createdBy) {
         Role role = this.getById(id);
         return role != null && role.getCreatedBy().equals(createdBy);
