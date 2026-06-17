@@ -86,7 +86,7 @@ public class PermissionServiceImpl implements PermissionEvaluator {
                     .map(String::toUpperCase)
                     .toList();
             result = authorities.contains(authority.toUpperCase()) ||
-                    authorities.contains(authority.replaceAll(":.*", ":*")) ||
+                    authorities.contains(authority.toUpperCase().replaceAll(":.*", ":*")) ||
                     authorities.contains("*:*");
         } else {
             result = authorityName.equalsIgnoreCase(authority);
