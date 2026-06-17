@@ -6,18 +6,18 @@ import com.xuxiaoye.api.bean.Pagination;
 import com.xuxiaoye.api.resp.AppResponse;
 import com.xuxiaoye.api.resp.FileResponse;
 
-public interface Service<PresentDto, SearchRequest, PresentPagedEntities, PresentMapper, DBService> {
+public interface Service<IdType, PresentDto, SearchRequest, PresentPagedEntities, PresentMapper, DBService> {
     PresentMapper getMapper();
 
     DBService getDBService();
 
-    AppResponse<PresentDto> get(String id);
+    AppResponse<PresentDto> get(IdType id);
 
     AppResponse<PresentDto> create(PresentDto pEntity);
 
-    AppResponse<PresentDto> updateById(String id, PresentDto pEntity);
+    AppResponse<PresentDto> updateById(IdType id, PresentDto pEntity);
 
-    AppResponse<String> deleteById(String id);
+    AppResponse<String> deleteById(IdType id);
 
     AppResponse<PresentPagedEntities> search(SearchRequest searchRequest, Pagination pagination);
 

@@ -18,6 +18,7 @@ import static com.xuxiaoye.api.client.BaseDbClient.Operator.*;
 
 @Log4j2
 public class StudentAuditServiceImpl extends CRUDDbClient<
+        String,
         StudentAudit,
         SearchStudentAuditRequest,
         PagedStudentAudits,

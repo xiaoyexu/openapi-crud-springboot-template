@@ -32,6 +32,7 @@ import static com.xuxiaoye.api.utils.DateTimeUtils.*;
 
 @Log4j2
 public class StudentServiceImpl extends CRUDDbClient<
+        String,
         Student,
         SearchStudentRequest,
         PagedStudents,
