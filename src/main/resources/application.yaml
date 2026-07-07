@@ -1,5 +1,5 @@
 server:
-  port: 6666
+  port: ${PORT:6666}
 spring:
   jackson:
     default-property-inclusion: NON_NULL

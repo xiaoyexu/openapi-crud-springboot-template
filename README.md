@@ -4,6 +4,29 @@ A production-ready Spring Boot template for building CRUD RESTful APIs with Open
 
 Demo at [www.xuxiaoye.com/tadmin/](https://www.xuxiaoye.com/tadmin/)
 
+## Documentation
+
+### Getting Started
+
+- [OpenAPI CRUD Skill](docs/SKILL_OPENAPI_CRUD.md)
+- [AI Playbook (EN)](docs/SKILL_OPENAPI_CRUD_AI.md)
+- [AI Playbook (ZH)](docs/SKILL_OPENAPI_CRUD_AI_ZH.md)
+
+### Error and Exception Handling
+
+- [Error Handling Guide](docs/ERROR_HANDLING_GUIDE.md)
+- [Exception Handling Guide](docs/EXCEPTION_HANDLING_GUIDE.md)
+
+### Quality and Review
+
+- [Code Review Checklist](docs/CODE_REVIEW_CHECKLIST.md)
+- [Code Review Prompt](CODE_REVIEW_PROMPT.md)
+
+### Improvement Notes
+
+- [Improve Plan](IMPROVE.md)
+- [Improvement Summary](IMPROVEMENT_SUMMARY.md)
+
 ## Features
 
 - **OpenAPI-Driven Development**: Define your API in OpenAPI/Swagger specification and auto-generate server stubs
@@ -529,6 +552,8 @@ curl -X POST http://localhost:6666/api/v1/students/import \
 ---
 
 ## Creating New Entities
+
+> Start here: [OpenAPI CRUD Skill](docs/SKILL_OPENAPI_CRUD.md) | [AI Playbook (EN)](docs/SKILL_OPENAPI_CRUD_AI.md) | [AI Playbook (ZH)](docs/SKILL_OPENAPI_CRUD_AI_ZH.md)
 
 ### Step-by-Step Guide
 
