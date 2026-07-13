@@ -23,7 +23,7 @@ parameters:
     name: Authorization
     description: "Bearer + {space} + {accessToken}. Example: Bearer KGNsaWVudF9pZDpjbGllbnRfc2VjcmV0KQ=="
     in: header
-    required: true
+    required: false
     type: string
   X-APP-ENV:
     name: x-app-env

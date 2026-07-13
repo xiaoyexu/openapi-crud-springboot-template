@@ -91,8 +91,8 @@ public class UserAdapter implements UsersApiDelegate {
     @PreAuthorize("@P.hasPermission(authentication, 'user', 'create')")
     public ResponseEntity<CreateUserResponse> createSingleUser(
             String xTraceID,
-            String authorization,
-            User createUserRequest
+            User createUserRequest,
+            String authorization
     ) {
         return this.userService.create(createUserRequest)
                 .toResponseEntity(
@@ -105,8 +105,8 @@ public class UserAdapter implements UsersApiDelegate {
     @PreAuthorize("@P.hasPermission(authentication, #userId, 'user', 'delete') or @P.hasPermission(authentication, #userId, 'user', 'delete_own')")
     public ResponseEntity<DeleteUserResponse> deleteSingleUser(
             String xTraceID,
-            String authorization,
-            String userId
+            String userId,
+            String authorization
     ) {
         return this.userService.deleteById(userId)
                 .toResponseEntity(
@@ -119,8 +119,8 @@ public class UserAdapter implements UsersApiDelegate {
     @PreAuthorize("@P.hasPermission(authentication, #userId, 'user', 'get') or @P.hasPermission(authentication, #userId, 'user', 'get_own')")
     public ResponseEntity<GetUserResponse> getSingleUser(
             String xTraceID,
-            String authorization,
-            String userId
+            String userId,
+            String authorization
     ) {
         return this.userService.get(userId)
                 .toResponseEntity(
@@ -133,8 +133,8 @@ public class UserAdapter implements UsersApiDelegate {
     @PreAuthorize("@P.hasPermission(authentication, 'user', 'search')")
     public ResponseEntity<SearchUserResponse> searchUsers(
             String xTraceID,
-            String authorization,
             SearchUserRequest searchUserRequest,
+            String authorization,
             Integer limit,
             Integer offset,
             String sortBy
@@ -150,9 +150,9 @@ public class UserAdapter implements UsersApiDelegate {
     @PreAuthorize("@P.hasPermission(authentication, #userId, 'user', 'update') or @P.hasPermission(authentication, #userId, 'user', 'update_own')")
     public ResponseEntity<UpdateUserResponse> updateSingleUser(
             String xTraceID,
-            String authorization,
             String userId,
-            User updateUserRequest
+            User updateUserRequest,
+            String authorization
     ) {
         return this.userService.updateById(userId, updateUserRequest)
                 .toResponseEntity(
@@ -165,8 +165,8 @@ public class UserAdapter implements UsersApiDelegate {
     @PreAuthorize("@P.hasPermission(authentication, 'user', 'export')")
     public ResponseEntity<org.springframework.core.io.Resource> exportUsers(
             String xTraceID,
-            String authorization,
             SearchUserRequest searchUserRequest,
+            String authorization,
             Integer limit,
             Integer offset,
             String sortBy
@@ -179,8 +179,8 @@ public class UserAdapter implements UsersApiDelegate {
     @PreAuthorize("@P.hasPermission(authentication, 'user', 'import')")
     public ResponseEntity<ImportUserResponse> importUsers(
             String xTraceID,
-            String authorization,
-            MultipartFile file
+            MultipartFile file,
+            String authorization
     ) {
         return this.userService.importData(file)
                 .toResponseEntity(

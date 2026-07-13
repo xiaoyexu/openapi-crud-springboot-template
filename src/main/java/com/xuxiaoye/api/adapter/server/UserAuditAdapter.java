@@ -29,8 +29,8 @@ public class UserAuditAdapter implements UserAuditsApiDelegate {
     @PreAuthorize("@P.hasPermission(authentication, #userAuditId, 'userAudit', 'get') or @P.hasPermission(authentication, #userAuditId, 'userAudit', 'get_own')")
     public ResponseEntity<GetUserAuditResponse> getSingleUserAudit(
             String xTraceID,
-            String authorization,
-            String userAuditId
+            String userAuditId,
+            String authorization
     ) {
         return this.userAuditService.get(userAuditId)
                 .toResponseEntity(
@@ -43,8 +43,8 @@ public class UserAuditAdapter implements UserAuditsApiDelegate {
     @PreAuthorize("@P.hasPermission(authentication, 'userAudit', 'search')")
     public ResponseEntity<SearchUserAuditResponse> searchUserAudits(
             String xTraceID,
-            String authorization,
             SearchUserAuditRequest searchUserAuditRequest,
+            String authorization,
             Integer limit,
             Integer offset,
             String sortBy
@@ -60,8 +60,8 @@ public class UserAuditAdapter implements UserAuditsApiDelegate {
     @PreAuthorize("@P.hasPermission(authentication, 'userAudit', 'export')")
     public ResponseEntity<org.springframework.core.io.Resource> exportUserAudits(
             String xTraceID,
-            String authorization,
             SearchUserAuditRequest searchUserAuditRequest,
+            String authorization,
             Integer limit,
             Integer offset,
             String sortBy

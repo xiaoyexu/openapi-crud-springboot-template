@@ -33,8 +33,8 @@ public class StudentAuditAdapter implements StudentAuditsApiDelegate {
     @PreAuthorize("@P.hasPermission(authentication, #studentAuditId, 'studentAudit', 'get') or @P.hasPermission(authentication, #studentAuditId, 'studentAudit', 'get_own')")
     public ResponseEntity<GetStudentAuditResponse> getSingleStudentAudit(
             String xTraceID,
-            String authorization,
-            String studentAuditId
+            String studentAuditId,
+            String authorization
     ) {
         return this.studentAuditService.get(studentAuditId)
                 .toResponseEntity(
@@ -47,8 +47,8 @@ public class StudentAuditAdapter implements StudentAuditsApiDelegate {
     @PreAuthorize("@P.hasPermission(authentication, 'studentAudit', 'search')")
     public ResponseEntity<SearchStudentAuditResponse> searchStudentAudits(
             String xTraceID,
-            String authorization,
             SearchStudentAuditRequest searchStudentAuditRequest,
+            String authorization,
             Integer limit,
             Integer offset,
             String sortBy
@@ -64,8 +64,8 @@ public class StudentAuditAdapter implements StudentAuditsApiDelegate {
     @PreAuthorize("@P.hasPermission(authentication, 'studentAudit', 'export')")
     public ResponseEntity<org.springframework.core.io.Resource> exportStudentAudits(
             String xTraceID,
-            String authorization,
             SearchStudentAuditRequest searchStudentAuditRequest,
+            String authorization,
             Integer limit,
             Integer offset,
             String sortBy
